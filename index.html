@@ -36,13 +36,11 @@
     a:hover { color: var(--primary-dark); text-decoration: none; }
     .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
 
-    /* Hiệu ứng Animations */
     @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
     @keyframes pulse-glow { 0% { box-shadow: 0 0 0 0 rgba(243, 156, 18, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(243, 156, 18, 0); } 100% { box-shadow: 0 0 0 0 rgba(243, 156, 18, 0); } }
     .fade-up { animation: fadeInUp 0.6s ease-out forwards; }
 
-    /* Header (Kính mờ) */
     .site-header { background: rgba(255,255,255,0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.3); position: sticky; top: 0; z-index: 50; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05); }
     .header-inner { display: flex; align-items: center; gap: 15px; padding: 12px 0; flex-wrap: nowrap; }
     .logo { display: flex; align-items: center; gap: 8px; font-size: 1.2rem; font-weight: 800; color: var(--primary-dark); text-decoration: none; white-space: nowrap; letter-spacing: -0.5px;}
@@ -66,7 +64,6 @@
     .search-results a:hover { background: #f8fafc; color: var(--primary); }
     .search-results a i { margin-right: 10px; color: var(--primary); }
 
-    /* Main */
     main.container { padding-top: 30px; padding-bottom: 60px; min-height: 60vh; }
     
     h1, h2, h3 { color: var(--primary-dark); margin-top: 0; }
@@ -74,7 +71,6 @@
     .section-title h2 { margin: 0; display: flex; align-items: center; gap: 10px; font-size: 1.5rem; font-weight: 800; letter-spacing: -0.5px;}
     .section-title h2 i { color: var(--accent); }
 
-    /* Banner Thông báo (Màu mè nhẹ) */
     .notice-banner { background: linear-gradient(135deg, #fff8e1, #ffecb3); border-left: 5px solid var(--accent); border-radius: var(--radius-sm); padding: 18px 24px; margin-bottom: 30px; display: flex; align-items: flex-start; gap: 15px; box-shadow: 0 4px 15px rgba(243, 156, 18, 0.15); animation: slideDown 0.5s ease-out; position: relative; overflow: hidden;}
     .notice-banner::before { content: '\f0a1'; font-family: 'Font Awesome 6 Free'; font-weight: 900; position: absolute; right: -10px; bottom: -20px; font-size: 6rem; color: rgba(243, 156, 18, 0.1); transform: rotate(-15deg);}
     @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
@@ -83,7 +79,6 @@
     .notice-content h4 { margin: 0 0 5px; color: #92400e; font-size: 1.05rem; font-weight: 700;}
     .notice-content p { margin: 0; font-size: 0.95rem; color: #b45309; }
 
-    /* Hero (Nâng cấp mạnh) */
     .hero { position: relative; background: linear-gradient(135deg, #0a5ea8 0%, #073f70 100%); color: white; border-radius: var(--radius); padding: 70px 32px; text-align: center; overflow: hidden; box-shadow: 0 10px 30px rgba(7, 63, 112, 0.2);}
     .hero::before { content: ''; position: absolute; width: 300px; height: 300px; background: rgba(255,255,255,0.1); border-radius: 50%; top: -100px; left: -100px; }
     .hero::after { content: ''; position: absolute; width: 200px; height: 200px; background: rgba(243, 156, 18, 0.2); border-radius: 50%; bottom: -50px; right: -50px; }
@@ -93,7 +88,6 @@
     .hero .cta { display: inline-flex; align-items: center; gap: 10px; background: var(--accent); color: white; padding: 16px 36px; border-radius: 30px; font-weight: 700; text-decoration: none; transition: 0.3s; position: relative; z-index: 1; animation: pulse-glow 2s infinite;}
     .hero .cta:hover { background: #e08e0b; transform: translateY(-3px) scale(1.02); color: white;}
 
-    /* Grid & Card (Hiệu ứng nổi) */
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
     .card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); color: var(--text); display: flex; flex-direction: column; transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s; position: relative; overflow: hidden;}
     .card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, var(--primary), var(--accent)); opacity: 0; transition: 0.3s; }
@@ -104,14 +98,12 @@
     .card .meta { font-size: 0.85rem; color: var(--muted); display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
     .card .meta i { width: 16px; text-align: center; color: #94a3b8;}
 
-    /* Detail & Badge */
     .detail-header { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 35px; margin-bottom: 30px; box-shadow: var(--shadow); position: relative; overflow: hidden;}
     .detail-header::before { content: ''; position: absolute; top: 0; left: 0; width: 6px; height: 100%; background: var(--primary); }
     .badge { display: inline-flex; align-items: center; gap: 8px; background: #e6f0fb; color: var(--primary-dark); padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; margin-right: 10px; margin-bottom: 10px; font-weight: 600; }
     .breadcrumb { font-size: 0.9rem; color: var(--muted); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; font-weight: 500;}
     .breadcrumb a { color: var(--primary); }
 
-    /* Forms (Bo góc mềm mại) */
     .review-form, .report-form, .admin-box { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 30px; margin: 30px 0; box-shadow: var(--shadow); }
     .review-form label, .report-form label, .admin-box label { display: block; font-weight: 700; margin-bottom: 10px; margin-top: 20px; color: var(--primary-dark); font-size: 0.95rem;}
     input[type="text"], input[type="password"], textarea, select { width: 100%; padding: 14px 16px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: inherit; background: #f8fafc; font-size: 0.95rem; transition: 0.3s;}
@@ -127,13 +119,11 @@
     .btn-approve { background: var(--success); color: white; box-shadow: none;}
     .btn-approve:hover { background: #27ae60; }
 
-    /* Star */
     .stars { color: var(--accent); text-shadow: 0 1px 2px rgba(243, 156, 18, 0.3);}
     .star-input { display: flex; gap: 10px; font-size: 2.2rem; cursor: pointer; }
     .star-input span { color: #d1d5db; transition: 0.2s; }
     .star-input span.active, .star-input span:hover, .star-input span:hover ~ span { color: var(--accent); transform: scale(1.15); text-shadow: 0 2px 10px rgba(243, 156, 18, 0.4);}
 
-    /* Review & Admin Styling */
     .review { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; box-shadow: var(--shadow); position: relative; transition: 0.3s;}
     .review:hover { box-shadow: 0 6px 25px rgba(0, 0, 0, 0.08); }
     .review.highlighted { border: 2px solid var(--accent); background-color: #fffdf5; animation: flash 2s ease-out; }
@@ -150,7 +140,6 @@
     .review-actions button.helpful:hover { color: var(--success); }
     .review-actions button.helpful.active { color: var(--success); background: #e8f8f5; padding: 4px 10px; border-radius: 6px;}
 
-    /* Replies */
     .replies-container { margin-top: 20px; padding-left: 24px; border-left: 3px solid #e2e8f0; }
     .reply-item { background: #f8fafc; padding: 16px; border-radius: var(--radius-sm); margin-bottom: 12px; font-size: 0.9rem; border: 1px solid #f1f5f9; }
     .reply-item.is-admin-comment { border: 1px solid #c7d2fe; background-color: #f8faff; }
@@ -159,7 +148,6 @@
     .reply-date { color: var(--muted); }
     .reply-form-box { display: none; margin-top: 15px; background: #f8fafc; padding: 20px; border-radius: var(--radius-sm); border: 1px solid var(--border);}
 
-    /* Admin Dashboard */
     .admin-tabs { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 2px solid var(--border); flex-wrap: wrap; }
     .admin-tab { padding: 12px 24px; cursor: pointer; font-weight: 700; color: var(--muted); border-bottom: 3px solid transparent; margin-bottom: -2px; transition: 0.2s; border-radius: 8px 8px 0 0;}
     .admin-tab:hover { color: var(--primary); background: #f8fafc;}
@@ -168,29 +156,24 @@
     .admin-content.active { display: block; }
     .admin-item { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 20px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.02);}
 
-    /* Filter Bar */
     .filter-bar { display: flex; gap: 20px; margin-bottom: 25px; align-items: center; flex-wrap: wrap; background: #fff; padding: 20px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow);}
     .filter-bar select { max-width: 220px; margin-bottom: 0; }
 
-    /* Empty State (Làm đẹp lại) */
     .empty-state { text-align: center; padding: 60px 30px; color: var(--muted); background: #fff; border: 2px dashed #cbd5e1; border-radius: var(--radius); display: flex; flex-direction: column; align-items: center; justify-content: center;}
     .empty-state i { font-size: 4rem; color: #e2e8f0; margin-bottom: 20px; animation: float 3s ease-in-out infinite;}
     .empty-state p { font-size: 1.1rem; font-weight: 500; margin-bottom: 20px;}
     
     .site-footer { background: #fff; border-top: 1px solid var(--border); padding: 40px 0; text-align: center; color: var(--muted); font-size: 0.95rem; }
 
-    /* Back to Top */
     #backToTop { display: none; position: fixed; bottom: 30px; right: 30px; z-index: 99; width: 50px; height: 50px; border-radius: 50%; background: var(--primary); color: white; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(10, 94, 168, 0.4); font-size: 1.2rem; align-items: center; justify-content: center; transition: 0.3s; }
     #backToTop:hover { background: var(--primary-dark); transform: translateY(-5px); }
 
-    /* Modal */
     .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 100; backdrop-filter: blur(4px);}
     .modal-overlay.active { display: flex; animation: fadeIn 0.2s;}
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     .modal-box { background: #fff; padding: 35px; border-radius: var(--radius); max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto; animation: fadeInUp 0.3s; box-shadow: 0 20px 40px rgba(0,0,0,0.2);}
     .modal-box h3 { margin-top: 0; font-size: 1.3rem;}
 
-    /* Responsive */
     @media (max-width: 900px) {
         .header-inner { flex-wrap: wrap; }
         .main-nav { order: 3; width: 100%; padding-left: 0; overflow-x: auto; padding-bottom: 5px; justify-content: flex-start;}
@@ -266,14 +249,14 @@
     </div>
   </div>
 
-  <!-- ===== MỚI: Modal Sửa thời gian Review (Admin) ===== -->
+  <!-- Modal Sửa thời gian Review (Admin) -->
   <div class="modal-overlay" id="editTimeModal">
     <div class="modal-box">
       <h3><i class="fas fa-clock" style="color:var(--primary)"></i> Chỉnh sửa thời gian đánh giá</h3>
       <input type="hidden" id="edit-time-review-id">
       <label style="display:block; font-weight:700; margin-bottom:10px; margin-top:20px; color:var(--primary-dark); font-size:0.95rem;">Thời gian mới</label>
       <input type="datetime-local" id="edit-time-value" required style="width:100%; padding:14px 16px; border:1px solid var(--border); border-radius:8px; font-family:inherit; background:#f8fafc; font-size:0.95rem;">
-      <p style="color:var(--muted); font-size:0.85rem; margin-top:10px;">💡 Mẹo: Đặt thời gian trong quá khứ để review trông cũ hơn, hoặc thời gian hiện tại để nó xuất hiện như mới.</p>
+      <p style="color:var(--muted); font-size:0.85rem; margin-top:10px;">💡 Mẹo: Đặt thời gian trong quá khứ để review trông cũ hơn.</p>
       <div style="display:flex; gap:12px; margin-top:25px;">
         <button class="btn" onclick="saveEditedTime()" style="margin:0; flex:1; justify-content:center;">Lưu thay đổi</button>
         <button class="btn" style="background:#cbd5e1; color:#334155; margin:0; flex:1; justify-content:center; box-shadow:none;" onclick="closeModal('editTimeModal')">Hủy</button>
@@ -281,7 +264,7 @@
     </div>
   </div>
 
-  <!-- ===== MỚI: Modal Sửa Review (Admin) ===== -->
+  <!-- Modal Sửa Review (Admin) -->
   <div class="modal-overlay" id="editReviewModal">
     <div class="modal-box">
       <h3><i class="fas fa-edit" style="color:var(--primary)"></i> Sửa đánh giá (Admin)</h3>
@@ -524,7 +507,6 @@
     function escapeHtml(s) { return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
     function formatDate(iso) { return new Date(iso).toLocaleDateString("vi-VN"); }
 
-    /* ===== MỚI: Hiển thị thời gian real-time + hàm tạo dữ liệu ảo ===== */
     function timeAgo(iso) {
         if (!iso) return "";
         const diff = Date.now() - new Date(iso).getTime();
@@ -560,170 +542,175 @@
         });
 
         return [
-            // ============ LECTURER ============
-            { id:"seed_l01", targetType:"lecturer", targetId:"gv001", author:"Minh Anh K26", rating:5, content:"Cô Hằng dạy Marketing tâm huyết vãi luôn mng ơi 🥰 giảng bài dễ hiểu, ví dụ thực tế siêu nhiều, cho điểm cũng dễ thở nữa =)))", likes:32, replies:[
-                reply("SV K25","confirm nha, cô dạy đỉnh thực sự :v",20*DAY),
-                reply("Ẩn danh","học cô xong mới thấy yêu Marketing 😍",18*DAY)
+            // ============ REVIEW GIẢNG VIÊN (Phong cách HUIT TP.HCM) ============
+            { id:"seed_l01", targetType:"lecturer", targetId:"gv001", author:"mê anh jack", rating:5, content:"Cô dạy tâm huyết lắm mng ơi 🥰 giảng bài dễ hiểu, ví dụ thực tế siêu nhiều, cho điểm cũng dễ thở nữa =)))", likes:32, replies:[
+                reply("sv năm 2","confirm nha, cô dạy đỉnh thực sự :v",20*DAY),
+                reply("đang học hóa","học cô xong mới thấy yêu môn này 😍",18*DAY)
             ], createdAt: iso(25*DAY) },
-            { id:"seed_l02", targetType:"lecturer", targetId:"gv073", author:"Trung Kiên", rating:5, content:"PGS Linh đỉnh vãi mng ạ, kiến thức cực sâu, dạy Marketing đúng tầm luôn 👏👏 đáng đồng tiền học phí", likes:45, replies:[], createdAt: iso(22*DAY) },
-            { id:"seed_l03", targetType:"lecturer", targetId:"gv018", author:"Bảo Ngọc", rating:5, content:"Thầy Nam siêu vui tính, dạy chill hết nấc, cả lớp ai cũng mê thầy =))) mà thi cũng không khó lắm đâu ae yên tâm", likes:38, replies:[], createdAt: iso(19*DAY) },
-            { id:"seed_l04", targetType:"lecturer", targetId:"gv007", author:"Học lại năm 3", rating:5, content:"Cô Trang dạy Kế toán hay vãi, giải thích rõ ràng từng bước, mà cho bài tập nhiều quá :v cày không kịp thở luôn", likes:27, replies:[reply("SV K24","bài tập cô cho đúng nhiều thật, mà làm hết thì thi dễ ẹc =)))",15*DAY)], createdAt: iso(17*DAY) },
-            { id:"seed_l05", targetType:"lecturer", targetId:"gv111", author:"Yến Nhi", rating:5, content:"Cô Dung 10 điểm không có nhưng, dạy siêu tâm huyết, HS hỏi gì cũng nhiệt tình trả lời, mà cô còn cho tài liệu free nữa chứ ❤️❤️❤️", likes:52, replies:[], createdAt: iso(14*DAY) },
-            { id:"seed_l06", targetType:"lecturer", targetId:"gv090", author:"Luật sư tương lai", rating:5, content:"Cô Thoa dạy Luật kinh tế đỉnh thực sự, ví dụ thực tế nhiều, học xong hiểu bài luôn, mà cô xinh nữa =)))", likes:41, replies:[], createdAt: iso(12*DAY) },
-            { id:"seed_l07", targetType:"lecturer", targetId:"gv076", author:"FoodTech K25", rating:5, content:"Thầy Ít dạy tâm huyết lắm mng, cho tài liệu free, hỏi gì cũng trả lời nhiệt tình, mà thầy còn giới thiệu việc làm cho SV nữa 👍", likes:30, replies:[], createdAt: iso(10*DAY) },
-            { id:"seed_l08", targetType:"lecturer", targetId:"gv067", author:"Banker tương lai", rating:4, content:"Cô Phương ok nha, giảng bài rõ ràng dễ hiểu, mà thi cuối kỳ đề hơi xương =))) ae ôn kỹ vào", likes:18, replies:[], createdAt: iso(8*DAY) },
-            { id:"seed_l09", targetType:"lecturer", targetId:"gv088", author:"Ẩn danh", rating:4, content:"Thầy Trí dạy ok, đợt trước ổng cho đề mở, ai làm được làm, kiểu tự do :v mà điểm cũng khá cao", likes:12, replies:[], createdAt: iso(6*DAY) },
-            { id:"seed_l10", targetType:"lecturer", targetId:"gv034", author:"Bức xúc vl", rating:1, content:"Thầy Tiến dạy chán nhất cái trường này, toàn yêu cầu điểm danh =))) tôi bỏ mẹ môn rồi ae ạ, đừng học thầy này", likes:67, replies:[
-                reply("Ẩn danh","confirm, thầy khó tính vcl",20*DAY),
-                reply("SV K26","ơ t thấy thầy ok mà ta :v",19*DAY),
-                reply("Ẩn danh","ông kia chắc SV cưng của thầy =)))",18*DAY)
+            { id:"seed_l02", targetType:"lecturer", targetId:"gv073", author:"trà sữa 0 đường", rating:5, content:"Cô đỉnh vãi mng ạ, kiến thức cực sâu, dạy đúng tầm luôn 👏👏 đáng đồng tiền học phí", likes:45, replies:[], createdAt: iso(22*DAY) },
+            { id:"seed_l03", targetType:"lecturer", targetId:"gv018", author:"cú đêm", rating:5, content:"Thầy siêu vui tính, dạy chill hết nấc, cả lớp ai cũng mê thầy =))) mà thi cũng không khó lắm đâu ae yên tâm", likes:38, replies:[], createdAt: iso(19*DAY) },
+            { id:"seed_l04", targetType:"lecturer", targetId:"gv007", author:"học lại năm 3", rating:5, content:"Cô dạy hay vãi, giải thích rõ ràng từng bước, mà cho bài tập nhiều quá :v cày không kịp thở luôn", likes:27, replies:[reply("sv K24","bài tập cô cho đúng nhiều thật, mà làm hết thì thi dễ ẹc =)))",15*DAY)], createdAt: iso(17*DAY) },
+            { id:"seed_l05", targetType:"lecturer", targetId:"gv111", author:"yến nhi", rating:5, content:"Cô 10 điểm không có nhưng, dạy siêu tâm huyết, HS hỏi gì cũng nhiệt tình trả lời, mà cô còn cho tài liệu free nữa chứ ❤️❤️❤️", likes:52, replies:[], createdAt: iso(14*DAY) },
+            { id:"seed_l06", targetType:"lecturer", targetId:"gv090", author:"luật sư tương lai", rating:5, content:"Cô dạy đỉnh thực sự, ví dụ thực tế nhiều, học xong hiểu bài luôn, mà cô xinh nữa =)))", likes:41, replies:[], createdAt: iso(12*DAY) },
+            { id:"seed_l07", targetType:"lecturer", targetId:"gv076", author:"foodtech k25", rating:5, content:"Thầy dạy tâm huyết lắm mng, cho tài liệu free, hỏi gì cũng trả lời nhiệt tình, mà thầy còn giới thiệu việc làm cho SV nữa 👍", likes:30, replies:[], createdAt: iso(10*DAY) },
+            { id:"seed_l08", targetType:"lecturer", targetId:"gv067", author:"banker tương lai", rating:4, content:"Cô ok nha, giảng bài rõ ràng dễ hiểu, mà thi cuối kỳ đề hơi xương =))) ae ôn kỹ vào", likes:18, replies:[], createdAt: iso(8*DAY) },
+            { id:"seed_l09", targetType:"lecturer", targetId:"gv088", author:"cà phê sữa", rating:4, content:"Thầy dạy ok, đợt trước ổng cho đề mở, ai làm được làm, kiểu tự do :v mà điểm cũng khá cao", likes:12, replies:[], createdAt: iso(6*DAY) },
+            { id:"seed_l10", targetType:"lecturer", targetId:"gv034", author:"bức xúc vl", rating:1, content:"Thầy dạy chán nhất cái trường này, toàn yêu cầu điểm danh =))) tôi bỏ mẹ môn rồi ae ạ, đừng học thầy này", likes:67, replies:[
+                reply("sv K26","confirm, thầy khó tính vcl",20*DAY),
+                reply("sv K25","ơ t thấy thầy ok mà ta :v",19*DAY),
+                reply("ẩn danh","ông kia chắc SV cưng của thầy =)))",18*DAY)
             ], createdAt: iso(21*DAY) },
-            { id:"seed_l11", targetType:"lecturer", targetId:"gv003", author:"Toxic nhẹ", rating:2, content:"Thầy Tâm dạy chán vl mng ạ, toàn đọc slide từ đầu đến cuối, học xong chả hiểu mẹ gì @@ vote 2 sao vì thầy cũng dễ tính", likes:44, replies:[], createdAt: iso(24*DAY) },
-            { id:"seed_l12", targetType:"lecturer", targetId:"gv005", author:"Ẩn danh", rating:2, content:"Thầy Ngọc dạy KDQT mà toàn nói chuyện ngoài lề, vào tiết được 30p là hết giờ cmnr @@ học phí đóng như cak, dạy được có tí", likes:55, replies:[], createdAt: iso(23*DAY) },
-            { id:"seed_l13", targetType:"lecturer", targetId:"gv020", author:"Tạch môn rồi", rating:2, content:"Thầy Hậu dạy Luật ok mà cho đề thi khó thấy mẹ, tạch mất rồi huhu 😭😭😭 ae đừng chủ quan như t", likes:33, replies:[reply("SV K25","t cũng tạch đây, đề khó vcl =((((",20*DAY)], createdAt: iso(22*DAY) },
-            { id:"seed_l14", targetType:"lecturer", targetId:"gv104", author:"Ẩn danh", rating:3, content:"Thầy Thắng giảng ổn mà khó tính vcl, trễ 5p là không cho vào =))) học phải đúng giờ tuyệt đối nha ae", likes:29, replies:[], createdAt: iso(20*DAY) },
-            { id:"seed_l15", targetType:"lecturer", targetId:"gv042", author:"Sinh viên khổ", rating:2, content:"Thầy Phước trình độ chỉ có ĐH mà dạy khó hiểu vãi, giải thích loanh quanh mãi không ra vấn đề, học phí đóng đủ mà học chả vào @@", likes:48, replies:[], createdAt: iso(18*DAY) },
-            { id:"seed_l16", targetType:"lecturer", targetId:"gv100", author:"Tạch TCNH", rating:1, content:"Cô Thu dạy TCNH khó hiểu vãi mng ơi, thi thì khó, tạch rồi ae ơi 😭😭😭 đừng ai dại mà học cô này nha", likes:38, replies:[reply("Ẩn danh","cô dạy cũng ok mà, do m k học thôi =)))",15*DAY)], createdAt: iso(16*DAY) },
-            { id:"seed_l17", targetType:"lecturer", targetId:"gv002", author:"Ẩn danh", rating:4, content:"Thầy Thắng kiến thức sâu vãi, giảng hơi nhanh tí nhưng mà hay, nhiều lúc không theo kịp :((", likes:22, replies:[], createdAt: iso(13*DAY) },
-            { id:"seed_l18", targetType:"lecturer", targetId:"gv046", author:"KT K26", rating:4, content:"Thầy Thiên kiến thức ổn, mà đợt này ổng busy quá hay sao mà ít lên lớp, toàn thay giảng viên khác =)))", likes:15, replies:[], createdAt: iso(11*DAY) },
-            { id:"seed_l19", targetType:"lecturer", targetId:"gv062", author:"Ẩn danh", rating:3, content:"Thầy Đức dạy bình thường, không có gì đặc sắc, được cái dễ tính :))) thi cũng dễ nữa", likes:9, replies:[], createdAt: iso(9*DAY) },
-            { id:"seed_l20", targetType:"lecturer", targetId:"gv015", author:"SV năm cuối", rating:4, content:"Cô Nhi dạy ok, cơ mà cho bài nhiều với deadline sát nhau quá tr :((", likes:19, replies:[], createdAt: iso(7*DAY) },
-            { id:"seed_l21", targetType:"lecturer", targetId:"gv110", author:"Ẩn danh", rating:5, content:"Cô Hà dạy KDQT siêu đỉnh mng ạ, tiếng Anh chuẩn, bài giảng hay, mà cô còn cho điểm cao nữa =)))", likes:28, replies:[], createdAt: iso(5*DAY) },
-            { id:"seed_l22", targetType:"lecturer", targetId:"gv054", author:"Ẩn danh", rating:3, content:"Cô Oanh dạy KDQT ok mà nói hơi nhanh, nhiều khi không hiểu kịp :(( ae note lại nhé", likes:11, replies:[], createdAt: iso(4*DAY) },
-            { id:"seed_l23", targetType:"lecturer", targetId:"gv070", author:"QTKD K25", rating:5, content:"Thầy Tuấn Anh dạy QTKD cực hay, ví dụ thực tế siêu nhiều, mà thầy còn tâm lý nữa chứ 🥰 10đ", likes:35, replies:[], createdAt: iso(3*DAY) },
-            { id:"seed_l24", targetType:"lecturer", targetId:"gv047", author:"Ẩn danh", rating:2, content:"Cô Hương dạy QTKD chán vl, toàn đọc giáo trình, học phí đóng đủ mà cảm giác lãng phí =((((", likes:26, replies:[], createdAt: iso(2*DAY) },
-            { id:"seed_l25", targetType:"lecturer", targetId:"gv106", author:"Ẩn danh", rating:5, content:"Cô Giang dạy TSQT siêu đỉnh, cô vừa trẻ vừa giỏi, tương lai của khoa QTKD 💯 học cô xong mới thấy yêu ngành", likes:33, replies:[], createdAt: iso(1*DAY) },
+            { id:"seed_l11", targetType:"lecturer", targetId:"gv003", author:"toxic nhẹ", rating:2, content:"Thầy dạy chán vl mng ạ, toàn đọc slide từ đầu đến cuối, học xong chả hiểu mẹ gì @@ vote 2 sao vì thầy cũng dễ tính", likes:44, replies:[], createdAt: iso(24*DAY) },
+            { id:"seed_l12", targetType:"lecturer", targetId:"gv005", author:"đang học hóa", rating:2, content:"Thầy dạy mà toàn nói chuyện ngoài lề, vào tiết được 30p là hết giờ cmnr @@ học phí đóng như cak, dạy được có tí", likes:55, replies:[], createdAt: iso(23*DAY) },
+            { id:"seed_l13", targetType:"lecturer", targetId:"gv020", author:"tạch môn rồi", rating:2, content:"Thầy dạy ok mà cho đề thi khó thấy mẹ, tạch mất rồi huhu 😭😭😭 ae đừng chủ quan như t", likes:33, replies:[reply("sv K25","t cũng tạch đây, đề khó vcl =((((",20*DAY)], createdAt: iso(22*DAY) },
+            { id:"seed_l14", targetType:"lecturer", targetId:"gv104", author:"mèo lười", rating:3, content:"Thầy giảng ổn mà khó tính vcl, trễ 5p là không cho vào =))) học phải đúng giờ tuyệt đối nha ae", likes:29, replies:[], createdAt: iso(20*DAY) },
+            { id:"seed_l15", targetType:"lecturer", targetId:"gv042", author:"sinh viên khổ", rating:2, content:"Thầy trình độ chỉ có ĐH mà dạy khó hiểu vãi, giải thích loanh quanh mãi không ra vấn đề, học phí đóng đủ mà học chả vào @@", likes:48, replies:[], createdAt: iso(18*DAY) },
+            { id:"seed_l16", targetType:"lecturer", targetId:"gv100", author:"tạch tcnh", rating:1, content:"Cô dạy khó hiểu vãi mng ơi, thi thì khó, tạch rồi ae ơi 😭😭😭 đừng ai dại mà học cô này nha", likes:38, replies:[reply("sv K26","cô dạy cũng ok mà, do m k học thôi =)))",15*DAY)], createdAt: iso(16*DAY) },
+            { id:"seed_l17", targetType:"lecturer", targetId:"gv002", author:"cú đêm", rating:4, content:"Thầy kiến thức sâu vãi, giảng hơi nhanh tí nhưng mà hay, nhiều lúc không theo kịp :((", likes:22, replies:[], createdAt: iso(13*DAY) },
+            { id:"seed_l18", targetType:"lecturer", targetId:"gv046", author:"kt k26", rating:4, content:"Thầy kiến thức ổn, mà đợt này ổng busy quá hay sao mà ít lên lớp, toàn thay giảng viên khác =)))", likes:15, replies:[], createdAt: iso(11*DAY) },
+            { id:"seed_l19", targetType:"lecturer", targetId:"gv062", author:"trà sữa 0 đường", rating:3, content:"Thầy dạy bình thường, không có gì đặc sắc, được cái dễ tính :))) thi cũng dễ nữa", likes:9, replies:[], createdAt: iso(9*DAY) },
+            { id:"seed_l20", targetType:"lecturer", targetId:"gv015", author:"sv năm cuối", rating:4, content:"Cô dạy ok, cơ mà cho bài nhiều với deadline sát nhau quá tr :((", likes:19, replies:[], createdAt: iso(7*DAY) },
+            { id:"seed_l21", targetType:"lecturer", targetId:"gv110", author:"mê anh jack", rating:5, content:"Cô dạy siêu đỉnh mng ạ, tiếng Anh chuẩn, bài giảng hay, mà cô còn cho điểm cao nữa =)))", likes:28, replies:[], createdAt: iso(5*DAY) },
+            { id:"seed_l22", targetType:"lecturer", targetId:"gv054", author:"cà phê sữa", rating:3, content:"Cô dạy ok mà nói hơi nhanh, nhiều khi không hiểu kịp :(( ae note lại nhé", likes:11, replies:[], createdAt: iso(4*DAY) },
+            { id:"seed_l23", targetType:"lecturer", targetId:"gv070", author:"qtkd k25", rating:5, content:"Thầy dạy cực hay, ví dụ thực tế siêu nhiều, mà thầy còn tâm lý nữa chứ 🥰 10đ", likes:35, replies:[], createdAt: iso(3*DAY) },
+            { id:"seed_l24", targetType:"lecturer", targetId:"gv047", author:"mèo lười", rating:2, content:"Cô dạy chán vl, toàn đọc giáo trình, học phí đóng đủ mà cảm giác lãng phí =((((", likes:26, replies:[], createdAt: iso(2*DAY) },
+            { id:"seed_l25", targetType:"lecturer", targetId:"gv106", author:"đang học hóa", rating:5, content:"Cô dạy siêu đỉnh, cô vừa trẻ vừa giỏi, tương lai của khoa 💯 học cô xong mới thấy yêu ngành", likes:33, replies:[], createdAt: iso(1*DAY) },
 
-            // ============ MAJOR ============
-            { id:"seed_m01", targetType:"major", targetId:"7480201", author:"IT K26", rating:5, content:"CNTT HUIT okela lắm mng ơi, cơ sở vật chất khá, thầy cô nhiệt tình, mà học phí hơi cao tí :v nói chung đáng học", likes:42, replies:[], createdAt: iso(26*DAY) },
-            { id:"seed_m02", targetType:"major", targetId:"7480107", author:"AI K26", rating:5, content:"Ngành AI mới mở mà hot vãi, thầy cô toàn TS, PGS không, học xong chắc có tương lai =))) ae tranh thủ đăng ký nha", likes:51, replies:[], createdAt: iso(24*DAY) },
-            { id:"seed_m03", targetType:"major", targetId:"7340101", author:"QTKD K25", rating:4, content:"Ngành QTKD học rộng vcl mng ạ, ra trường làm được nhiều thứ, cơ mà cạnh tranh cao lắm 😅 ae xác định trước nha", likes:28, replies:[], createdAt: iso(22*DAY) },
-            { id:"seed_m04", targetType:"major", targetId:"7340122", author:"TMĐT K26", rating:4, content:"TMĐT HUIT học ok, mà thực hành hơi ít, toàn lý thuyết suông, chán vãi :((", likes:19, replies:[], createdAt: iso(20*DAY) },
-            { id:"seed_m05", targetType:"major", targetId:"7340201", author:"Tạch môn rồi", rating:2, content:"TCNH HUIT thề là khó vcl mng ạ, ra trường làm bank lương cũng tàm tạm, mà học thì mệt nghỉ, ai yếu tim đừng dại =)))", likes:47, replies:[reply("Ẩn danh","chuẩn luôn, t học đây, stress muốn trầm cảm 😭",15*DAY)], createdAt: iso(19*DAY) },
-            { id:"seed_m06", targetType:"major", targetId:"7540101", author:"FoodTech K25", rating:5, content:"Ngành CNTP okela lắm ae ơi, thực hành nhiều, ra trường dễ xin việc ở các cty thực phẩm =))) lương khởi điểm cũng ổn", likes:34, replies:[], createdAt: iso(17*DAY) },
-            { id:"seed_m07", targetType:"major", targetId:"7510605", author:"Logistics K26", rating:5, content:"Logistics HUIT hot vãi mng ơi, ra trường lương khủng, cơ mà học cũng khoai lắm 😅 ai đam mê thì vô nha", likes:39, replies:[], createdAt: iso(15*DAY) },
-            { id:"seed_m08", targetType:"major", targetId:"7810201", author:"Hotel K25", rating:5, content:"QTKS okela lắm mng, thầy cô vui tính, thực hành nhiều, ra trường làm khách sạn 4-5 sao được luôn ✨✨", likes:31, replies:[], createdAt: iso(13*DAY) },
-            { id:"seed_m09", targetType:"major", targetId:"7340301", author:"Kế toán khổ", rating:3, content:"Kế toán HUIT học cũng bth, ra trường lương thấp vcl, phải cày thêm chứng chỉ mới khá được ae ạ :((", likes:36, replies:[], createdAt: iso(11*DAY) },
-            { id:"seed_m10", targetType:"major", targetId:"7480202", author:"Security K26", rating:5, content:"ATTT HUIT top luôn mng, thầy cô toàn dân white hat, học xong có job ngay =))) mà khó vcl ae ạ", likes:43, replies:[], createdAt: iso(9*DAY) },
-            { id:"seed_m11", targetType:"major", targetId:"7380107", author:"Luật gia tương lai", rating:3, content:"Luật KT HUIT học khá ổn, mà ra trường phải học thêm nhiều mới làm được nghề :v nói chung không dễ ăn đâu", likes:22, replies:[], createdAt: iso(8*DAY) },
-            { id:"seed_m12", targetType:"major", targetId:"7510303", author:"Điện K25", rating:4, content:"Ngành Điều khiển & TĐH nam đông vãi =))) học cũng ổn, thực hành nhiều, mà cơ sở vật chất hơi cũ, máy móc lạc hậu", likes:17, replies:[], createdAt: iso(7*DAY) },
-            { id:"seed_m13", targetType:"major", targetId:"7220201", author:"NNA K26", rating:3, content:"Ngành NNA học cũng được, mà GV đa số trẻ, kinh nghiệm chưa nhiều lắm :(( được cái học phí rẻ hơn mấy ngành khác", likes:14, replies:[], createdAt: iso(6*DAY) },
-            { id:"seed_m14", targetType:"major", targetId:"7340120", author:"KDQT K25", rating:3, content:"KDQT học rộng, mà ra trường khó xin việc phết, ae suy nghĩ kỹ :(( đừng nghe mấy anh chị tư vấn ảo nha", likes:25, replies:[], createdAt: iso(5*DAY) },
-            { id:"seed_m15", targetType:"major", targetId:"7220204", author:"Tiếng Trung K26", rating:4, content:"NNT ok phết mng, học tiếng Trung ra trường làm được nhiều, lương cũng khá =))) mà phải chăm học mới theo được", likes:20, replies:[], createdAt: iso(4*DAY) },
-            { id:"seed_m16", targetType:"major", targetId:"7810103", author:"Du lịch K25", rating:5, content:"Ngành du lịch chill phết ae ơi, đi tour suốt, mà học phí cũng chát :v được cái ra trường có việc làm ngay", likes:27, replies:[], createdAt: iso(3*DAY) },
-            { id:"seed_m17", targetType:"major", targetId:"7510401", author:"Hoá K26", rating:2, content:"Hoá học HUIT khó vcl mng, thí nghiệm nhiều, mà ra trường lương thấp tệ :((( chán thật sự, ai có đam mê hãy vào", likes:31, replies:[], createdAt: iso(2*DAY) },
-            { id:"seed_m18", targetType:"major", targetId:"7340205", author:"Fintech K26", rating:5, content:"Fintech HUIT mới mở mà chất lượng phết, thầy cô toàn dân công nghệ, học xong có tương lai =))) recommend nha ae", likes:29, replies:[], createdAt: iso(2*DAY) },
-            { id:"seed_m19", targetType:"major", targetId:"7510203", author:"Cơ điện tử K25", rating:4, content:"Cơ điện tử HUIT ok nha, máy móc đầy đủ, mà lab hơi chật, học đông vcl =))) thực hành cũng nhiều", likes:16, replies:[], createdAt: iso(1*DAY) },
-            { id:"seed_m20", targetType:"major", targetId:"7540106", author:"QA/QC K26", rating:4, content:"Ngành ĐBCL ATTP mới, cơ mà triển vọng, ra trường làm QA/QC lương ổn, mà học cũng khó vcl :v", likes:18, replies:[], createdAt: iso(12*HOUR) },
+            // ============ REVIEW NGÀNH HỌC (Phong cách HUIT TP.HCM) ============
+            { id:"seed_m01", targetType:"major", targetId:"7480201", author:"it k26", rating:5, content:"Ngành này okela lắm mng ơi, cơ sở vật chất khá, thầy cô nhiệt tình, mà học phí hơi cao tí :v nói chung đáng học", likes:42, replies:[], createdAt: iso(26*DAY) },
+            { id:"seed_m02", targetType:"major", targetId:"7480107", author:"ai k26", rating:5, content:"Ngành mới mở mà hot vãi, thầy cô toàn TS, PGS không, học xong chắc có tương lai =))) ae tranh thủ đăng ký nha", likes:51, replies:[], createdAt: iso(24*DAY) },
+            { id:"seed_m03", targetType:"major", targetId:"7340101", author:"qtkd k25", rating:4, content:"Ngành này học rộng vcl mng ạ, ra trường làm được nhiều thứ, cơ mà cạnh tranh cao lắm 😅 ae xác định trước nha", likes:28, replies:[], createdAt: iso(22*DAY) },
+            { id:"seed_m04", targetType:"major", targetId:"7340122", author:"tmđt k26", rating:4, content:"Ngành này học ok, mà thực hành hơi ít, toàn lý thuyết suông, chán vãi :((", likes:19, replies:[], createdAt: iso(20*DAY) },
+            { id:"seed_m05", targetType:"major", targetId:"7340201", author:"tạch môn rồi", rating:2, content:"Ngành này thề là khó vcl mng ạ, ra trường làm bank lương cũng tàm tạm, mà học thì mệt nghỉ, ai yếu tim đừng dại =)))", likes:47, replies:[reply("sv K25","chuẩn luôn, t học đây, stress muốn trầm cảm 😭",15*DAY)], createdAt: iso(19*DAY) },
+            { id:"seed_m06", targetType:"major", targetId:"7540101", author:"foodtech k25", rating:5, content:"Ngành này okela lắm ae ơi, thực hành nhiều, ra trường dễ xin việc ở các cty thực phẩm =))) lương khởi điểm cũng ổn", likes:34, replies:[], createdAt: iso(17*DAY) },
+            { id:"seed_m07", targetType:"major", targetId:"7510605", author:"logistics k26", rating:5, content:"Ngành này hot vãi mng ơi, ra trường lương khủng, cơ mà học cũng khoai lắm 😅 ai đam mê thì vô nha", likes:39, replies:[], createdAt: iso(15*DAY) },
+            { id:"seed_m08", targetType:"major", targetId:"7810201", author:"hotel k25", rating:5, content:"Ngành này okela lắm mng, thầy cô vui tính, thực hành nhiều, ra trường làm khách sạn 4-5 sao được luôn ✨✨", likes:31, replies:[], createdAt: iso(13*DAY) },
+            { id:"seed_m09", targetType:"major", targetId:"7340301", author:"kế toán khổ", rating:3, content:"Ngành này học cũng bth, ra trường lương thấp vcl, phải cày thêm chứng chỉ mới khá được ae ạ :((", likes:36, replies:[], createdAt: iso(11*DAY) },
+            { id:"seed_m10", targetType:"major", targetId:"7480202", author:"security k26", rating:5, content:"Ngành này top luôn mng, thầy cô toàn dân white hat, học xong có job ngay =))) mà khó vcl ae ạ", likes:43, replies:[], createdAt: iso(9*DAY) },
+            { id:"seed_m11", targetType:"major", targetId:"7380107", author:"luật gia tương lai", rating:3, content:"Ngành này học khá ổn, mà ra trường phải học thêm nhiều mới làm được nghề :v nói chung không dễ ăn đâu", likes:22, replies:[], createdAt: iso(8*DAY) },
+            { id:"seed_m12", targetType:"major", targetId:"7510303", author:"điện k25", rating:4, content:"Ngành này nam đông vãi =))) học cũng ổn, thực hành nhiều, mà cơ sở vật chất hơi cũ, máy móc lạc hậu", likes:17, replies:[], createdAt: iso(7*DAY) },
+            { id:"seed_m13", targetType:"major", targetId:"7220201", author:"nna k26", rating:3, content:"Ngành này học cũng được, mà GV đa số trẻ, kinh nghiệm chưa nhiều lắm :(( được cái học phí rẻ hơn mấy ngành khác", likes:14, replies:[], createdAt: iso(6*DAY) },
+            { id:"seed_m14", targetType:"major", targetId:"7340120", author:"kdqt k25", rating:3, content:"Ngành này học rộng, mà ra trường khó xin việc phết, ae suy nghĩ kỹ :(( đừng nghe mấy anh chị tư vấn ảo nha", likes:25, replies:[], createdAt: iso(5*DAY) },
+            { id:"seed_m15", targetType:"major", targetId:"7220204", author:"tiếng trung k26", rating:4, content:"Ngành này ok phết mng, học ra trường làm được nhiều, lương cũng khá =))) mà phải chăm học mới theo được", likes:20, replies:[], createdAt: iso(4*DAY) },
+            { id:"seed_m16", targetType:"major", targetId:"7810103", author:"du lịch k25", rating:5, content:"Ngành này chill phết ae ơi, đi tour suốt, mà học phí cũng chát :v được cái ra trường có việc làm ngay", likes:27, replies:[], createdAt: iso(3*DAY) },
+            { id:"seed_m17", targetType:"major", targetId:"7510401", author:"hoá k26", rating:2, content:"Ngành này khó vcl mng, thí nghiệm nhiều, mà ra trường lương thấp tệ :((( chán thật sự, ai có đam mê hãy vào", likes:31, replies:[], createdAt: iso(2*DAY) },
+            { id:"seed_m18", targetType:"major", targetId:"7340205", author:"fintech k26", rating:5, content:"Ngành này mới mở mà chất lượng phết, thầy cô toàn dân công nghệ, học xong có tương lai =))) recommend nha ae", likes:29, replies:[], createdAt: iso(2*DAY) },
+            { id:"seed_m19", targetType:"major", targetId:"7510203", author:"cơ điện tử k25", rating:4, content:"Ngành này ok nha, máy móc đầy đủ, mà lab hơi chật, học đông vcl =))) thực hành cũng nhiều", likes:16, replies:[], createdAt: iso(1*DAY) },
+            { id:"seed_m20", targetType:"major", targetId:"7540106", author:"qa/qc k26", rating:4, content:"Ngành này mới, cơ mà triển vọng, ra trường làm QA/QC lương ổn, mà học cũng khó vcl :v", likes:18, replies:[], createdAt: iso(12*HOUR) },
 
-            // ============ LECTURER EXTRA — GV HOT NHIỀU REVIEW ============
-            { id:"seed_l26", targetType:"lecturer", targetId:"gv001", author:"Marketing K25", rating:5, content:"Cô Hằng best teacher marketing HUIT luôn, không phải bàn =))) mà bài tập hơi nhiều, ai lười thì xác định", likes:18, replies:[
-                reply("Ẩn danh","bài tập nhiều nhưng mà làm xong hiểu bài thật, đáng :v", 14*DAY),
-                reply("SV K26","cô dạy hay vãi, mà điểm danh khó tính :((", 13*DAY)
+            // ============ REVIEW BỔ SUNG (Tương tác qua lại) ============
+            { id:"seed_l26", targetType:"lecturer", targetId:"gv001", author:"marketing k25", rating:5, content:"Cô best teacher luôn, không phải bàn =))) mà bài tập hơi nhiều, ai lười thì xác định", likes:18, replies:[
+                reply("sv K26","bài tập nhiều nhưng mà làm xong hiểu bài thật, đáng :v", 14*DAY),
+                reply("sv K25","cô dạy hay vãi, mà điểm danh khó tính :((", 13*DAY)
             ], createdAt: iso(14*DAY) },
-            { id:"seed_l27", targetType:"lecturer", targetId:"gv001", author:"Không thích marketing", rating:3, content:"Cô dạy ok mà nói hơi nhanh, t không theo kịp mấy =((( ai học yếu thì nên coi lại slide trước ở nhà", likes:9, replies:[
-                reply("SV khác","cô nói hơi nhanh thật, mà giảng hay :v", 10*DAY)
+            { id:"seed_l27", targetType:"lecturer", targetId:"gv001", author:"không thích marketing", rating:3, content:"Cô dạy ok mà nói hơi nhanh, t không theo kịp mấy =((( ai học yếu thì nên coi lại slide trước ở nhà", likes:9, replies:[
+                reply("sv khác","cô nói hơi nhanh thật, mà giảng hay :v", 10*DAY)
             ], createdAt: iso(11*DAY) },
-            { id:"seed_l28", targetType:"lecturer", targetId:"gv001", author:"Ẩn danh", rating:1, content:"Mình thấy cô dạy không hợp, cảm giác như cô giảng cho mình cô nghe =)) không khuyến khích ai học", likes:22, replies:[
-                reply("Defend cô Hằng","ơ hay, do m k chịu học thôi chứ cô dạy hay mà =)))", 9*DAY),
-                reply("Ẩn danh","vote cô Hằng 5 sao nha, đừng nghe bạn này :v", 8*DAY),
-                reply("Minh Anh K26","cô dạy tâm huyết lắm, m không hiểu thì hỏi, cô trả lời nhiệt tình 😤", 7*DAY)
+            { id:"seed_l28", targetType:"lecturer", targetId:"gv001", author:"cú đêm", rating:1, content:"Mình thấy cô dạy không hợp, cảm giác như cô giảng cho mình cô nghe =)) không khuyến khích ai học", likes:22, replies:[
+                reply("defend cô Hằng","ơ hay, do m k chịu học thôi chứ cô dạy hay mà =)))", 9*DAY),
+                reply("sv K26","vote cô Hằng 5 sao nha, đừng nghe bạn này :v", 8*DAY),
+                reply("minh anh k26","cô dạy tâm huyết lắm, m không hiểu thì hỏi, cô trả lời nhiệt tình 😤", 7*DAY)
             ], createdAt: iso(9*DAY) },
-            { id:"seed_l29", targetType:"lecturer", targetId:"gv073", author:"Marketing K26", rating:5, content:"PGS Linh đỉnh thực sự, giảng bài có chiều sâu, hỏi gì cũng trả lời được hết 👏👏 học cô xong tự tin làm nghề luôn", likes:41, replies:[
-                reply("SV K25","confirm, PGS mà giảng dễ hiểu hơn mấy ông TS khác nhiều :v", 15*DAY)
+            { id:"seed_l29", targetType:"lecturer", targetId:"gv073", author:"marketing k26", rating:5, content:"Cô đỉnh thực sự, giảng bài có chiều sâu, hỏi gì cũng trả lời được hết 👏👏 học cô xong tự tin làm nghề luôn", likes:41, replies:[
+                reply("sv K25","confirm, PGS mà giảng dễ hiểu hơn mấy ông TS khác nhiều :v", 15*DAY)
             ], createdAt: iso(18*DAY) },
-            { id:"seed_l30", targetType:"lecturer", targetId:"gv073", author:"Ẩn danh", rating:4, content:"Cô Linh dạy ok mà khó tính vcl, trễ 1p là bị nhắc =((( nói chung chất lượng thì không phải bàn", likes:15, replies:[], createdAt: iso(12*DAY) },
-            { id:"seed_l31", targetType:"lecturer", targetId:"gv073", author:"Trung Kiên", rating:5, content:"Cô Linh còn nhận hướng dẫn khóa luận nữa, SV nào may mắn được cô hướng dẫn thì yên tâm =)))", likes:27, replies:[], createdAt: iso(6*DAY) },
-            { id:"seed_l32", targetType:"lecturer", targetId:"gv034", author:"SV K25", rating:5, content:"Mình thấy thầy Tiến dạy ok mà ta? Thầy yêu cầu cao nhưng mà công bằng, ai chăm chỉ thì điểm cao =)))", likes:18, replies:[
-                reply("Anti thầy Tiến","đù, chắc m là SV cưng của thầy =)))", 18*DAY),
-                reply("SV K25","không nha, t chỉ học bình thường thôi, mà thấy thầy dạy ổn :v", 17*DAY),
-                reply("Ẩn danh","t cũng thấy thầy ok, mấy bạn kia chắc do lười thôi =))", 16*DAY)
+            { id:"seed_l30", targetType:"lecturer", targetId:"gv073", author:"trà sữa 0 đường", rating:4, content:"Cô dạy ok mà khó tính vcl, trễ 1p là bị nhắc =((( nói chung chất lượng thì không phải bàn", likes:15, replies:[], createdAt: iso(12*DAY) },
+            { id:"seed_l31", targetType:"lecturer", targetId:"gv034", author:"sv K25", rating:5, content:"Mình thấy thầy dạy ok mà ta? Thầy yêu cầu cao nhưng mà công bằng, ai chăm chỉ thì điểm cao =)))", likes:18, replies:[
+                reply("anti thầy tiến","đù, chắc m là SV cưng của thầy =)))", 18*DAY),
+                reply("sv K25","không nha, t chỉ học bình thường thôi, mà thấy thầy dạy ổn :v", 17*DAY),
+                reply("ẩn danh","t cũng thấy thầy ok, mấy bạn kia chắc do lười thôi =))", 16*DAY)
             ], createdAt: iso(19*DAY) },
-            { id:"seed_l33", targetType:"lecturer", targetId:"gv034", author:"Bức xúc", rating:1, content:"Điểm danh đầu giờ, trễ 5p cũng không cho vào =((( cả kỳ t đi trễ có 2 lần mà bị trừ điểm chuyên cần, vcl thật", likes:29, replies:[
-                reply("SV K25","ơ trễ thì bị trừ đúng rồi, kêu gì :v", 15*DAY)
+            { id:"seed_l32", targetType:"lecturer", targetId:"gv034", author:"bức xúc", rating:1, content:"Điểm danh đầu giờ, trễ 5p cũng không cho vào =((( cả kỳ t đi trễ có 2 lần mà bị trừ điểm chuyên cần, vcl thật", likes:29, replies:[
+                reply("sv K25","ơ trễ thì bị trừ đúng rồi, kêu gì :v", 15*DAY)
             ], createdAt: iso(16*DAY) },
-            { id:"seed_l34", targetType:"lecturer", targetId:"gv034", author:"Ẩn danh", rating:2, content:"Thầy Tiến dạy chán thật, mà thầy còn cho đề thi khó vcl =(( học thầy xong t stress muốn nghỉ học luôn", likes:31, replies:[
-                reply("SV K26","đồng cảm, t cũng stress =((((", 12*DAY),
-                reply("Ẩn danh","thầy dạy khó nhưng mà công bằng, đừng có đánh giá thấp :v", 11*DAY)
-            ], createdAt: iso(13*DAY) },
-            { id:"seed_l35", targetType:"lecturer", targetId:"gv018", author:"Marketing K26", rating:5, content:"Thầy Nam vui tính vcl, dạy chill, cho đề dễ, học thầy chill hết nấc =))) recommend nha ae", likes:22, replies:[], createdAt: iso(15*DAY) },
-            { id:"seed_l36", targetType:"lecturer", targetId:"gv018", author:"Ẩn danh", rating:4, content:"Thầy dạy ok mà hơi lười update bài giảng, dùng slide cũ mấy năm r =)) đc cái thầy vui", likes:11, replies:[], createdAt: iso(4*DAY) },
-            { id:"seed_l37", targetType:"lecturer", targetId:"gv003", author:"Ẩn danh", rating:1, content:"Thầy Tâm dạy chán nhất trường, toàn đọc slide, không giải thích gì thêm =((( vote 1 sao", likes:38, replies:[
-                reply("SV K25","đồng ý, thầy dạy chán vcl", 20*DAY),
-                reply("Defend","mấy bạn không hiểu thì hỏi thầy đi, thầy trả lời nhiệt tình mà :v", 19*DAY),
-                reply("Ẩn danh","thôi, thầy dạy chán thật, khỏi bênh =))", 18*DAY)
+            { id:"seed_l33", targetType:"lecturer", targetId:"gv018", author:"marketing k26", rating:5, content:"Thầy vui tính vcl, dạy chill, cho đề dễ, học thầy chill hết nấc =))) recommend nha ae", likes:22, replies:[], createdAt: iso(15*DAY) },
+            { id:"seed_l34", targetType:"lecturer", targetId:"gv018", author:"mèo lười", rating:4, content:"Thầy dạy ok mà hơi lười update bài giảng, dùng slide cũ mấy năm r =)) đc cái thầy vui", likes:11, replies:[], createdAt: iso(4*DAY) },
+            { id:"seed_l35", targetType:"lecturer", targetId:"gv003", author:"cà phê sữa", rating:1, content:"Thầy dạy chán nhất trường, toàn đọc slide, không giải thích gì thêm =((( vote 1 sao", likes:38, replies:[
+                reply("sv K25","đồng ý, thầy dạy chán vcl", 20*DAY),
+                reply("defend","mấy bạn không hiểu thì hỏi thầy đi, thầy trả lời nhiệt tình mà :v", 19*DAY),
+                reply("ẩn danh","thôi, thầy dạy chán thật, khỏi bênh =))", 18*DAY)
             ], createdAt: iso(21*DAY) },
-            { id:"seed_l38", targetType:"lecturer", targetId:"gv003", author:"QTKD K26", rating:3, content:"Thầy dạy cũng được, đề thi dễ, được cái dễ tính, ai học thầy chắc pass =)))", likes:9, replies:[], createdAt: iso(5*DAY) },
-            { id:"seed_l39", targetType:"lecturer", targetId:"gv042", author:"Bức xúc vcl", rating:1, content:"Thầy Phước dạy như đọc sách, chả có tâm huyết mẹ gì, học phí đóng đủ mà học không vào =((( vote 1 sao", likes:44, replies:[
-                reply("SV K25","đồng ý, thầy này dạy chán vcl", 10*DAY),
-                reply("Ẩn danh","thầy dạy dở thật, chả hiểu sao trường giữ lại :v", 9*DAY)
+            { id:"seed_l36", targetType:"lecturer", targetId:"gv003", author:"qtkd k26", rating:3, content:"Thầy dạy cũng được, đề thi dễ, được cái dễ tính, ai học thầy chắc pass =)))", likes:9, replies:[], createdAt: iso(5*DAY) },
+            { id:"seed_l37", targetType:"lecturer", targetId:"gv042", author:"bức xúc vcl", rating:1, content:"Thầy dạy như đọc sách, chả có tâm huyết mẹ gì, học phí đóng đủ mà học không vào =((( vote 1 sao", likes:44, replies:[
+                reply("sv K25","đồng ý, thầy này dạy chán vcl", 10*DAY),
+                reply("ẩn danh","thầy dạy dở thật, chả hiểu sao trường giữ lại :v", 9*DAY)
             ], createdAt: iso(11*DAY) },
-            { id:"seed_l40", targetType:"lecturer", targetId:"gv042", author:"Ẩn danh", rating:2, content:"Học thầy xong chả hiểu mẹ gì luôn, tự học ở nhà còn hiểu hơn =)) không recommend nha ae", likes:31, replies:[], createdAt: iso(7*DAY) },
-            { id:"seed_l41", targetType:"lecturer", targetId:"gv100", author:"Banker tương lai", rating:4, content:"Cô Thu dạy ok nha mng, giảng kỹ, mà cho bài tập nhiều vcl =))) ai lười thì xác định", likes:19, replies:[], createdAt: iso(14*DAY) },
-            { id:"seed_l42", targetType:"lecturer", targetId:"gv100", author:"Tạch môn", rating:1, content:"Tạch môn cô rồi ae ơi, đề khó vcl, học tâm huyết mà thi vẫn tạch =(((( đừng ai học cô này nha", likes:28, replies:[
-                reply("Ẩn danh","t cũng tạch đây, đề khó thật =(((", 8*DAY),
-                reply("SV K25","do m k học thôi, t học cô vẫn qua môn mà =))", 7*DAY)
+            { id:"seed_l38", targetType:"lecturer", targetId:"gv042", author:"cú đêm", rating:2, content:"Học thầy xong chả hiểu mẹ gì luôn, tự học ở nhà còn hiểu hơn =)) không recommend nha ae", likes:31, replies:[], createdAt: iso(7*DAY) },
+            { id:"seed_l39", targetType:"lecturer", targetId:"gv100", author:"banker tương lai", rating:4, content:"Cô dạy ok nha mng, giảng kỹ, mà cho bài tập nhiều vcl =))) ai lười thì xác định", likes:19, replies:[], createdAt: iso(14*DAY) },
+            { id:"seed_l40", targetType:"lecturer", targetId:"gv100", author:"tạch môn", rating:1, content:"Tạch môn cô rồi ae ơi, đề khó vcl, học tâm huyết mà thi vẫn tạch =(((( đừng ai học cô này nha", likes:28, replies:[
+                reply("sv K26","t cũng tạch đây, đề khó thật =(((", 8*DAY),
+                reply("sv K25","do m k học thôi, t học cô vẫn qua môn mà =))", 7*DAY)
             ], createdAt: iso(9*DAY) },
-            { id:"seed_l43", targetType:"lecturer", targetId:"gv020", author:"Luật K26", rating:4, content:"Thầy Hậu dạy Luật hay mà khó tính, cho đề khó, ai yếu thì xác định tạch =)))", likes:17, replies:[], createdAt: iso(13*DAY) },
-            { id:"seed_l44", targetType:"lecturer", targetId:"gv020", author:"Ẩn danh", rating:5, content:"Thầy Hậu dạy tâm huyết lắm mng, hỏi gì cũng trả lời nhiệt tình, không hiểu thì hỏi lại thầy chỉ tiếp =)))", likes:21, replies:[], createdAt: iso(3*DAY) },
-            { id:"seed_l45", targetType:"lecturer", targetId:"gv007", author:"Kế toán K26", rating:5, content:"Cô Trang dạy kế toán đỉnh vcl, giải thích rõ ràng, mà bài tập nhiều quá cày không kịp =((((", likes:24, replies:[], createdAt: iso(8*DAY) },
-            { id:"seed_l46", targetType:"lecturer", targetId:"gv090", author:"Ẩn danh", rating:4, content:"Cô Thoa dạy hay mà cho bài nhiều, điểm danh khó tính :((", likes:13, replies:[], createdAt: iso(6*DAY) },
-            { id:"seed_l47", targetType:"lecturer", targetId:"gv005", author:"KDQT K26", rating:1, content:"Thầy Ngọc dạy chán nhất cái trường này, toàn nói chuyện ngoài lề, học phí đóng đủ mà dạy được có tí =((( vote 1 sao", likes:41, replies:[
-                reply("SV K25","đồng ý, thầy này dạy chán vcl", 20*DAY),
-                reply("Defend thầy Ngọc","thầy dạy ok mà, do mấy bạn không chú ý thôi :v", 19*DAY),
-                reply("Anti thầy","ừ thầy dạy chán thật, không phải do tụi này đâu =))", 18*DAY)
+            { id:"seed_l41", targetType:"lecturer", targetId:"gv020", author:"luật k26", rating:4, content:"Thầy dạy hay mà khó tính, cho đề khó, ai yếu thì xác định tạch =)))", likes:17, replies:[], createdAt: iso(13*DAY) },
+            { id:"seed_l42", targetType:"lecturer", targetId:"gv020", author:"đang học hóa", rating:5, content:"Thầy dạy tâm huyết lắm mng, hỏi gì cũng trả lời nhiệt tình, không hiểu thì hỏi lại thầy chỉ tiếp =)))", likes:21, replies:[], createdAt: iso(3*DAY) },
+            { id:"seed_l43", targetType:"lecturer", targetId:"gv007", author:"kế toán k26", rating:5, content:"Cô dạy đỉnh vcl, giải thích rõ ràng, mà bài tập nhiều quá cày không kịp =((((", likes:24, replies:[], createdAt: iso(8*DAY) },
+            { id:"seed_l44", targetType:"lecturer", targetId:"gv090", author:"mê anh jack", rating:4, content:"Cô dạy hay mà cho bài nhiều, điểm danh khó tính :((", likes:13, replies:[], createdAt: iso(6*DAY) },
+            { id:"seed_l45", targetType:"lecturer", targetId:"gv005", author:"kdqt k26", rating:1, content:"Thầy dạy chán nhất cái trường này, toàn nói chuyện ngoài lề, học phí đóng đủ mà dạy được có tí =((( vote 1 sao", likes:41, replies:[
+                reply("sv K25","đồng ý, thầy này dạy chán vcl", 20*DAY),
+                reply("defend thầy ngọc","thầy dạy ok mà, do mấy bạn không chú ý thôi :v", 19*DAY),
+                reply("anti thầy","ừ thầy dạy chán thật, không phải do tụi này đâu =))", 18*DAY)
             ], createdAt: iso(22*DAY) },
-            { id:"seed_l48", targetType:"lecturer", targetId:"gv110", author:"SV K25", rating:4, content:"Cô Hà dạy hay mà cho bài nhiều, deadline sát nhau :(( cơ mà cô dễ thương", likes:14, replies:[], createdAt: iso(5*DAY) },
+            { id:"seed_l46", targetType:"lecturer", targetId:"gv110", author:"sv K25", rating:4, content:"Cô dạy hay mà cho bài nhiều, deadline sát nhau :(( cơ mà cô dễ thương", likes:14, replies:[], createdAt: iso(5*DAY) },
 
-            // ============ MAJOR EXTRA — NGÀNH HOT NHIỀU REVIEW ============
-            { id:"seed_m21", targetType:"major", targetId:"7480201", author:"IT K25", rating:5, content:"CNTT HUIT top trường luôn mng, thầy cô toàn TS, chương trình cập nhật, ra trường có job ngay =)))", likes:38, replies:[
-                reply("SV K26","confirm, học CNTT HUIT ra trường lương khá lắm :v", 20*DAY)
+            // ============ REVIEW NGÀNH HỌC BỔ SUNG ============
+            { id:"seed_m21", targetType:"major", targetId:"7480201", author:"it k25", rating:5, content:"Ngành này top trường luôn mng, thầy cô toàn TS, chương trình cập nhật, ra trường có job ngay =)))", likes:38, replies:[
+                reply("sv K26","confirm, học ngành này ra trường lương khá lắm :v", 20*DAY)
             ], createdAt: iso(23*DAY) },
-            { id:"seed_m22", targetType:"major", targetId:"7480201", author:"IT khổ", rating:3, content:"CNTT học khó vcl mng ạ, ai yếu code thì đừng dại =(( cơ mà ra trường lương cao", likes:25, replies:[
-                reply("Ẩn danh","chuẩn, t sắp tạch môn code đây =((((", 18*DAY)
+            { id:"seed_m22", targetType:"major", targetId:"7480201", author:"it khổ", rating:3, content:"Ngành này học khó vcl mng ạ, ai yếu code thì đừng dại =(( cơ mà ra trường lương cao", likes:25, replies:[
+                reply("ẩn danh","chuẩn, t sắp tạch môn code đây =((((", 18*DAY)
             ], createdAt: iso(19*DAY) },
-            { id:"seed_m23", targetType:"major", targetId:"7480201", author:"Ẩn danh", rating:5, content:"CNTT HUIT cơ sở vật chất ok, máy tính xịn, thầy cô hỗ trợ nhiệt tình =))) recommend nha ae", likes:29, replies:[], createdAt: iso(13*DAY) },
-            { id:"seed_m24", targetType:"major", targetId:"7480201", author:"Anti HUIT", rating:2, content:"CNTT HUIT học phí cao vcl mng, mà dạy cũng bth, ra trường lương cũng chả khá =(( không recommend", likes:33, replies:[
-                reply("SV K25","m học không giỏi thì đừng đổ lỗi trường =))", 10*DAY),
-                reply("Ẩn danh","t thấy ổn mà ta :v do m k học thôi", 9*DAY),
-                reply("Anti HUIT","thôi các bạn cãi đi, t học đây t biết =)))", 8*DAY)
+            { id:"seed_m23", targetType:"major", targetId:"7480201", author:"cà phê sữa", rating:5, content:"Ngành này cơ sở vật chất ok, máy tính xịn, thầy cô hỗ trợ nhiệt tình =))) recommend nha ae", likes:29, replies:[], createdAt: iso(13*DAY) },
+            { id:"seed_m24", targetType:"major", targetId:"7480201", author:"anti huit", rating:2, content:"Ngành này học phí cao vcl mng, mà dạy cũng bth, ra trường lương cũng chả khá =(( không recommend", likes:33, replies:[
+                reply("sv K25","m học không giỏi thì đừng đổ lỗi trường =))", 10*DAY),
+                reply("ẩn danh","t thấy ổn mà ta :v do m k học thôi", 9*DAY),
+                reply("anti huit","thôi các bạn cãi đi, t học đây t biết =)))", 8*DAY)
             ], createdAt: iso(11*DAY) },
-            { id:"seed_m25", targetType:"major", targetId:"7340201", author:"Banker K25", rating:5, content:"TCNH HUIT ổn nha mng, ra trường làm bank lương khá, mà học mệt vcl =))) ai yếu tim đừng vào", likes:36, replies:[], createdAt: iso(21*DAY) },
-            { id:"seed_m26", targetType:"major", targetId:"7340201", author:"Tạch TCNH", rating:1, content:"TCNH HUIT khó vcl, tạch môn rồi ae ơi =(((( đừng ai học nha", likes:42, replies:[
-                reply("SV K25","t cũng tạch đây huhu =(((", 15*DAY),
-                reply("Ẩn danh","mấy bạn không chịu học thôi, t học vẫn qua =))", 14*DAY),
-                reply("Tạch TCNH","ừ tại t lười, mà khó thật =)))", 13*DAY)
+            { id:"seed_m25", targetType:"major", targetId:"7340201", author:"banker k25", rating:5, content:"Ngành này ổn nha mng, ra trường làm bank lương khá, mà học mệt vcl =))) ai yếu tim đừng vào", likes:36, replies:[], createdAt: iso(21*DAY) },
+            { id:"seed_m26", targetType:"major", targetId:"7340201", author:"tạch tcnh", rating:1, content:"Ngành này khó vcl, tạch môn rồi ae ơi =(((( đừng ai học nha", likes:42, replies:[
+                reply("sv K25","t cũng tạch đây huhu =(((", 15*DAY),
+                reply("ẩn danh","mấy bạn không chịu học thôi, t học vẫn qua =))", 14*DAY),
+                reply("tạch tcnh","ừ tại t lười, mà khó thật =)))", 13*DAY)
             ], createdAt: iso(16*DAY) },
-            { id:"seed_m27", targetType:"major", targetId:"7340201", author:"Ẩn danh", rating:4, content:"TCNH học ok, thầy cô nhiệt tình, mà cơ sở vật chất hơi cũ :((", likes:18, replies:[], createdAt: iso(9*DAY) },
-            { id:"seed_m28", targetType:"major", targetId:"7340101", author:"QTKD K26", rating:5, content:"QTKD HUIT best luôn, ngành hot, thầy cô đỉnh, học xong ra trường có tương lai =))) recommend nha ae", likes:33, replies:[
-                reply("SV K25","confirm, QTKD HUIT top :v", 18*DAY)
+            { id:"seed_m27", targetType:"major", targetId:"7340201", author:"mèo lười", rating:4, content:"Ngành này học ok, thầy cô nhiệt tình, mà cơ sở vật chất hơi cũ :((", likes:18, replies:[], createdAt: iso(9*DAY) },
+            { id:"seed_m28", targetType:"major", targetId:"7340101", author:"qtkd k26", rating:5, content:"Ngành này best luôn, ngành hot, thầy cô đỉnh, học xong ra trường có tương lai =))) recommend nha ae", likes:33, replies:[
+                reply("sv K25","confirm, ngành này top :v", 18*DAY)
             ], createdAt: iso(20*DAY) },
-            { id:"seed_m29", targetType:"major", targetId:"7340101", author:"Thất nghiệp", rating:2, content:"QTKD ra trường khó xin việc vcl, bằng cấp đầy ra, lương thấp tệ :((( ae nên suy nghĩ kỹ trước khi học", likes:41, replies:[
-                reply("Ẩn danh","ừ học rộng, mà ra trường cạnh tranh cao lắm =(((", 15*DAY),
-                reply("SV K25","do m k giỏi thôi, ai giỏi thì vẫn có việc :v", 14*DAY)
+            { id:"seed_m29", targetType:"major", targetId:"7340101", author:"thất nghiệp", rating:2, content:"Ngành này ra trường khó xin việc vcl, bằng cấp đầy ra, lương thấp tệ :((( ae nên suy nghĩ kỹ trước khi học", likes:41, replies:[
+                reply("ẩn danh","ừ học rộng, mà ra trường cạnh tranh cao lắm =(((", 15*DAY),
+                reply("sv K25","do m k giỏi thôi, ai giỏi thì vẫn có việc :v", 14*DAY)
             ], createdAt: iso(16*DAY) },
-            { id:"seed_m30", targetType:"major", targetId:"7340101", author:"Ẩn danh", rating:3, content:"QTKD học cũng bth, không có gì nổi bật, mà ra trường làm được nhiều nghề :v", likes:15, replies:[], createdAt: iso(11*DAY) },
-            { id:"seed_m31", targetType:"major", targetId:"7480107", author:"AI K25", rating:5, content:"Ngành AI HUIT mới mà đỉnh vcl, thầy cô toàn PGS, TS, chương trình cập nhật công nghệ mới =))) recommend mạnh", likes:44, replies:[
-                reply("SV K26","confirm, AI HUIT top :v", 17*DAY)
+            { id:"seed_m30", targetType:"major", targetId:"7340101", author:"trà sữa 0 đường", rating:3, content:"Ngành này học cũng bth, không có gì nổi bật, mà ra trường làm được nhiều nghề :v", likes:15, replies:[], createdAt: iso(11*DAY) },
+            { id:"seed_m31", targetType:"major", targetId:"7480107", author:"ai k25", rating:5, content:"Ngành này mới mà đỉnh vcl, thầy cô toàn PGS, TS, chương trình cập nhật công nghệ mới =))) recommend mạnh", likes:44, replies:[
+                reply("sv K26","confirm, ngành này top :v", 17*DAY)
             ], createdAt: iso(18*DAY) },
-            { id:"seed_m32", targetType:"major", targetId:"7480107", author:"Ẩn danh", rating:4, content:"AI học hay mà khó vcl, ai yếu toán thì đừng dại =((( nói chung là đáng học", likes:22, replies:[], createdAt: iso(7*DAY) },
-            { id:"seed_m33", targetType:"major", targetId:"7510605", author:"Logistics K25", rating:5, content:"Logistics HUIT top, ra trường lương khủng, mà học cũng khoai =))) ae ai đam mê thì vô nha", likes:37, replies:[
-                reply("SV K26","confirm, t đang học năm 2, cũng thấy ok :v", 15*DAY)
+            { id:"seed_m32", targetType:"major", targetId:"7480107", author:"cú đêm", rating:4, content:"Ngành này học hay mà khó vcl, ai yếu toán thì đừng dại =((( nói chung là đáng học", likes:22, replies:[], createdAt: iso(7*DAY) },
+            { id:"seed_m33", targetType:"major", targetId:"7510605", author:"logistics k25", rating:5, content:"Ngành này top, ra trường lương khủng, mà học cũng khoai =))) ae ai đam mê thì vô nha", likes:37, replies:[
+                reply("sv K26","confirm, t đang học năm 2, cũng thấy ok :v", 15*DAY)
             ], createdAt: iso(16*DAY) },
-            { id:"seed_m34", targetType:"major", targetId:"7510605", author:"Không đam mê", rating:2, content:"Logistics học chán vcl, toàn lý thuyết, ra trường lương khủng mà phải cày nhiều =((( không recommend", likes:25, replies:[
-                reply("Ẩn danh","do m k đam mê thôi, ai đam mê thì học ok :v", 12*DAY)
+            { id:"seed_m34", targetType:"major", targetId:"7510605", author:"không đam mê", rating:2, content:"Ngành này học chán vcl, toàn lý thuyết, ra trường lương khủng mà phải cày nhiều =((( không recommend", likes:25, replies:[
+                reply("ẩn danh","do m k đam mê thôi, ai đam mê thì học ok :v", 12*DAY)
             ], createdAt: iso(13*DAY) },
-            { id:"seed_m35", targetType:"major", targetId:"7510605", author:"Logistics", rating:5, content:"Logistics HUIT thầy cô nhiệt tình, thực hành nhiều, ra trường có job ngay =))) 10đ", likes:28, replies:[], createdAt: iso(5*DAY) },
-            { id:"seed_m36", targetType:"major", targetId:"7540101", author:"FoodTech", rating:5, content:"CNTP HUIT ok nha, thực hành nhiều, ra trường làm được nhiều cty thực phẩm =)))", likes:21, replies:[], createdAt: iso(14*DAY) },
-            { id:"seed_m37", targetType:"major", targetId:"7540101", author:"Ẩn danh", rating:3, content:"CNTP học cũng ok, mà lab hơi cũ, học phí cũng chát :((", likes:12, replies:[], createdAt: iso(8*DAY) },
-            { id:"seed_m38", targetType:"major", targetId:"7340115", author:"Marketing K26", rating:5, content:"Marketing HUIT hot vcl mng ơi, thầy cô đỉnh, ra trường có job ngay =))) recommend mạnh", likes:32, replies:[], createdAt: iso(10*DAY) },
-            { id:"seed_m39", targetType:"major", targetId:"7340115", author:"Ẩn danh", rating:3, content:"Marketing học ok mà cạnh tranh cao vcl, ra trường khó xin việc :((", likes:19, replies:[], createdAt: iso(6*DAY) },
-            { id:"seed_m40", targetType:"major", targetId:"7810202", author:"Ẩm thực K26", rating:5, content:"QTNH&ƯA HUIT okela lắm, thực hành nhiều, thầy cô vui tính, ra trường làm nhà hàng 5 sao =)))", likes:24, replies:[], createdAt: iso(9*DAY) }
+            { id:"seed_m35", targetType:"major", targetId:"7510605", author:"logistics", rating:5, content:"Ngành này thầy cô nhiệt tình, thực hành nhiều, ra trường có job ngay =))) 10đ", likes:28, replies:[], createdAt: iso(5*DAY) },
+            { id:"seed_m36", targetType:"major", targetId:"7540101", author:"foodtech", rating:5, content:"Ngành này ok nha, thực hành nhiều, ra trường làm được nhiều cty thực phẩm =)))", likes:21, replies:[], createdAt: iso(14*DAY) },
+            { id:"seed_m37", targetType:"major", targetId:"7540101", author:"đang học hóa", rating:3, content:"Ngành này học cũng ok, mà lab hơi cũ, học phí cũng chát :((", likes:12, replies:[], createdAt: iso(8*DAY) },
+            { id:"seed_m38", targetType:"major", targetId:"7340115", author:"marketing k26", rating:5, content:"Ngành này hot vcl mng ơi, thầy cô đỉnh, ra trường có job ngay =))) recommend mạnh", likes:32, replies:[], createdAt: iso(10*DAY) },
+            { id:"seed_m39", targetType:"major", targetId:"7340115", author:"mê anh jack", rating:3, content:"Ngành này học ok mà cạnh tranh cao vcl, ra trường khó xin việc :((", likes:19, replies:[], createdAt: iso(6*DAY) },
+            { id:"seed_m40", targetType:"major", targetId:"7810202", author:"ẩm thực k26", rating:5, content:"Ngành này okela lắm, thực hành nhiều, thầy cô vui tính, ra trường làm nhà hàng 5 sao =)))", likes:24, replies:[], createdAt: iso(9*DAY) },
+
+            // ============ REVIEW CHO GIẢNG VIÊN "FLOP" (0 review) ============
+            { id:"seed_l47", targetType:"lecturer", targetId:"gv004", author:"sv vô danh", rating:4, content:"Cô dạy cũng được, không quá nổi bật nhưng mà dễ tính, ai học cô chắc pass =)))", likes:5, replies:[], createdAt: iso(12*DAY) },
+            { id:"seed_l48", targetType:"lecturer", targetId:"gv008", author:"kế toán khổ", rating:3, content:"Cô dạy bình thường, được cái cho đề dễ, học cô không lo tạch :v", likes:7, replies:[], createdAt: iso(10*DAY) },
+            { id:"seed_l49", targetType:"lecturer", targetId:"gv009", author:"cú đêm", rating:4, content:"Thầy dạy ok, vui tính, mà hay kể chuyện ngoài lề :))) cũng được", likes:8, replies:[], createdAt: iso(8*DAY) },
+            { id:"seed_l50", targetType:"lecturer", targetId:"gv011", author:"trà sữa 0 đường", rating:3, content:"Thầy dạy cũng ok, không có gì đặc biệt, được cái dễ nói chuyện =))", likes:6, replies:[], createdAt: iso(6*DAY) },
+            { id:"seed_l51", targetType:"lecturer", targetId:"gv012", author:"mèo lười", rating:4, content:"Thầy dạy dễ hiểu, mà hơi khó tính, ai đi trễ là bị nhắc :((", likes:9, replies:[], createdAt: iso(4*DAY) },
+            { id:"seed_l52", targetType:"lecturer", targetId:"gv013", author:"banker tương lai", rating:4, content:"Cô dạy ok nha, nhiệt tình, mà bài tập hơi nhiều :v", likes:7, replies:[], createdAt: iso(3*DAY) },
+            { id:"seed_l53", targetType:"lecturer", targetId:"gv014", author:"sv kế toán", rating:5, content:"Thầy dạy cực hay, tâm huyết, hỏi gì cũng trả lời, học thầy xong hiểu bài luôn =)))", likes:12, replies:[], createdAt: iso(2*DAY) },
+            { id:"seed_l54", targetType:"lecturer", targetId:"gv016", author:"sv kdqt", rating:3, content:"Thầy dạy cũng bth, mà hay cho bài tập nhóm, ai không thích làm nhóm thì hơi mệt :((", likes:5, replies:[], createdAt: iso(1*DAY) }
         ];
     }
 
     function seedFakeReviews() {
-        const SEED_KEY = "huit_fake_reviews_seeded_v2";
+        const SEED_KEY = "huit_fake_reviews_seeded_v3";
         if (localStorage.getItem(SEED_KEY)) return;
         try {
             const existing = JSON.parse(localStorage.getItem(REVIEW_KEY) || "[]");
@@ -733,7 +720,6 @@
             localStorage.setItem(SEED_KEY, "true");
         } catch(e) { console.warn("Seed reviews lỗi:", e); }
     }
-    /* ===== HẾT PHẦN MỚI ===== */
 
     function getMajor(id) { return DB.majors.find(m => m.id === id); }
     function getLecturer(id) { return DB.lecturers.find(l => l.id === id) || DB.pendingLecturers.find(l => l.id === id); }
@@ -1561,7 +1547,7 @@
         }
     }
 
-    /* ===== MỚI: Admin sửa nội dung review ===== */
+    /* ===== Admin sửa nội dung review ===== */
     let editReviewRating = 5;
 
     window.setEditRating = function(n) {
@@ -1614,9 +1600,8 @@
             route();
         }
     };
-    /* ===== HẾT PHẦN MỚI ===== */
 
-    /* ===== MỚI: Admin sửa thời gian review ===== */
+    /* ===== Admin sửa thời gian review ===== */
     window.openEditTimeModal = function(reviewId) {
         const r = getReviews().find(x => x.id === reviewId);
         if (!r) return;
@@ -1641,7 +1626,6 @@
             route();
         }
     };
-    /* ===== HẾT PHẦN MỚI ===== */
 
     window.openReportModal = function(reviewId) {
         document.getElementById("reportReviewId").value = reviewId;
@@ -1696,7 +1680,6 @@
 
       document.getElementById("app").innerHTML = html;
       
-      // Set active nav
       document.querySelectorAll('.main-nav a').forEach(a => a.classList.remove('active'));
       if (parts.length === 0) document.querySelector('.main-nav a[href="#/"]').classList.add('active');
       else if (parts[0] === "majors" || parts[0] === "major") document.querySelector('.main-nav a[href="#/majors"]').classList.add('active');
