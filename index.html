@@ -1343,9 +1343,9 @@
 
         // 4. Thông báo trang chủ & từ khóa cấm
         DB.notices = (notRes.data || []).map(n => ({ id: n.id, title: n.title, content: n.content, createdAt: n.created_at }));
-        DB.forbiddenWords = (wordRes.data && wordRes.data.length)
-          ? wordRes.data.map(w => w.word)
-          : [...DEFAULT_FORBIDDEN_WORDS];
+        DB.forbiddenWords = wordRes.error
+          ? [...DEFAULT_FORBIDDEN_WORDS]
+          : (wordRes.data || []).map(w => w.word);
 
         // 5. Thông báo chuông cá nhân
         let idx = 7;
@@ -2519,10 +2519,26 @@
       alert("Đã duyệt giảng viên!");
       route();
     };
-    window.rejectLecturer = async function(id) {
-      if (!supabaseClient || !isCurrentAdmin() || !confirm("Từ chối và xóa vĩnh viễn đề xuất này?")) return;
-      await supabaseClient.from("reviews").delete().eq("target_type", "lecturer").eq("target_id", id);
-      await supabaseClient.from("lecturer_records").delete().eq("id", id);
+    window.removeForbiddenWord = async function(index) {
+      if (!supabaseClient || !isCurrentAdmin()) {
+        alert("Bạn cần đăng nhập bằng tài khoản Admin để xóa từ cấm.");
+        return;
+      }
+      const word = DB.forbiddenWords[index];
+      if (!word) return;
+      const { data, error } = await supabaseClient
+        .from("forbidden_words")
+        .delete()
+        .eq("word", word)
+        .select();
+      if (error) {
+        alert("Lỗi xóa từ cấm: " + error.message);
+        return;
+      }
+      if (!data || data.length === 0) {
+        alert("Supabase chưa cho phép xóa từ này (0 dòng bị xóa). Hãy chạy lại lệnh SQL ở Bước 2.");
+        return;
+      }
       await syncFromSupabase();
       route();
     };
