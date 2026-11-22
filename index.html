@@ -398,6 +398,29 @@
       .main-nav { order:3; width:100%; padding-left:0; overflow:visible; padding-bottom:4px; justify-content:flex-start; flex-wrap:wrap; }
       .auth-user { max-width:115px; }
     }
+
+/* ===== Thống kê sao trung bình & phần trăm từng mức sao ===== */
+    .rating-summary { display:grid; grid-template-columns:190px 1fr; gap:24px; align-items:center; background:#fff; border:1px solid var(--border); border-radius:var(--radius); padding:24px 28px; margin-bottom:28px; box-shadow:var(--shadow); }
+    .rating-score-box { text-align:center; padding-right:24px; border-right:1px solid var(--border); }
+    .rating-big-num { font-size:2.8rem; font-weight:800; color:var(--primary-dark); line-height:1.1; }
+    .rating-big-num small { font-size:1.05rem; font-weight:600; color:var(--muted); }
+    .rating-big-stars { margin:8px 0 6px; font-size:1.1rem; }
+    .rating-total-count { font-size:.86rem; color:var(--muted); font-weight:600; }
+    .rating-bars { display:flex; flex-direction:column; gap:8px; }
+    .rating-bar-row { display:grid; grid-template-columns:48px 1fr 92px; align-items:center; gap:12px; font-size:.88rem; }
+    .rating-bar-label { font-weight:700; color:var(--primary-dark); white-space:nowrap; }
+    .rating-bar-label i { color:var(--accent); font-size:.8rem; }
+    .rating-bar-track { height:10px; background:#e2e8f0; border-radius:999px; overflow:hidden; }
+    .rating-bar-fill { height:100%; background:linear-gradient(90deg, var(--accent), #f5b041); border-radius:999px; transition:width .4s ease; }
+    .rating-bar-pct { text-align:right; color:var(--muted); font-weight:600; font-size:.82rem; font-variant-numeric:tabular-nums; white-space:nowrap; }
+    .card-rating-row { margin-top:auto; padding-top:14px; display:flex; justify-content:space-between; align-items:center; gap:8px; }
+    .card-rating-pill { display:inline-flex; align-items:center; gap:6px; font-size:.86rem; }
+    .card-rating-pill b { color:var(--accent); font-size:.98rem; }
+    .search-star { float:right; color:var(--accent); font-weight:700; font-size:.82rem; margin-left:8px; }
+    @media (max-width: 650px) {
+      .rating-summary { grid-template-columns:1fr; gap:18px; padding:20px; }
+      .rating-score-box { border-right:0; border-bottom:1px solid var(--border); padding-right:0; padding-bottom:16px; }
+    }    
   </style>
 </head>
 <body>
@@ -1185,9 +1208,48 @@
     }
     function starsHTML(rating) {
       let html = '<span class="stars">';
-      const full = Math.round(rating || 0);
-      for (let i = 1; i <= 5; i++) html += i <= full ? '<i class="fas fa-star"></i>' : '<i class="far fa-star" style="color:#d1d5db"></i>';
+      const r = Number(rating) || 0;
+      for (let i = 1; i <= 5; i++) {
+        if (r >= i - 0.25) html += '<i class="fas fa-star"></i>';
+        else if (r >= i - 0.75) html += '<i class="fas fa-star-half-alt"></i>';
+        else html += '<i class="far fa-star" style="color:#d1d5db"></i>';
+      }
       return html + "</span>";
+    }
+    function ratingSummaryHTML(type, targetId) {
+      const rs = getReviewsFor(type, targetId);
+      const total = rs.length;
+      const avg = total ? (rs.reduce((s, r) => s + r.rating, 0) / total) : 0;
+      const rows = [5, 4, 3, 2, 1].map(star => {
+        const cnt = rs.filter(r => Math.round(r.rating) === star).length;
+        const pct = total ? Math.round((cnt / total) * 100) : 0;
+        return `
+          <div class="rating-bar-row">
+            <span class="rating-bar-label">${star} <i class="fas fa-star"></i></span>
+            <div class="rating-bar-track"><div class="rating-bar-fill" style="width:${pct}%"></div></div>
+            <span class="rating-bar-pct">${pct}% (${cnt})</span>
+          </div>`;
+      }).join("");
+      return `
+        <section class="rating-summary fade-up" aria-label="Thống kê đánh giá">
+          <div class="rating-score-box">
+            <div class="rating-big-num">${total ? avg.toFixed(1) : "0.0"}<small>/5</small></div>
+            <div class="rating-big-stars">${starsHTML(avg)}</div>
+            <div class="rating-total-count">${total ? `${total} lượt đánh giá` : "Chưa có đánh giá"}</div>
+          </div>
+          <div class="rating-bars">${rows}</div>
+        </section>`;
+    }
+    function cardRatingHTML(type, targetId) {
+      const avg = avgRating(type, targetId);
+      const count = getReviewCount(type, targetId);
+      return `
+        <div class="card-rating-row">
+          <span class="card-rating-pill">${avg
+            ? `${starsHTML(avg)} <b>${avg.toFixed(1)}/5</b>`
+            : `${starsHTML(0)} <span style="color:var(--muted);font-size:.82rem;">Chưa có</span>`}</span>
+          <span style="font-size:.8rem;color:var(--primary);font-weight:600;background:#e6f0fb;padding:4px 8px;border-radius:10px;"><i class="fas fa-comments"></i> ${count}</span>
+        </div>`;
     }
     function escapeHtml(s) {
       return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -1845,24 +1907,24 @@
         ${topLecturers.length > 0 ? `
         <div class="section-title fade-up"><h2><i class="fas fa-fire" style="color:var(--danger)"></i> Giảng viên nổi bật</h2></div>
         <div class="grid fade-up">
-          ${topLecturers.map(item => `
-            <a class="card" href="#/lecturer/${item.id}">
-              <h3><i class="fas fa-user-tie"></i> ${escapeHtml(item.data.name)}</h3>
-              <div class="meta"><i class="fas fa-graduation-cap"></i> ${escapeHtml(item.data.degree)}</div>
-              <div class="meta" style="color:var(--accent); font-weight:700; margin-top:15px; background:#fff8e1; padding:6px 12px; border-radius:20px; align-self:flex-start; font-size:0.8rem;"><i class="fas fa-comments"></i> ${item.count} đánh giá</div>
-            </a>
-          `).join("")}
-        </div>` : ""}
+        ${topLecturers.map(item => `
+          <a class="card" href="#/lecturer/${item.id}">
+            <h3><i class="fas fa-user-tie"></i> ${escapeHtml(item.data.name)}</h3>
+            <div class="meta"><i class="fas fa-graduation-cap"></i> ${escapeHtml(item.data.degree)}</div>
+            ${cardRatingHTML("lecturer", item.id)}
+          </a>
+        `).join("")}
+      </div>` : ""}
 
-        ${topMajors.length > 0 ? `
-        <div class="section-title fade-up"><h2><i class="fas fa-fire" style="color:var(--danger)"></i> Ngành học nổi bật</h2></div>
-        <div class="grid fade-up">
-          ${topMajors.map(item => `
-            <a class="card" href="#/major/${item.id}">
-              <h3><i class="fas fa-book"></i> ${escapeHtml(item.data.name)}</h3>
-              <div class="meta" style="color:var(--accent); font-weight:700; margin-top:15px; background:#fff8e1; padding:6px 12px; border-radius:20px; align-self:flex-start; font-size:0.8rem;"><i class="fas fa-comments"></i> ${item.count} đánh giá</div>
-            </a>
-          `).join("")}
+      ${topMajors.length > 0 ? `
+      <div class="section-title fade-up"><h2><i class="fas fa-fire" style="color:var(--danger)"></i> Ngành học nổi bật</h2></div>
+      <div class="grid fade-up">
+        ${topMajors.map(item => `
+          <a class="card" href="#/major/${item.id}">
+            <h3><i class="fas fa-book"></i> ${escapeHtml(item.data.name)}</h3>
+            ${cardRatingHTML("major", item.id)}
+          </a>
+        `).join("")}
         </div>` : ""}
 
         <div class="section-title fade-up"><h2><i class="fas fa-comments"></i> Nhận xét mới nhất</h2></div>
@@ -1985,10 +2047,7 @@
           return `<a class="card" href="#/lecturer/${l.id}">
             <h3><i class="fas fa-user-tie"></i> ${escapeHtml(l.name)}</h3>
             <div class="meta"><i class="fas fa-graduation-cap"></i> ${escapeHtml(l.degree || "Giảng viên")}</div>
-            <div style="margin-top:auto;padding-top:12px;display:flex;justify-content:space-between;align-items:center;gap:8px;">
-              <span>${avg ? `${starsHTML(avg)} <b style="color:var(--accent)">${avg.toFixed(1)}</b>` : `<span style="color:var(--muted);font-size:.82rem">Chưa có đánh giá</span>`}</span>
-              <span style="font-size:.8rem;color:var(--primary);font-weight:600;background:#e6f0fb;padding:4px 8px;border-radius:10px"><i class="fas fa-comments"></i> ${count}</span>
-            </div>
+        ${cardRatingHTML("lecturer", l.id)}
           </a>`;
         }).join("")}</div>` : `<div class="empty-state"><i class="fas fa-users"></i><p>Chưa có giảng viên thuộc khoa này.</p></div>`}
       `;
@@ -2011,6 +2070,7 @@
             ${isAdmin ? `<button onclick="adminDeleteMajor('${m.id}')" class="btn" style="background:var(--danger);margin:0;padding:10px 20px;font-size:0.9rem;"><i class="fas fa-trash"></i> Xóa ngành (Admin)</button>` : ""}
           </div>
         </div>
+        ${ratingSummaryHTML("major", id)}
         ${reviewSectionHTML("major", id, "Đánh giá ngành", highlightReviewId)}
       `;
     }
@@ -2040,7 +2100,7 @@
           </div>
           <div class="catalog-inline-field">
             <label for="sortLecturer"><i class="fas fa-arrow-down-wide-short" aria-hidden="true"></i> Sắp xếp</label>
-            <select id="sortLecturer" onchange="filterAndSortLecturers()"><option value="default">Theo khoa (A–Z)</option><option value="reviews_desc">Nhiều đánh giá nhất</option><option value="name_asc">Tên (A - Z)</option></select>
+            <select id="sortLecturer" onchange="filterAndSortLecturers()"><option value="default">Theo khoa (A–Z)</option><option value="rating_desc">Điểm sao cao nhất</option><option value="reviews_desc">Nhiều đánh giá nhất</option><option value="name_asc">Tên (A - Z)</option></select>
           </div>
           <span id="resultCount" class="catalog-result-count" aria-live="polite"><i class="fas fa-users" aria-hidden="true"></i> ${orderedLecturers.length} giảng viên</span>
         </div>
@@ -2049,14 +2109,11 @@
             const avg = avgRating("lecturer", l.id);
             const count = getReviewCount("lecturer", l.id);
             const faculty = facultyForLecturer(l);
-            return `<a class="card lecturer-card fade-up" href="#/lecturer/${l.id}" data-faculty="${faculty?.id || ""}" data-source-order="${index}" data-reviews="${count}" data-name="${escapeHtml(l.name.toLocaleLowerCase("vi"))}" data-search="${escapeHtml(normalizeSearch(l.name))}">
+            return `<a class="card lecturer-card fade-up" href="#/lecturer/${l.id}" data-faculty="${faculty?.id || ""}" data-source-order="${index}" data-reviews="${count}" data-rating="${avg || 0}" data-name="${escapeHtml(l.name.toLocaleLowerCase("vi"))}" data-search="${escapeHtml(normalizeSearch(l.name))}">
               <h3><i class="fas fa-user-tie"></i> ${escapeHtml(l.name)}</h3>
               <div class="meta"><i class="fas fa-graduation-cap"></i> ${escapeHtml(l.degree || "")}</div>
               <div class="meta"><i class="fas fa-building-columns"></i> ${faculty ? `<span>${escapeHtml(faculty.name)}</span>` : '<span style="color:#a16207">Đang xác minh khoa</span>'}</div>
-              <div style="margin-top:auto;padding-top:15px;display:flex;justify-content:space-between;align-items:center;">
-                <span>${avg ? `${starsHTML(avg)} <b style="color:var(--accent);font-size:1.1rem;">${avg.toFixed(1)}</b>` : "<span style='color:#aaa'>Chưa có đánh giá</span>"}</span>
-                <span style="font-size:.8rem;color:var(--primary);font-weight:600;background:#e6f0fb;padding:4px 8px;border-radius:10px;"><i class="fas fa-comments"></i> ${count}</span>
-              </div>
+              ${cardRatingHTML("lecturer", l.id)}
             </a>`;
           }).join("")}
         </div>
@@ -2088,6 +2145,7 @@
             ` : ""}
           </div>
         </div>
+        ${ratingSummaryHTML("lecturer", id)}
         ${reviewSectionHTML("lecturer", id, `Đánh giá GV ${l.name}`, highlightReviewId)}
       `;
     }
@@ -2449,7 +2507,8 @@
         card.style.display = show ? "flex" : "none";
         if (show) count++;
       });
-      if (sort === "reviews_desc") cards.sort((a, b) => parseInt(b.dataset.reviews || "0") - parseInt(a.dataset.reviews || "0"));
+      if (sort === "rating_desc") cards.sort((a, b) => parseFloat(b.dataset.rating || "0") - parseFloat(a.dataset.rating || "0") || parseInt(b.dataset.reviews || "0") - parseInt(a.dataset.reviews || "0"));
+      else if (sort === "reviews_desc") cards.sort((a, b) => parseInt(b.dataset.reviews || "0") - parseInt(a.dataset.reviews || "0"));
       else if (sort === "name_asc") cards.sort((a, b) => (a.dataset.name || "").localeCompare(b.dataset.name || "", "vi"));
       else cards.sort((a, b) => parseInt(a.dataset.sourceOrder || "0") - parseInt(b.dataset.sourceOrder || "0"));
       cards.forEach(card => grid.appendChild(card));
