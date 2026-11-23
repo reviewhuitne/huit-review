@@ -487,14 +487,40 @@
     .account-status-banner{display:flex;gap:12px;align-items:flex-start;padding:15px 18px;margin:0 0 20px;border-radius:12px;border:1px solid #fecaca;background:#fff1f2;color:#9f1239;}
     .account-status-banner.warning{border-color:#fcd34d;background:#fffbeb;color:#92400e;}
     .account-status-banner i{font-size:1.2rem;margin-top:2px;}
-    .user-admin-search{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:end;}
+
+    /* Thanh tìm kiếm tài khoản: tinh gọn, rõ điểm nhấn và đồng bộ màu HUIT */
+    .user-admin-search{display:grid;grid-template-columns:minmax(0,1fr) 168px;gap:12px;align-items:end;padding:15px;border:1px solid #dce8f4;border-radius:16px;background:linear-gradient(135deg,#f7fbff 0%,#f1f7fd 100%);}
+    .user-admin-search-field{min-width:0;}
+    .user-admin-search-label{display:flex;align-items:center;gap:8px;margin:0 0 8px!important;color:#244765!important;font-size:.86rem!important;font-weight:800!important;}
+    .user-admin-search-label i{color:var(--primary);font-size:.88rem;}
+    .user-admin-search-input-wrap{position:relative;}
+    .user-admin-search-input-wrap>i{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:#7892aa;font-size:1rem;pointer-events:none;transition:color .2s;}
+    #admin-user-search{display:block;width:100%;height:52px;margin:0;padding:0 64px 0 45px;border:1px solid #d5e1ed;border-radius:12px;background:#fff;color:#18334c;font:500 .93rem 'Inter',sans-serif;box-shadow:0 2px 5px rgba(17,54,88,.035);transition:border-color .2s,box-shadow .2s,background .2s;}
+    #admin-user-search::placeholder{color:#9aaabd;font-weight:400;}
+    #admin-user-search:focus{outline:none;border-color:#4b91cb;box-shadow:0 0 0 4px rgba(10,94,168,.12);background:#fff;}
+    .user-admin-search-input-wrap:focus-within>i{color:var(--primary);}
+    .user-admin-search-shortcut{position:absolute;right:10px;top:50%;transform:translateY(-50%);padding:3px 7px;border:1px solid #e1e8ef;border-radius:6px;background:#f8fafc;color:#7b8da1;font:600 .68rem 'Inter',sans-serif;pointer-events:none;}
+    .user-admin-search-hint{display:flex;align-items:center;gap:6px;margin-top:7px;color:#718399;font-size:.76rem;}
+    .user-admin-search-hint i{color:#7da1c2;font-size:.72rem;}
+    .user-admin-search-btn{height:52px;justify-content:center;gap:9px;margin:0!important;padding:0 17px;border-radius:12px;background:linear-gradient(135deg,#1472b8 0%,#07518f 100%);box-shadow:0 5px 13px rgba(10,94,168,.18);white-space:nowrap;}
+    .user-admin-search-btn:hover{background:linear-gradient(135deg,#0d63a4 0%,#063f70 100%);box-shadow:0 7px 16px rgba(10,94,168,.23);}
+    .user-admin-search-btn:active{transform:translateY(0);}
+    .user-admin-search-btn:disabled{opacity:.65;cursor:wait;}
     .user-admin-results{display:grid;gap:10px;margin-top:16px;}
-    .user-admin-result{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border:1px solid var(--border);border-radius:12px;padding:14px;background:#fff;}
-    .user-admin-result.selected{border-color:var(--primary);background:#f0f7ff;}
-    .user-admin-result-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:6px;font-size:.82rem;color:var(--muted);}
-    .user-state-pill{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:4px 9px;font-size:.74rem;font-weight:800;}
-    .user-state-pill.active{background:#dcfce7;color:#166534;}
-    .user-state-pill.locked{background:#fee2e2;color:#991b1b;}
+    .user-admin-result{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;border:1px solid #e2eaf2;border-radius:14px;padding:14px 16px;background:#fff;box-shadow:0 2px 7px rgba(15,45,72,.025);transition:border-color .2s,box-shadow .2s,transform .2s;}
+    .user-admin-result:hover{border-color:#bfd5e9;box-shadow:0 6px 16px rgba(15,60,96,.07);transform:translateY(-1px);}
+    .user-admin-result.selected{border-color:#72a8d5;background:linear-gradient(120deg,#f0f7ff 0%,#fff 100%);box-shadow:0 0 0 3px rgba(10,94,168,.075);}
+    .user-admin-result-main{display:flex;align-items:center;gap:12px;min-width:220px;flex:1;}
+    .user-admin-avatar{display:flex;align-items:center;justify-content:center;flex:0 0 42px;width:42px;height:42px;border:1px solid #d6e7f5;border-radius:13px;background:linear-gradient(145deg,#eaf4fc,#dcecf9);color:#165b91;font-size:1rem;font-weight:800;text-transform:uppercase;}
+    .user-admin-identity{min-width:0;}
+    .user-admin-username{display:block;color:#173d5e;font-size:.94rem;font-weight:800;overflow-wrap:anywhere;}
+    .user-admin-display-name{display:block;margin-top:2px;color:#7a8999;font-size:.81rem;overflow-wrap:anywhere;}
+    .user-admin-result-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:7px;font-size:.8rem;color:var(--muted);}
+    .user-admin-warning-count{display:inline-flex;align-items:center;gap:5px;padding:4px 8px;border:1px solid #f3e2bd;border-radius:999px;background:#fffaf0;color:#94620b;font-size:.73rem;font-weight:800;}
+    .user-admin-select-btn{min-height:36px;padding:8px 13px;border-radius:9px;box-shadow:none;}
+    .user-state-pill{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:4px 9px;font-size:.73rem;font-weight:800;}
+    .user-state-pill.active{background:#e9f8ef;color:#197044;}
+    .user-state-pill.locked{background:#fff0f0;color:#b42318;}
     .user-admin-detail{margin-top:18px;padding:20px;border:1px solid #cbdcf0;border-radius:14px;background:#f8fbff;}
     .user-admin-detail h3{margin-bottom:8px;}
     .user-admin-detail label{display:block;margin:12px 0 6px;font-weight:700;color:var(--primary-dark);font-size:.88rem;}
@@ -505,7 +531,7 @@
     .user-admin-history-item:last-child{border-bottom:0;}
     .notification-detail-body{white-space:pre-wrap;line-height:1.8;color:#334155;background:#f8fafc;border:1px solid var(--border);padding:16px;border-radius:12px;overflow-wrap:anywhere;}
     .notification-detail-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:12px 0;color:var(--muted);font-size:.82rem;}
-    @media(max-width:650px){.user-admin-search{grid-template-columns:1fr}.user-admin-result{align-items:flex-start}.user-admin-detail{padding:15px}}
+    @media(max-width:650px){.user-admin-search{grid-template-columns:1fr;padding:12px}.user-admin-search-btn{width:100%;}.user-admin-result{align-items:flex-start}.user-admin-result-main{min-width:0}.user-admin-detail{padding:15px}}
   </style>
 </head>
 <body>
@@ -2794,10 +2820,16 @@
               <h3><i class="fas fa-users-gear" style="color:var(--primary)"></i> Tìm kiếm &amp; quản lý tài khoản</h3>
               <p style="margin:0 0 14px;color:var(--muted);font-size:.9rem;">Tìm theo tên đăng nhập. Chọn một tài khoản để gửi thông báo riêng, cảnh cáo, gỡ cảnh cáo hoặc khóa/mở khóa.</p>
               <div class="user-admin-search">
-                <div><label for="admin-user-search" style="display:block;margin:0 0 7px;font-weight:700;color:var(--primary-dark);">Tên đăng nhập người dùng</label>
-                  <input type="search" id="admin-user-search" minlength="2" maxlength="30" placeholder="Nhập username, ví dụ: sinhvien_huit26" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();adminSearchUsers();}" />
+                <div class="user-admin-search-field">
+                  <label class="user-admin-search-label" for="admin-user-search"><i class="fas fa-at" aria-hidden="true"></i> Tên đăng nhập người dùng</label>
+                  <div class="user-admin-search-input-wrap">
+                    <i class="fas fa-search" aria-hidden="true"></i>
+                    <input type="search" id="admin-user-search" minlength="2" maxlength="30" placeholder="Nhập username cần tìm..." autocomplete="off" aria-describedby="admin-user-search-hint" onkeydown="if(event.key==='Enter'){event.preventDefault();adminSearchUsers();}" />
+                    <span class="user-admin-search-shortcut" aria-hidden="true">Enter</span>
+                  </div>
+                  <div class="user-admin-search-hint" id="admin-user-search-hint"><i class="fas fa-circle-info" aria-hidden="true"></i> Nhập ít nhất 2 ký tự để tìm tài khoản</div>
                 </div>
-                <button type="button" class="btn" style="margin:0;white-space:nowrap;" onclick="adminSearchUsers()"><i class="fas fa-search"></i> Tìm người dùng</button>
+                <button type="button" id="admin-user-search-button" class="btn user-admin-search-btn" onclick="adminSearchUsers()"><i class="fas fa-magnifying-glass"></i> Tìm kiếm</button>
               </div>
               <div id="admin-user-search-message" class="auth-message" role="status" aria-live="polite"></div>
               <div id="admin-user-results" class="user-admin-results"><div class="empty-state" style="padding:24px;"><p style="margin:0;font-size:.9rem;">Nhập ít nhất 2 ký tự để tìm tài khoản.</p></div></div>
@@ -3287,15 +3319,18 @@
         setAdminUserSearchMessage(ADMIN_USER_RESULTS.length ? `Tìm thấy ${ADMIN_USER_RESULTS.length} tài khoản.` : "Không tìm thấy tài khoản phù hợp.", ADMIN_USER_RESULTS.length ? "success" : "info");
         if (resultsBox) resultsBox.innerHTML = ADMIN_USER_RESULTS.length ? ADMIN_USER_RESULTS.map(u => `
           <div class="user-admin-result ${ADMIN_SELECTED_USER?.id === u.id ? "selected" : ""}">
-            <div style="min-width:220px;flex:1;">
-              <b style="color:var(--primary-dark);">@${escapeHtml(u.username || "")}</b>
-              <span style="color:var(--muted);font-size:.85rem;"> · ${escapeHtml(u.display_name || "Chưa có tên hiển thị")}</span>
-              <div class="user-admin-result-meta">
-                <span class="user-state-pill ${u.account_status === "locked" ? "locked" : "active"}"><i class="fas ${u.account_status === "locked" ? "fa-lock" : "fa-check-circle"}"></i> ${u.account_status === "locked" ? "Đang khóa" : "Hoạt động"}</span>
-                <span><i class="fas fa-triangle-exclamation" style="color:var(--danger)"></i> ${Number(u.warning_count || 0)}/4 cảnh cáo</span>
+            <div class="user-admin-result-main">
+              <div class="user-admin-avatar" aria-hidden="true">${escapeHtml(String(u.username || "U").charAt(0))}</div>
+              <div class="user-admin-identity">
+                <span class="user-admin-username">@${escapeHtml(u.username || "")}</span>
+                <span class="user-admin-display-name">${escapeHtml(u.display_name || "Chưa có tên hiển thị")}</span>
+                <div class="user-admin-result-meta">
+                  <span class="user-state-pill ${u.account_status === "locked" ? "locked" : "active"}"><i class="fas ${u.account_status === "locked" ? "fa-lock" : "fa-check-circle"}"></i> ${u.account_status === "locked" ? "Đang khóa" : "Hoạt động"}</span>
+                  <span class="user-admin-warning-count"><i class="fas fa-triangle-exclamation"></i> ${Number(u.warning_count || 0)}/4 cảnh cáo</span>
+                </div>
               </div>
             </div>
-            <button type="button" class="btn btn-sm" onclick="adminSelectUser('${escapeHtml(u.id)}')"><i class="fas fa-user-gear"></i> Quản lý</button>
+            <button type="button" class="btn btn-sm user-admin-select-btn" onclick="adminSelectUser('${escapeHtml(u.id)}')"><i class="fas fa-user-gear"></i> Quản lý <i class="fas fa-arrow-right" style="font-size:.72rem;margin-left:2px;"></i></button>
           </div>`).join("") : `<div class="empty-state" style="padding:24px;"><p style="margin:0;font-size:.9rem;">Không tìm thấy người dùng.</p></div>`;
         if (ADMIN_SELECTED_USER) {
           const refreshed = ADMIN_USER_RESULTS.find(u => u.id === ADMIN_SELECTED_USER.id);
