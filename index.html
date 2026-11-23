@@ -4142,23 +4142,95 @@
     };
     window.saveEditedLecturer = async function() {
       if (!supabaseClient || !isCurrentAdmin()) return;
-      const id = document.getElementById("edit-lect-id").value;
-      const name = toTitleCase(document.getElementById("edit-lect-name").value.trim());
-      const degree = document.getElementById("edit-lect-degree").value.trim();
-      const facultyId = document.getElementById("edit-lect-faculty").value;
-      const verified = document.getElementById("edit-lect-verified")?.checked;
-      if (name.length < 3 || !degree || !FACULTY_BY_ID[facultyId]) { alert("Vui lòng nhập tên, học vị và khoa hợp lệ."); return; }
-      const keepPending = DB.pendingLecturers.some(item => item.id === id);
-      const { data, error } = await supabaseClient.from("lecturer_records").upsert({
-        id, name, degree, faculty_id: facultyId, status: keepPending ? "pending" : "approved",
-        source_type: verified ? "admin" : "community"
-      }).select("id,status").maybeSingle();
-      if (error) { alert("Lỗi lưu giảng viên: " + supabaseErrorText(error)); return; }
-      if (!data) { alert("Supabase không xác nhận đã lưu giảng viên (0 dòng bị tác động). Kiểm tra quyền SELECT/UPSERT."); return; }
-      closeModal("editLecturerModal");
-      await syncFromSupabase();
-      alert("Đã lưu thay đổi giảng viên!");
-      route({ preserveScroll: true });
+      if (!currentUser?.id) {
+        alert("Phiên đăng nhập quản trị viên không còn hợp lệ. Vui lòng đăng nhập lại rồi thử lưu.");
+        return;
+      }
+
+      const id = document.getElementById("edit-lect-id")?.value;
+      const name = toTitleCase(document.getElementById("edit-lect-name")?.value.trim() || "");
+      const degree = document.getElementById("edit-lect-degree")?.value.trim() || "";
+      const facultyId = document.getElementById("edit-lect-faculty")?.value || "";
+      const verified = Boolean(document.getElementById("edit-lect-verified")?.checked);
+      if (!id) { alert("Không xác định được giảng viên cần cập nhật."); return; }
+      if (name.length < 3 || !degree || !FACULTY_BY_ID[facultyId]) {
+        alert("Vui lòng nhập tên, học vị và khoa hợp lệ.");
+        return;
+      }
+
+      const saveButton = document.querySelector('#editLecturerModal button[onclick="saveEditedLecturer()"]');
+      if (saveButton?.disabled) return;
+      if (saveButton) {
+        saveButton.disabled = true;
+        saveButton.dataset.originalText = saveButton.textContent;
+        saveButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang lưu...';
+      }
+
+      try {
+        const keepPending = DB.pendingLecturers.some(item => item.id === id);
+        const payload = {
+          name,
+          degree,
+          faculty_id: facultyId,
+          status: keepPending ? "pending" : "approved",
+          source_type: verified ? "admin" : "community"
+        };
+
+        // Tránh upsert trên bản ghi đã tồn tại: một số trigger kiểm tra submitted_by
+        // chạy cả nhánh INSERT của UPSERT và từ chối khi trường này không được truyền.
+        // UPDATE chỉ sửa các trường quản trị, vì vậy giữ nguyên người đề xuất ban đầu.
+        const { data: existingRecord, error: lookupError } = await supabaseClient
+          .from("lecturer_records")
+          .select("id,submitted_by")
+          .eq("id", id)
+          .maybeSingle();
+        if (lookupError) throw new Error("Không kiểm tra được bản ghi giảng viên: " + supabaseErrorText(lookupError));
+
+        let saveResult;
+        if (existingRecord) {
+          // Giữ người đề xuất cũ; chỉ bổ sung tài khoản Admin nếu bản ghi legacy
+          // chưa có submitted_by để tránh trigger từ chối do giá trị NULL.
+          const updatePayload = existingRecord.submitted_by
+            ? payload
+            : { ...payload, submitted_by: currentUser.id };
+          saveResult = await supabaseClient
+            .from("lecturer_records")
+            .update(updatePayload)
+            .eq("id", id)
+            .select("id,status")
+            .maybeSingle();
+        } else {
+          // Giảng viên mặc định chỉ tồn tại trong mã nguồn: tạo bản ghi ghi đè
+          // và gắn submitted_by để đáp ứng trigger yêu cầu tài khoản đề xuất.
+          saveResult = await supabaseClient
+            .from("lecturer_records")
+            .insert({
+              id,
+              ...payload,
+              submitted_by: currentUser.id
+            })
+            .select("id,status")
+            .maybeSingle();
+        }
+
+        if (saveResult.error) throw saveResult.error;
+        if (!saveResult.data || saveResult.data.id !== id) {
+          throw new Error("Supabase không xác nhận đã cập nhật giảng viên (0 dòng bị tác động). Kiểm tra quyền UPDATE/INSERT và chính sách RLS.");
+        }
+
+        closeModal("editLecturerModal");
+        await syncFromSupabase();
+        alert("Đã lưu thay đổi giảng viên!");
+        route({ preserveScroll: true });
+      } catch (error) {
+        console.error("Save edited lecturer error:", error);
+        alert("Lỗi lưu giảng viên: " + supabaseErrorText(error));
+      } finally {
+        if (saveButton) {
+          saveButton.disabled = false;
+          saveButton.innerHTML = '<i class="fas fa-save"></i> Lưu thay đổi';
+        }
+      }
     };
 
     window.openEditMajorModal = function(id) {
