@@ -795,6 +795,226 @@
       .admin-catalog-row-actions{width:100%}
       .admin-catalog-row-actions .btn{flex:1;justify-content:center}
     }
+
+    /* ===== V3 DESIGN OVERHAUL: MODERN POLISH, AVATARS, REASON CHIPS & LIVE ACTIVITY ===== */
+    html { scroll-behavior: smooth; }
+    body {
+      background:
+        radial-gradient(circle at 0% 0%, rgba(10, 94, 168, 0.065) 0%, transparent 42%),
+        radial-gradient(circle at 100% 10%, rgba(243, 156, 18, 0.055) 0%, transparent 36%),
+        #f2f5f9;
+      font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+      -webkit-font-smoothing: antialiased;
+    }
+    ::-webkit-scrollbar { width: 9px; height: 9px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 999px; border: 2px solid transparent; background-clip: content-box; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; border: 2px solid transparent; background-clip: content-box; }
+
+    .site-header {
+      background: rgba(255, 255, 255, 0.88);
+      border-bottom: 1px solid rgba(203, 213, 225, 0.65);
+      box-shadow: 0 4px 24px rgba(15, 39, 71, 0.055);
+    }
+    .search-box { position: relative; min-width: 195px; max-width: 245px; }
+    .search-box input { padding-right: 36px; background: #f8fafc; border-color: #dbe4ef; }
+    .search-box input:focus { background: #fff; }
+    .search-kbd {
+      position: absolute; right: 11px; top: 50%; transform: translateY(-50%);
+      padding: 2px 7px; border-radius: 6px; border: 1px solid #d5dfe9;
+      background: #fff; color: #8a9bb0; font: 700 .7rem 'Inter', sans-serif; pointer-events: none;
+    }
+    .search-box input:focus + .search-kbd { opacity: 0; }
+
+    /* Hero V3 */
+    .hero {
+      background:
+        radial-gradient(circle at 18% 20%, rgba(56, 189, 248, 0.28) 0%, transparent 45%),
+        radial-gradient(circle at 86% 80%, rgba(245, 158, 11, 0.28) 0%, transparent 48%),
+        linear-gradient(135deg, #06315e 0%, #0a5ea8 54%, #1574c4 100%);
+      border-radius: 24px;
+      padding: clamp(44px, 6vw, 68px) clamp(20px, 4vw, 44px);
+      box-shadow: 0 18px 44px rgba(7, 52, 99, 0.24);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; margin-bottom: 16px;
+      border-radius: 999px; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.24);
+      color: #e6f3ff; font-size: .78rem; font-weight: 700; letter-spacing: .04em; backdrop-filter: blur(8px);
+      position: relative; z-index: 1;
+    }
+    .hero h1 { font-size: clamp(2rem, 4.4vw, 3.1rem); margin-bottom: 12px; }
+    .hero p { max-width: 680px; margin: 0 auto 28px; font-size: clamp(1rem, 1.8vw, 1.15rem); color: rgba(255,255,255,.9); }
+    .hero-actions { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; position: relative; z-index: 1; }
+    .hero .cta-secondary {
+      display: inline-flex; align-items: center; gap: 9px; padding: 15px 28px; border-radius: 30px;
+      background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.32); color: #fff;
+      font-weight: 700; backdrop-filter: blur(8px); transition: .25s;
+    }
+    .hero .cta-secondary:hover { background: rgba(255,255,255,.24); transform: translateY(-2px); color: #fff; }
+    .hero-stats {
+      position: relative; z-index: 1; margin: 32px auto 0; max-width: 720px;
+      display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px;
+      padding: 14px; border-radius: 18px; background: rgba(6, 36, 70, 0.34);
+      border: 1px solid rgba(255, 255, 255, 0.16); backdrop-filter: blur(10px);
+    }
+    .hero-stat { padding: 6px 8px; text-align: center; }
+    .hero-stat strong { display: block; font-size: 1.35rem; font-weight: 800; color: #fff; line-height: 1.15; font-variant-numeric: tabular-nums; }
+    .hero-stat span { display: block; font-size: .76rem; color: rgba(230, 242, 255, .82); font-weight: 600; margin-top: 2px; }
+
+    /* Cards & Detail Header V3 */
+    .card {
+      border-radius: 18px; border: 1px solid #e1e9f2;
+      box-shadow: 0 4px 18px rgba(15, 39, 71, 0.045);
+    }
+    .card:hover { box-shadow: 0 14px 32px rgba(10, 94, 168, 0.13); border-color: #9bc4ea; }
+    .detail-header {
+      border-radius: 22px; border: 1px solid #dfe8f3;
+      background: linear-gradient(145deg, #ffffff 0%, #f8fbff 100%);
+      box-shadow: 0 10px 30px rgba(15, 39, 71, 0.06);
+    }
+    .detail-head-row { display: flex; align-items: flex-start; gap: 18px; flex-wrap: wrap; }
+    .detail-avatar {
+      flex: 0 0 64px; width: 64px; height: 64px; border-radius: 18px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.55rem; font-weight: 800; color: #fff;
+      background: linear-gradient(135deg, #0a5ea8 0%, #2b82d1 100%);
+      box-shadow: 0 8px 20px rgba(10, 94, 168, 0.24);
+    }
+    .detail-avatar.major { background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%); box-shadow: 0 8px 20px rgba(217, 119, 6, 0.24); }
+    .detail-head-content { flex: 1; min-width: 240px; }
+    .detail-head-content h1 { margin-bottom: 10px; line-height: 1.25; }
+
+    /* Reviewer Avatars & Sleek Comment Cards */
+    .review {
+      border-radius: 18px; border: 1px solid #e2eaf3;
+      box-shadow: 0 4px 16px rgba(15, 39, 71, 0.04);
+      padding: 22px 24px;
+    }
+    .review-author-wrap { display: inline-flex; align-items: center; gap: 10px; min-width: 0; }
+    .comment-avatar {
+      flex: 0 0 36px; width: 36px; height: 36px; border-radius: 11px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: .88rem; text-transform: uppercase;
+      background: linear-gradient(135deg, #e0efff, #cde3fb); color: #0a4d8c;
+      border: 1px solid #c5ddf8;
+    }
+    .comment-avatar.sm { flex-basis: 28px; width: 28px; height: 28px; border-radius: 9px; font-size: .74rem; }
+    .comment-avatar.is-admin { background: linear-gradient(135deg, #ef4444, #b91c1c); color: #fff; border-color: transparent; }
+    .review-actions { gap: 10px; }
+    .review-actions button, .reply-actions button {
+      padding: 5px 10px; border-radius: 8px;
+    }
+    .review-actions button:hover, .reply-actions button:hover { background: #f1f5f9; }
+    .admin-inline-warn {
+      color: #b91c1c !important; background: #fef2f2 !important; border: 1px solid #fecaca !important;
+      font-weight: 700 !important;
+    }
+    .admin-inline-warn:hover { background: #fee2e2 !important; color: #991b1b !important; }
+    .admin-inline-del {
+      color: #991b1b !important; background: #fff1f2 !important; border: 1px solid #ffe4e6 !important;
+    }
+    .admin-inline-del:hover { background: #ffe4e6 !important; color: #881337 !important; }
+    .admin-inline-edit { color: var(--primary) !important; background: #eff6ff !important; border: 1px solid #dbeafe !important; }
+    .admin-inline-edit:hover { background: #dbeafe !important; }
+
+    /* Modal Polish + Preset Reason Chips */
+    .modal-box {
+      border-radius: 22px; padding: 28px 30px; border: 1px solid rgba(226, 232, 240, 0.9);
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.28);
+    }
+    .modal-head-bar {
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+      padding-bottom: 14px; margin-bottom: 14px; border-bottom: 1px solid #edf2f7;
+    }
+    .modal-head-bar h3 { margin: 0; display: flex; align-items: center; gap: 9px; font-size: 1.18rem; }
+    .mod-mode-banner {
+      display: flex; align-items: flex-start; gap: 10px; padding: 11px 14px; margin: 0 0 12px;
+      border-radius: 12px; font-size: .84rem; line-height: 1.5; font-weight: 600;
+    }
+    .mod-mode-banner.danger { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+    .mod-mode-banner.amber { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
+    .mod-mode-banner i { margin-top: 2px; font-size: 1rem; }
+
+    .reason-chip-grid {
+      display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 12px;
+    }
+    .reason-chip {
+      display: inline-flex; align-items: center; gap: 7px; padding: 8px 12px;
+      border-radius: 10px; border: 1.5px solid #dbe4ef; background: #f8fafc;
+      color: #334e68; font: 600 .81rem 'Inter', sans-serif; cursor: pointer;
+      transition: .16s; text-align: left; line-height: 1.3;
+    }
+    .reason-chip:hover { border-color: #93c5fd; background: #eff6ff; color: var(--primary-dark); }
+    .reason-chip.selected {
+      border-color: #dc2626; background: #fef2f2; color: #991b1b;
+      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.10);
+    }
+    .reason-chip.tone-blue.selected {
+      border-color: var(--primary); background: #eaf3fc; color: var(--primary-dark);
+      box-shadow: 0 0 0 3px rgba(10, 94, 168, 0.12);
+    }
+    .reason-chip .chip-check {
+      width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid #cbd5e1;
+      display: inline-flex; align-items: center; justify-content: center; font-size: .62rem;
+      background: #fff; flex-shrink: 0; color: transparent; transition: .16s;
+    }
+    .reason-chip.selected .chip-check { background: #dc2626; border-color: #dc2626; color: #fff; }
+    .reason-chip.tone-blue.selected .chip-check { background: var(--primary); border-color: var(--primary); color: #fff; }
+    .mod-optional-toggle {
+      display: flex; align-items: center; gap: 10px; padding: 11px 13px; margin: 12px 0 4px;
+      border-radius: 11px; background: #fff7ed; border: 1px solid #fed7aa;
+      color: #9a3412; font-size: .86rem; font-weight: 700; cursor: pointer;
+    }
+    .mod-optional-toggle input { width: 17px; height: 17px; margin: 0; accent-color: #dc2626; }
+
+    /* Live Activity Filter Bar & Expanded Event Tones */
+    .live-dot-badge {
+      display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px;
+      border-radius: 999px; background: #ecfdf5; border: 1px solid #a7f3d0;
+      color: #047857; font-size: .73rem; font-weight: 800;
+    }
+    .live-dot-badge::before {
+      content: ''; width: 7px; height: 7px; border-radius: 50%; background: #10b981;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+    }
+    .activity-controls {
+      display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px;
+      padding: 12px 14px; border-radius: 14px; background: #f8fbff; border: 1px solid #e1ebf5;
+    }
+    .activity-controls-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+    .activity-filter-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+    .activity-filter-pill {
+      border: 1px solid #dbe4ef; background: #fff; color: #475569;
+      padding: 6px 11px; border-radius: 999px; font: 700 .76rem 'Inter', sans-serif;
+      cursor: pointer; transition: .16s; display: inline-flex; align-items: center; gap: 5px;
+    }
+    .activity-filter-pill:hover { border-color: var(--primary-light); color: var(--primary); }
+    .activity-filter-pill.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+    .activity-search-mini {
+      position: relative; min-width: 210px; flex: 1; max-width: 300px;
+    }
+    .activity-search-mini i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #8296ab; font-size: .82rem; pointer-events: none; }
+    .activity-search-mini input {
+      width: 100%; height: 36px; padding: 0 12px 0 34px; border: 1px solid #d5e2ef;
+      border-radius: 10px; background: #fff; font: 500 .83rem 'Inter', sans-serif;
+    }
+    .activity-search-mini input:focus { outline: none; border-color: var(--primary-light); box-shadow: 0 0 0 3px rgba(10,94,168,.10); }
+    .admin-activity-icon.deleted { background: #fef2f2; color: #dc2626; }
+    .admin-activity-icon.edited { background: #eef2ff; color: #4f46e5; }
+    .admin-activity-icon.like { background: #ecfdf5; color: #059669; }
+    .admin-activity-icon.propose { background: #fffbeb; color: #d97706; }
+    .admin-activity-type.danger { background: #fee2e2; color: #b91c1c; }
+    .admin-activity-type.edited { background: #e0e7ff; color: #3730a3; }
+    .admin-activity-type.success { background: #dcfce7; color: #166534; }
+    .admin-activity-type.amber { background: #fef3c7; color: #92400e; }
+    .admin-activity-excerpt.deleted { border-left-color: #fca5a5; background: #fff7f7; color: #7f1d1d; }
+
+    @media (max-width: 650px) {
+      .hero-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .activity-search-mini { max-width: none; width: 100%; }
+      .search-kbd { display: none; }
+    }
   </style>
 </head>
 <body>
@@ -813,6 +1033,7 @@
       <div class="search-box">
         <i class="fas fa-search search-icon"></i>
         <input type="search" id="globalSearch" placeholder="Tìm ngành, giảng viên..." autocomplete="off" />
+        <span class="search-kbd" aria-hidden="true">/</span>
         <div id="searchResults" class="search-results"></div>
       </div>
       <div id="authActions" class="auth-actions" aria-live="polite"></div>
@@ -1000,18 +1221,31 @@
     </div>
   </div>
 
-  <!-- Modal cảnh cáo nhanh dành riêng cho Admin -->
+  <!-- Modal Cảnh cáo & Xóa bình luận (Admin) có danh sách lý do chọn nhanh -->
   <div class="modal-overlay" id="adminQuickWarningModal" role="dialog" aria-modal="true" aria-labelledby="adminQuickWarningTitle">
-    <div class="modal-box">
-      <h3 id="adminQuickWarningTitle"><i class="fas fa-triangle-exclamation" style="color:var(--danger)"></i> Cảnh cáo nhanh người dùng</h3>
-      <p id="adminQuickWarningUser" style="margin:0;color:var(--muted);font-size:.9rem;"></p>
+    <div class="modal-box" style="max-width:560px;">
+      <div class="modal-head-bar">
+        <h3 id="adminQuickWarningTitle"><i class="fas fa-triangle-exclamation" style="color:var(--danger)"></i> Cảnh cáo &amp; Xóa bình luận</h3>
+        <button class="auth-close" type="button" onclick="closeModal('adminQuickWarningModal')" aria-label="Đóng">&times;</button>
+      </div>
+      <div id="adminQuickWarningBanner" class="mod-mode-banner danger">
+        <i class="fas fa-trash-can"></i>
+        <span>Bình luận này sẽ tự động bị xóa ngay lập tức và tài khoản người viết nhận +1 cảnh cáo (đủ 4/4 sẽ tự động khóa).</span>
+      </div>
+      <p id="adminQuickWarningUser" style="margin:0;color:var(--muted);font-size:.88rem;font-weight:600;"></p>
       <div id="adminQuickWarningContext" class="admin-quick-warning-context"></div>
-      <label for="adminQuickWarningReason">Lý do cảnh cáo *</label>
-      <textarea id="adminQuickWarningReason" rows="4" maxlength="1000" placeholder="Nêu rõ quy tắc bị vi phạm và lý do cảnh cáo (ít nhất 5 ký tự)..."></textarea>
-      <p class="auth-help">Cảnh cáo thứ 4 sẽ tự động khóa tài khoản. Hành động này sẽ gửi thông báo đến người dùng và được ghi vào lịch sử.</p>
+      <label style="display:block;font-weight:700;color:var(--primary-dark);font-size:.9rem;margin:12px 0 4px;">Chọn nhanh lý do (bấm để chọn 1 hoặc nhiều):</label>
+      <div id="adminQuickWarningChips" class="reason-chip-grid"></div>
+      <label id="adminQuickWarningAlsoWarnWrap" class="mod-optional-toggle" style="display:none;">
+        <input type="checkbox" id="adminQuickWarningAlsoWarn">
+        <span>Kèm gửi +1 cảnh cáo cho người viết bình luận này</span>
+      </label>
+      <label for="adminQuickWarningReason" style="display:block;font-weight:700;color:var(--primary-dark);font-size:.88rem;margin:12px 0 6px;">Ghi chú thêm của Quản trị viên <span style="font-weight:500;color:var(--muted);">(không bắt buộc)</span></label>
+      <textarea id="adminQuickWarningReason" rows="3" maxlength="1000" placeholder="Không bắt buộc nếu đã bấm chọn lý do ở trên. Bạn có thể nhập thêm chi tiết nếu muốn..."></textarea>
+      <p class="auth-help" id="adminQuickWarningHelp">Toàn bộ thao tác xóa/cảnh cáo được gửi thông báo cho người dùng và lưu vào nhật ký hoạt động của Admin + lịch sử tài khoản.</p>
       <div style="display:flex;gap:12px;margin-top:20px;">
-        <button type="button" id="adminQuickWarningSubmit" class="btn btn-del" onclick="adminSubmitQuickWarning()" style="margin:0;flex:1;justify-content:center;"><i class="fas fa-gavel"></i> Xác nhận cảnh cáo</button>
-        <button type="button" class="btn" onclick="closeModal('adminQuickWarningModal')" style="margin:0;flex:1;justify-content:center;background:#cbd5e1;color:#334155;box-shadow:none;">Hủy</button>
+        <button type="button" id="adminQuickWarningSubmit" class="btn btn-del" onclick="adminSubmitQuickWarning()" style="margin:0;flex:1;justify-content:center;"><i class="fas fa-gavel"></i> Xác nhận Cảnh cáo &amp; Xóa</button>
+        <button type="button" class="btn" onclick="closeModal('adminQuickWarningModal')" style="margin:0;flex:0 0 110px;justify-content:center;background:#e2e8f0;color:#334155;box-shadow:none;">Hủy</button>
       </div>
     </div>
   </div>
@@ -1615,8 +1849,36 @@
     let ADMIN_USER_RESULTS = [];
     let ADMIN_SELECTED_USER = null;
     let ADMIN_ACTIVITY_CACHE = [];
+    let ADMIN_USER_ACTIVITY_CACHE = [];
+    let ADMIN_ACTIVITY_FILTER = { group: "all", search: "" };
+    let ADMIN_USER_ACTIVITY_FILTER = { group: "all", search: "" };
     let ADMIN_ACTIVITY_CHANNEL = null;
     let ADMIN_QUICK_WARNING_TARGET = null;
+
+    const ADMIN_COMMENT_PRESET_REASONS = [
+      "Ngôn từ thô tục, thiếu văn minh",
+      "Xúc phạm, công kích cá nhân",
+      "Thông tin sai sự thật, chưa kiểm chứng",
+      "Spam, quảng cáo hoặc lặp nội dung",
+      "Tiết lộ thông tin cá nhân / riêng tư",
+      "Nội dung lạc đề, không liên quan học tập",
+      "Kích động, đe dọa hoặc gây chia rẽ"
+    ];
+    const ADMIN_USER_WARN_PRESET_REASONS = [
+      "Ngôn từ thô tục, thiếu văn minh",
+      "Xúc phạm, công kích cá nhân",
+      "Spam, quảng cáo hoặc gây nhiễu",
+      "Đăng thông tin sai sự thật",
+      "Tiết lộ thông tin riêng tư người khác",
+      "Tái phạm quy tắc cộng đồng nhiều lần"
+    ];
+    const ADMIN_USER_ACTION_PRESET_REASONS = [
+      "Xác minh nhầm lẫn, gỡ cảnh cáo",
+      "Người dùng đã khắc phục / giải trình hợp lệ",
+      "Vi phạm nghiêm trọng quy tắc cộng đồng",
+      "Tài khoản spam hàng loạt",
+      "Chấp thuận mở khóa sau yêu cầu hỗ trợ"
+    ];
     let USER_NOTIFS_CHANNEL = null;
     let supabaseClient = null;
     let currentUser = null;
@@ -1753,6 +2015,33 @@
     function toTitleCase(str) {
       if (!str) return "";
       return str.toLowerCase().replace(/(^|\s)\S/g, l => l.toUpperCase());
+    }
+    function initialsOf(name) {
+      const parts = String(name || "T").trim().split(/\s+/).filter(Boolean);
+      if (!parts.length) return "T";
+      if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    function renderReasonChipsHTML(reasons, toneClass = "") {
+      return reasons.map(r => `<button type="button" class="reason-chip ${toneClass}" data-reason="${escapeHtml(r)}" onclick="toggleReasonChip(this)"><span class="chip-check"><i class="fas fa-check"></i></span><span>${escapeHtml(r)}</span></button>`).join("");
+    }
+    window.toggleReasonChip = function(btn) {
+      if (!btn) return;
+      btn.classList.toggle("selected");
+    };
+    function collectReasonInput(chipContainerId, textareaId) {
+      const selected = [...document.querySelectorAll(`#${chipContainerId} .reason-chip.selected`)]
+        .map(b => b.dataset.reason)
+        .filter(Boolean);
+      const extra = document.getElementById(textareaId)?.value.trim() || "";
+      if (!selected.length && !extra) return "";
+      if (selected.length && extra) return `${selected.join("; ")}. Ghi chú thêm: ${extra}`;
+      return selected.length ? selected.join("; ") : extra;
+    }
+    function resetReasonInput(chipContainerId, textareaId) {
+      document.querySelectorAll(`#${chipContainerId} .reason-chip.selected`).forEach(b => b.classList.remove("selected"));
+      const area = document.getElementById(textareaId);
+      if (area) area.value = "";
     }
     function showToast(message, type = "info") {
       const text = String(message ?? "").trim();
@@ -2247,7 +2536,7 @@
         }
         const badName = containsForbiddenWord(displayName);
         if (badName) {
-          setAuthMessage(`Tên hiển thị chứa từ khóa không phù hợp ("${badName}").`, "error");
+          setAuthMessage("Tên hiển thị chứa từ ngữ không phù hợp với quy tắc cộng đồng. Vui lòng chọn tên khác.", "error");
           return;
         }
       }
@@ -2562,7 +2851,7 @@
         </section>`;
     }
 
-    /* ================= TỪ KHÓA CẤM ================= */
+    /* ================= TỪ KHÓA CẤM & TỰ ĐỘNG CẢNH CÁO ================= */
     function containsForbiddenWord(text) {
       const lower = String(text || "").normalize("NFC").toLowerCase();
       for (const word of DB.forbiddenWords) {
@@ -2572,6 +2861,37 @@
         if (new RegExp(`(^|[^\\p{L}\\p{N}])${esc}($|[^\\p{L}\\p{N}])`, "u").test(lower)) return word;
       }
       return null;
+    }
+
+    // Từ chối nội dung chứa từ khóa không hợp lệ, tự động ghi nhận cảnh cáo & nhắc nhở (TUYỆT ĐỐI KHÔNG nhắc lại từ bị cấm)
+    async function handleForbiddenContentViolation(contextLabel = "bình luận", targetType = null, targetId = null) {
+      if (!supabaseClient || !currentUser || isCurrentAdmin()) {
+        showToast("Nội dung đã bị từ chối vì chứa từ ngữ không phù hợp với quy tắc cộng đồng. Vui lòng điều chỉnh ngôn từ văn minh hơn.", "error");
+        return;
+      }
+      try {
+        const { data, error } = await supabaseClient.rpc("auto_warn_forbidden_content", {
+          p_context: contextLabel,
+          p_target_type: targetType || null,
+          p_target_id: targetId ? String(targetId) : null
+        });
+        if (error) throw error;
+        const result = Array.isArray(data) ? data[0] : data;
+        await loadCurrentProfile();
+        await syncFromSupabase();
+        updateAuthActions();
+        if (result?.locked) {
+          showToast("Nội dung đã bị từ chối vì chứa từ ngữ không phù hợp với quy tắc cộng đồng. Tài khoản của bạn đã đủ 4/4 cảnh cáo và tự động bị khóa.", "error");
+          rerender();
+        } else {
+          const cnt = result?.warning_count ?? Number(currentProfile?.warning_count || 1);
+          showToast(`Nội dung đã bị từ chối vì chứa từ ngữ không phù hợp với quy tắc cộng đồng. Tài khoản vừa nhận 1 cảnh cáo tự động (${cnt}/4). Vui lòng giữ ngôn từ văn minh, tôn trọng mọi người.`, "error");
+          rerender();
+        }
+      } catch (err) {
+        console.warn("auto_warn_forbidden_content RPC fallback:", err);
+        showToast("Nội dung đã bị từ chối vì chứa từ ngữ không phù hợp với quy tắc cộng đồng. Vui lòng sử dụng ngôn từ văn minh, tôn trọng mọi người.", "error");
+      }
     }
 
     /* ================= SỬA / XÓA BÌNH LUẬN CỦA CHÍNH MÌNH ================= */
@@ -2611,9 +2931,13 @@
       const min = kind === "reply" ? 2 : 10;
       const max = kind === "reply" ? 2000 : 3000;
       if (content.length < min || content.length > max) { alert(`Nội dung phải dài từ ${min} đến ${max.toLocaleString("vi-VN")} ký tự!`); return; }
+      const { rev, ok } = findMine(kind, reviewId, replyId);
       const bad = containsForbiddenWord(content);
-      if (bad) { alert(`Nội dung chứa từ khóa không phù hợp ("${bad}"). Vui lòng điều chỉnh!`); return; }
-      const { ok } = findMine(kind, reviewId, replyId);
+      if (bad) {
+        closeModal("myEditModal");
+        await handleForbiddenContentViolation(kind === "reply" ? "chỉnh sửa phản hồi" : "chỉnh sửa đánh giá", rev?.targetType || null, rev?.targetId || null);
+        return;
+      }
       if (!ok) { alert("Bạn chỉ có thể sửa bình luận của chính mình."); closeModal("myEditModal"); return; }
 
       const btn = document.getElementById("myEditSaveBtn");
@@ -2697,9 +3021,19 @@
         </div>` : ""}
 
         <section class="hero fade-up">
+          <div class="hero-badge"><i class="fas fa-sparkles"></i> Cộng đồng sinh viên HUIT · Minh bạch &amp; Văn minh</div>
           <h1><i class="fas fa-graduation-cap"></i> HUIT Review</h1>
-          <p>Không gian cộng đồng độc lập để tham khảo giảng viên, ngành học và chia sẻ trải nghiệm tại HUIT.</p>
-          <a href="#/lecturers" class="cta">Khám phá ngay <i class="fas fa-arrow-right"></i></a>
+          <p>Không gian cộng đồng độc lập để tham khảo giảng viên, ngành học và chia sẻ trải nghiệm học tập thực tế tại HUIT.</p>
+          <div class="hero-actions">
+            <a href="#/lecturers" class="cta">Khám phá giảng viên <i class="fas fa-arrow-right"></i></a>
+            <a href="#/majors" class="cta-secondary"><i class="fas fa-book-open"></i> Danh sách ngành học</a>
+          </div>
+          <div class="hero-stats" aria-label="Thống kê cộng đồng">
+            <div class="hero-stat"><strong>${DB.lecturers.length}</strong><span>Giảng viên</span></div>
+            <div class="hero-stat"><strong>${DB.majors.length}</strong><span>Ngành học</span></div>
+            <div class="hero-stat"><strong>${FACULTIES.length}</strong><span>Khoa đào tạo</span></div>
+            <div class="hero-stat"><strong>${approvedReviews.length}</strong><span>Đánh giá thực tế</span></div>
+          </div>
         </section>
 
         <section class="home-intro fade-up" aria-labelledby="home-intro-title">
@@ -2953,11 +3287,16 @@
       return `
         <div class="breadcrumb fade-up"><a href="#/majors">Ngành học</a> <i class="fas fa-chevron-right" style="font-size:.7rem;color:#cbd5e1"></i> ${faculty ? `<a href="#/faculty/${facultyId}/majors">${escapeHtml(faculty.name)}</a> <i class="fas fa-chevron-right" style="font-size:.7rem;color:#cbd5e1"></i>` : ""} ${escapeHtml(m.name)}</div>
         <div class="detail-header fade-up">
-          <h1><i class="fas fa-book"></i> ${escapeHtml(m.name)} <span class="badge" style="background:#e6f0fb;color:var(--primary);font-size:.9rem;margin-left:10px;">${count} đánh giá</span></h1>
-          <div class="info">
-            <span class="badge"><i class="fas fa-barcode"></i> Mã ngành: ${escapeHtml(m.code || m.id)}</span>
-            ${faculty ? `<a class="faculty-pill" href="#/faculty/${faculty.id}/majors"><i class="fas fa-building-columns"></i> ${escapeHtml(faculty.name)}</a>` : ""}
-            ${avg ? `<span class="badge" style="background:#fff8e1; color:#b45309;"><i class="fas fa-star" style="color:var(--accent)"></i> ${starsHTML(avg)} ${avg.toFixed(1)}/5</span>` : ""}
+          <div class="detail-head-row">
+            <div class="detail-avatar major" aria-hidden="true"><i class="fas fa-book-open"></i></div>
+            <div class="detail-head-content">
+              <h1>${escapeHtml(m.name)} <span class="badge" style="background:#e6f0fb;color:var(--primary);font-size:.86rem;margin-left:6px;vertical-align:middle;">${count} đánh giá</span></h1>
+              <div class="info">
+                <span class="badge"><i class="fas fa-barcode"></i> Mã ngành: ${escapeHtml(m.code || m.id)}</span>
+                ${faculty ? `<a class="faculty-pill" href="#/faculty/${faculty.id}/majors"><i class="fas fa-building-columns"></i> ${escapeHtml(faculty.name)}</a>` : ""}
+                ${avg ? `<span class="badge" style="background:#fff8e1; color:#b45309;"><i class="fas fa-star" style="color:var(--accent)"></i> ${starsHTML(avg)} ${avg.toFixed(1)}/5</span>` : ""}
+              </div>
+            </div>
           </div>
           <div style="margin-top:20px; display:flex; gap:10px; flex-wrap:wrap;">
             <a href="${reportHref}" class="btn btn-report" style="margin:0;"><i class="fas fa-flag"></i> Báo cáo thông tin sai</a>
@@ -3028,12 +3367,17 @@
       return `
         <div class="breadcrumb fade-up"><a href="#/lecturers">Giảng viên</a> <i class="fas fa-chevron-right" style="font-size:0.7rem; color:#cbd5e1;"></i> ${escapeHtml(l.name)}</div>
         <div class="detail-header fade-up">
-          <h1><i class="fas fa-user-tie"></i> ${escapeHtml(l.name)} ${isPending ? '<span class="badge" style="background:#fef3c7; color:#d97706;">Chờ duyệt</span>' : ""} <span class="badge" style="background:#e6f0fb; color:var(--primary); font-size:0.9rem; margin-left:10px;">${count} đánh giá</span></h1>
-          <div class="info">
-            <span class="badge"><i class="fas fa-graduation-cap"></i> ${escapeHtml(l.degree)}</span>
-            ${l.sourceType === "community" ? '<span class="community-source-badge"><i class="fas fa-users"></i> Thông tin do người dùng đề xuất</span>' : ""}
-            ${faculty ? `<a class="faculty-pill" href="#/faculty/${faculty.id}/lecturers"><i class="fas fa-building-columns"></i> ${escapeHtml(faculty.name)}</a>` : `<span class="badge">Đang xác minh khoa</span>`}
-            ${avg ? `<span class="badge" style="background:#fff8e1; color:#b45309;"><i class="fas fa-star" style="color:var(--accent)"></i> ${starsHTML(avg)} ${avg.toFixed(1)}/5</span>` : ""}
+          <div class="detail-head-row">
+            <div class="detail-avatar" aria-hidden="true">${escapeHtml(initialsOf(l.name))}</div>
+            <div class="detail-head-content">
+              <h1>${escapeHtml(l.name)} ${isPending ? '<span class="badge" style="background:#fef3c7; color:#d97706;vertical-align:middle;">Chờ duyệt</span>' : ""} <span class="badge" style="background:#e6f0fb; color:var(--primary); font-size:0.86rem; margin-left:6px;vertical-align:middle;">${count} đánh giá</span></h1>
+              <div class="info">
+                <span class="badge"><i class="fas fa-graduation-cap"></i> ${escapeHtml(l.degree)}</span>
+                ${l.sourceType === "community" ? '<span class="community-source-badge"><i class="fas fa-users"></i> Thông tin do người dùng đề xuất</span>' : ""}
+                ${faculty ? `<a class="faculty-pill" href="#/faculty/${faculty.id}/lecturers"><i class="fas fa-building-columns"></i> ${escapeHtml(faculty.name)}</a>` : `<span class="badge">Đang xác minh khoa</span>`}
+                ${avg ? `<span class="badge" style="background:#fff8e1; color:#b45309;"><i class="fas fa-star" style="color:var(--accent)"></i> ${starsHTML(avg)} ${avg.toFixed(1)}/5</span>` : ""}
+              </div>
+            </div>
           </div>
           <div style="margin-top:20px; display:flex; gap:10px; flex-wrap:wrap;">
             <a href="${reportHref}" class="btn btn-report" style="margin:0;"><i class="fas fa-flag"></i> Báo cáo thông tin sai</a>
@@ -3369,10 +3713,25 @@
                 <div class="admin-box">
                   <div class="admin-panel-head">
                     <div>
-                      <h3><i class="fas fa-tower-broadcast" style="color:var(--primary)"></i> Trung tâm giám sát hoạt động</h3>
-                      <p>Theo dõi đăng ký, đánh giá, bình luận, góp ý, báo cáo và thao tác kiểm duyệt mới nhất. Bấm tên người dùng để mở hồ sơ hoạt động.</p>
+                      <h3><i class="fas fa-tower-broadcast" style="color:var(--primary)"></i> Trung tâm giám sát hoạt động <span class="live-dot-badge">Trực tiếp</span></h3>
+                      <p>Ghi nhận toàn bộ hoạt động: đăng ký, đăng/sửa/xóa đánh giá &amp; phản hồi, lượt hữu ích, đề xuất GV, góp ý, báo cáo và cảnh cáo tự động/thủ công.</p>
                     </div>
                     <button type="button" class="btn btn-sm" style="margin:0;" onclick="loadAdminActivityFeed()"><i class="fas fa-rotate"></i> Làm mới</button>
+                  </div>
+                  <div class="activity-controls">
+                    <div class="activity-controls-top">
+                      <div class="activity-filter-pills" id="admin-activity-filter-pills">
+                        <button type="button" class="activity-filter-pill ${ADMIN_ACTIVITY_FILTER.group === "all" ? "active" : ""}" data-group="all" onclick="setAdminActivityFilter('feed','all')">Tất cả</button>
+                        <button type="button" class="activity-filter-pill ${ADMIN_ACTIVITY_FILTER.group === "posts" ? "active" : ""}" data-group="posts" onclick="setAdminActivityFilter('feed','posts')"><i class="fas fa-comment-dots"></i> Đăng &amp; Sửa</button>
+                        <button type="button" class="activity-filter-pill ${ADMIN_ACTIVITY_FILTER.group === "deletes" ? "active" : ""}" data-group="deletes" onclick="setAdminActivityFilter('feed','deletes')"><i class="fas fa-trash-can"></i> Xóa nội dung</button>
+                        <button type="button" class="activity-filter-pill ${ADMIN_ACTIVITY_FILTER.group === "moderation" ? "active" : ""}" data-group="moderation" onclick="setAdminActivityFilter('feed','moderation')"><i class="fas fa-triangle-exclamation"></i> Vi phạm &amp; Cảnh cáo</button>
+                        <button type="button" class="activity-filter-pill ${ADMIN_ACTIVITY_FILTER.group === "other" ? "active" : ""}" data-group="other" onclick="setAdminActivityFilter('feed','other')"><i class="fas fa-bolt"></i> Tương tác &amp; Khác</button>
+                      </div>
+                      <div class="activity-search-mini">
+                        <i class="fas fa-search" aria-hidden="true"></i>
+                        <input type="search" id="admin-activity-search" value="${escapeHtml(ADMIN_ACTIVITY_FILTER.search)}" placeholder="Lọc theo @username, nội dung..." oninput="setAdminActivitySearch('feed', this.value)" autocomplete="off" />
+                      </div>
+                    </div>
                   </div>
                   <div id="admin-activity-feed" class="admin-activity-feed"><div class="loading-box" style="padding:24px;"><i class="fas fa-spinner fa-spin"></i> Đang tải hoạt động...</div></div>
                   <div id="admin-activity-updated" style="margin-top:10px;color:var(--muted);font-size:.73rem;text-align:right;"></div>
@@ -3469,8 +3828,10 @@
                       </div>
                       <div style="display:flex;gap:8px;flex-wrap:wrap;">
                         ${linkObj && reportedText ? `<a class="btn btn-sm" href="${linkObj.href}"><i class="fas fa-arrow-up-right-from-square"></i> Xem chỗ đó</a>` : ""}
-                        ${rep.replyId && replyObj ? `<button type="button" class="btn btn-sm btn-del" onclick="deleteReportedReply(${jsArg(r.id)},${jsArg(replyObj.id)},${jsArg(rep.id)})"><i class="fas fa-trash"></i> Xóa phản hồi</button>` : ""}
-                        ${!rep.replyId && r ? `<button type="button" class="btn btn-sm btn-del" onclick="deleteReview(${jsArg(r.id)},${jsArg(rep.id)})"><i class="fas fa-trash"></i> Xóa đánh giá</button>` : ""}
+                        ${rep.replyId && replyObj && replyObj.userId && !replyObj.isAdmin && replyObj.userId !== currentUser?.id ? `<button type="button" class="btn btn-sm btn-del" onclick="adminOpenCommentModeration('warn_and_delete','reply',${jsArg(r.id)},${jsArg(replyObj.id)},${jsArg(replyObj.userId)},${jsArg(reportedAuthor)},${jsArg(String(replyObj.content || '').slice(0,260))},${jsArg(rep.id)})"><i class="fas fa-gavel"></i> Cảnh cáo &amp; Xóa</button>` : ""}
+                        ${!rep.replyId && r && r.userId && !r.isAdmin && r.userId !== currentUser?.id ? `<button type="button" class="btn btn-sm btn-del" onclick="adminOpenCommentModeration('warn_and_delete','review',${jsArg(r.id)},'',${jsArg(r.userId)},${jsArg(reportedAuthor)},${jsArg(String(r.content || '').slice(0,260))},${jsArg(rep.id)})"><i class="fas fa-gavel"></i> Cảnh cáo &amp; Xóa</button>` : ""}
+                        ${rep.replyId && replyObj ? `<button type="button" class="btn btn-sm" style="background:#fee2e2;color:#991b1b;box-shadow:none;" onclick="adminOpenCommentModeration('delete_only','reply',${jsArg(r.id)},${jsArg(replyObj.id)},${jsArg(replyObj.userId || '')},${jsArg(reportedAuthor)},${jsArg(String(replyObj.content || '').slice(0,260))},${jsArg(rep.id)})"><i class="fas fa-trash"></i> Xóa phản hồi</button>` : ""}
+                        ${!rep.replyId && r ? `<button type="button" class="btn btn-sm" style="background:#fee2e2;color:#991b1b;box-shadow:none;" onclick="adminOpenCommentModeration('delete_only','review',${jsArg(r.id)},'',${jsArg(r.userId || '')},${jsArg(reportedAuthor)},${jsArg(String(r.content || '').slice(0,260))},${jsArg(rep.id)})"><i class="fas fa-trash"></i> Xóa đánh giá</button>` : ""}
                         <button type="button" class="btn btn-sm" style="background:#94a3b8;" onclick="dismissReport(${jsArg(rep.id)})">Bỏ qua / Đóng</button>
                       </div>
                     </div>`;
@@ -3907,23 +4268,31 @@
       const hasLiked = Boolean(currentUser && (r.likedBy || []).includes(currentUser.id));
       const mine = isMine(r);
       const isHighlighted = r.id === highlightReviewId && !highlightReplyId;
+      const authorName = r.author || "Thành viên";
       return `
-        <div class="review ${isHighlighted ? "highlighted" : ""} ${r.isAdmin ? "is-admin-comment" : ""}" id="review-${r.id}">
+        <div class="review ${isHighlighted ? "highlighted" : ""} ${r.isAdmin ? "is-admin-comment" : ""}" id="review-${escapeHtml(r.id)}">
           <div class="review-head">
-            <span class="review-author"><i class="fas fa-user-circle"></i> ${escapeHtml(r.author || "Thành viên")} ${mine ? '<span class="own-badge">Bạn</span>' : ""} ${r.isAdmin ? '<span class="admin-badge">ADMIN</span>' : ""}</span>
+            <span class="review-author review-author-wrap">
+              <span class="comment-avatar ${r.isAdmin ? "is-admin" : ""}" aria-hidden="true">${r.isAdmin ? '<i class="fas fa-shield-halved"></i>' : escapeHtml(initialsOf(authorName))}</span>
+              <span>${escapeHtml(authorName)} ${mine ? '<span class="own-badge">Bạn</span>' : ""} ${r.isAdmin ? '<span class="admin-badge">ADMIN</span>' : ""}</span>
+            </span>
             <span>${starsHTML(r.rating)} <small style="color:#888; margin-left:5px;" title="${exactTime(r.createdAt)}">${timeAgo(r.createdAt)}</small></span>
           </div>
-          <p style="font-size:1.05rem; color:#334155;">${escapeHtml(r.content)}${r.editedAt ? `<span class="edited-tag" title="${exactTime(r.editedAt)}">(đã chỉnh sửa)</span>` : ""}</p>
+          <p style="font-size:1.02rem; color:#334155; margin:0 0 8px;">${escapeHtml(r.content)}${r.editedAt ? `<span class="edited-tag" title="${exactTime(r.editedAt)}">(đã chỉnh sửa)</span>` : ""}</p>
           ${r.replies.length > 0 ? `
             <div class="replies-container">
               ${r.replies.map(reply => {
                 const replyLiked = Boolean(currentUser && (reply.likedBy || []).includes(currentUser.id));
                 const replyMine = isMine(reply);
                 const replyHighlighted = reply.id === highlightReplyId;
+                const repAuthor = reply.author || "Thành viên";
                 return `
-                <div class="reply-item ${reply.isAdmin ? "is-admin-comment" : ""} ${reply.parentReplyId ? "is-sub-reply" : ""} ${replyHighlighted ? "highlighted" : ""}" id="reply-${reply.id}">
+                <div class="reply-item ${reply.isAdmin ? "is-admin-comment" : ""} ${reply.parentReplyId ? "is-sub-reply" : ""} ${replyHighlighted ? "highlighted" : ""}" id="reply-${escapeHtml(reply.id)}">
                   <div class="reply-head">
-                    <span class="reply-author"><i class="fas fa-reply" style="transform: scaleX(-1); font-size:0.8rem;"></i> ${escapeHtml(reply.author || "Thành viên")}${replyMine ? '<span class="own-badge">Bạn</span>' : ""} ${reply.isAdmin ? '<span class="admin-badge">ADMIN</span>' : ""}</span>
+                    <span class="reply-author review-author-wrap">
+                      <span class="comment-avatar sm ${reply.isAdmin ? "is-admin" : ""}" aria-hidden="true">${reply.isAdmin ? '<i class="fas fa-shield-halved"></i>' : escapeHtml(initialsOf(repAuthor))}</span>
+                      <span>${escapeHtml(repAuthor)}${replyMine ? '<span class="own-badge">Bạn</span>' : ""} ${reply.isAdmin ? '<span class="admin-badge">ADMIN</span>' : ""}</span>
+                    </span>
                     <span class="reply-date" title="${exactTime(reply.createdAt)}">${timeAgo(reply.createdAt)}</span>
                   </div>
                   <div style="color:#334155;">${reply.replyToAuthor ? `<span class="reply-mention">@${escapeHtml(reply.replyToAuthor)}</span>` : ""}${escapeHtml(reply.content)}${reply.editedAt ? '<span class="edited-tag">(đã chỉnh sửa)</span>' : ""}</div>
@@ -3933,8 +4302,8 @@
                     ${replyMine
                       ? `<button type="button" onclick="openMyEdit('reply',${jsArg(r.id)},${jsArg(reply.id)})"><i class="fas fa-edit"></i> Sửa</button><button type="button" class="del" onclick="deleteMyReply(${jsArg(r.id)},${jsArg(reply.id)})"><i class="fas fa-trash"></i> Xóa</button>`
                       : `<button type="button" class="del" onclick="openReportModal(${jsArg(r.id)},${jsArg(reply.id)})"><i class="fas fa-flag"></i> Báo cáo</button>`}
-                    ${isAdmin && reply.userId && !reply.isAdmin && reply.userId !== currentUser?.id ? `<button type="button" class="admin-inline-warn" onclick="adminOpenQuickWarning(${jsArg(reply.userId)},${jsArg(reply.author || "Thành viên")},${jsArg("phản hồi")},${jsArg(reply.id)},${jsArg(String(reply.content || "").slice(0,220))})" title="Cảnh cáo tài khoản của người viết phản hồi"><i class="fas fa-triangle-exclamation"></i> Cảnh cáo</button>` : ""}
-                    ${isAdmin ? `<button type="button" class="del" style="margin-left:auto;" onclick="adminDeleteReply(${jsArg(r.id)},${jsArg(reply.id)})" title="Xóa phản hồi"><i class="fas fa-trash"></i> Xóa (Admin)</button>` : ""}
+                    ${isAdmin && reply.userId && !reply.isAdmin && reply.userId !== currentUser?.id ? `<button type="button" class="admin-inline-warn" onclick="adminOpenCommentModeration('warn_and_delete','reply',${jsArg(r.id)},${jsArg(reply.id)},${jsArg(reply.userId)},${jsArg(repAuthor)},${jsArg(String(reply.content || '').slice(0,260))})" title="Cảnh cáo người viết và tự động xóa phản hồi này"><i class="fas fa-triangle-exclamation"></i> Cảnh cáo &amp; Xóa</button>` : ""}
+                    ${isAdmin ? `<button type="button" class="admin-inline-del" style="margin-left:auto;" onclick="adminOpenCommentModeration('delete_only','reply',${jsArg(r.id)},${jsArg(reply.id)},${jsArg(reply.userId || '')},${jsArg(repAuthor)},${jsArg(String(reply.content || '').slice(0,260))})" title="Xóa phản hồi"><i class="fas fa-trash"></i> Xóa (Admin)</button>` : ""}
                   </div>
                 </div>`;
               }).join("")}
@@ -3945,9 +4314,9 @@
             ${mine ? `<button type="button" class="own-edit" onclick="openMyEdit('review',${jsArg(r.id)})"><i class="fas fa-pen"></i> Sửa bình luận</button>
             <button type="button" onclick="deleteMyReview(${jsArg(r.id)})"><i class="fas fa-trash"></i> Xóa bình luận</button>` : `<button type="button" onclick="openReportModal(${jsArg(r.id)})"><i class="fas fa-flag"></i> Báo cáo vi phạm</button>`}
             ${isAdmin ? `
-            ${r.userId && !r.isAdmin && r.userId !== currentUser?.id ? `<button type="button" class="admin-inline-warn" onclick="adminOpenQuickWarning(${jsArg(r.userId)},${jsArg(r.author || "Thành viên")},${jsArg("đánh giá")},${jsArg(r.id)},${jsArg(String(r.content || "").slice(0,220))})"><i class="fas fa-triangle-exclamation"></i> Cảnh cáo người viết</button>` : ""}
-            <button type="button" onclick="openEditReviewModal(${jsArg(r.id)})" style="color:var(--primary);"><i class="fas fa-edit"></i> Sửa (Admin)</button>
-            <button type="button" onclick="adminDeleteReview(${jsArg(r.id)})" style="color:var(--danger); margin-left:auto;"><i class="fas fa-trash"></i> Xóa (Admin)</button>
+            ${r.userId && !r.isAdmin && r.userId !== currentUser?.id ? `<button type="button" class="admin-inline-warn" onclick="adminOpenCommentModeration('warn_and_delete','review',${jsArg(r.id)},'',${jsArg(r.userId)},${jsArg(authorName)},${jsArg(String(r.content || '').slice(0,260))})" title="Cảnh cáo người viết và tự động xóa đánh giá này"><i class="fas fa-triangle-exclamation"></i> Cảnh cáo &amp; Xóa</button>` : ""}
+            <button type="button" class="admin-inline-edit" onclick="openEditReviewModal(${jsArg(r.id)})"><i class="fas fa-edit"></i> Sửa (Admin)</button>
+            <button type="button" class="admin-inline-del" style="margin-left:auto;" onclick="adminOpenCommentModeration('delete_only','review',${jsArg(r.id)},'',${jsArg(r.userId || '')},${jsArg(authorName)},${jsArg(String(r.content || '').slice(0,260))})"><i class="fas fa-trash"></i> Xóa (Admin)</button>
             ` : ""}
           </div>
           <div class="reply-form-box" id="reply-form-${escapeHtml(r.id)}">
@@ -4028,10 +4397,12 @@
       const content = document.getElementById(`reply-content-${reviewId}`).value.trim();
       const isAdminReply = isCurrentAdmin() && Boolean(document.getElementById(`reply-as-admin-${reviewId}`)?.checked);
       if (content.length < 2 || content.length > 2000) { alert("Nội dung phản hồi cần từ 2 đến 2.000 ký tự."); return; }
-      const badWord = containsForbiddenWord(content);
-      if (badWord) { alert(`Nội dung chứa từ khóa không phù hợp ("${badWord}").`); return; }
-
       const rev = REVIEWS_CACHE.find(r => r.id === reviewId);
+      const badWord = containsForbiddenWord(content);
+      if (badWord) {
+        await handleForbiddenContentViolation("phản hồi bình luận", rev?.targetType || null, rev?.targetId || null);
+        return;
+      }
       if (!rev) return;
       const target = replyTargetMap[reviewId] || null;
       const btn = document.getElementById(`reply-btn-${reviewId}`);
@@ -4219,15 +4590,66 @@
     function adminActivityTypeInfo(item) {
       const type = item?.activity_type;
       const meta = item?.metadata || {};
-      if (type === "account_created") return { label: "Tạo tài khoản", icon: "fa-user-plus", tone: "account", summary: "vừa tạo tài khoản HUIT Review" };
-      if (type === "review_created") return { label: "Đánh giá mới", icon: "fa-star", tone: "", summary: "vừa đăng một đánh giá" };
-      if (type === "reply_created") return { label: "Bình luận mới", icon: "fa-comments", tone: "", summary: "vừa viết một bình luận / phản hồi" };
-      if (type === "feedback_submitted") return { label: "Góp ý / phản ánh", icon: "fa-lightbulb", tone: "", summary: `vừa gửi ${meta.category === "suggest" ? "góp ý" : "phản ánh"}${meta.topic ? ` · ${meta.topic}` : ""}` };
-      if (type === "report_submitted") return { label: "Báo cáo nội dung", icon: "fa-flag", tone: "warning", summary: "vừa gửi báo cáo vi phạm nội dung" };
-      if (type === "support_ticket_created") return { label: "Yêu cầu hỗ trợ", icon: "fa-life-ring", tone: "", summary: "vừa gửi yêu cầu hỗ trợ tài khoản" };
+      if (type === "account_created") {
+        return { label: "Tạo tài khoản", badgeTone: "success", icon: "fa-user-plus", tone: "account", group: "other", summary: "vừa tạo tài khoản HUIT Review" };
+      }
+      if (type === "review_created") {
+        const starText = meta.rating ? ` (${meta.rating}★)` : "";
+        return { label: "Đăng đánh giá", badgeTone: "", icon: "fa-star", tone: "", group: "posts", summary: `vừa đăng một đánh giá mới${starText}` };
+      }
+      if (type === "review_edited") {
+        const byAdmin = meta.edited_by_admin ? " (do Admin chỉnh sửa)" : "";
+        return { label: "Sửa đánh giá", badgeTone: "edited", icon: "fa-pen-to-square", tone: "edited", group: "posts", summary: `đã chỉnh sửa đánh giá${byAdmin}` };
+      }
+      if (type === "review_deleted") {
+        const who = meta.deleted_by_admin ? "bị Admin xóa đánh giá" : "đã tự xóa đánh giá của mình";
+        return { label: "Xóa đánh giá", badgeTone: "danger", icon: "fa-trash-can", tone: "deleted", group: "deletes", summary: who };
+      }
+      if (type === "reply_created") {
+        const mention = meta.reply_to_author ? ` tới @${meta.reply_to_author}` : "";
+        return { label: "Đăng bình luận", badgeTone: "", icon: "fa-comments", tone: "", group: "posts", summary: `vừa viết một bình luận / phản hồi${mention}` };
+      }
+      if (type === "reply_edited") {
+        return { label: "Sửa bình luận", badgeTone: "edited", icon: "fa-pen", tone: "edited", group: "posts", summary: "đã chỉnh sửa một bình luận / phản hồi" };
+      }
+      if (type === "reply_deleted") {
+        const who = meta.deleted_by_admin ? "bị Admin xóa bình luận / phản hồi" : "đã tự xóa bình luận / phản hồi của mình";
+        return { label: "Xóa bình luận", badgeTone: "danger", icon: "fa-comment-slash", tone: "deleted", group: "deletes", summary: who };
+      }
+      if (type === "review_liked") {
+        return { label: "Hữu ích", badgeTone: "success", icon: "fa-thumbs-up", tone: "like", group: "other", summary: "đã đánh dấu hữu ích một đánh giá" };
+      }
+      if (type === "review_unliked") {
+        return { label: "Bỏ hữu ích", badgeTone: "", icon: "fa-thumbs-down", tone: "", group: "other", summary: "đã bỏ đánh dấu hữu ích một đánh giá" };
+      }
+      if (type === "reply_liked") {
+        return { label: "Hữu ích", badgeTone: "success", icon: "fa-thumbs-up", tone: "like", group: "other", summary: "đã đánh dấu hữu ích một phản hồi" };
+      }
+      if (type === "reply_unliked") {
+        return { label: "Bỏ hữu ích", badgeTone: "", icon: "fa-thumbs-down", tone: "", group: "other", summary: "đã bỏ đánh dấu hữu ích một phản hồi" };
+      }
+      if (type === "lecturer_proposed") {
+        return { label: "Đề xuất GV", badgeTone: "amber", icon: "fa-user-plus", tone: "propose", group: "other", summary: "vừa đề xuất thêm một giảng viên mới (chờ duyệt)" };
+      }
+      if (type === "feedback_submitted") {
+        return { label: "Góp ý / phản ánh", badgeTone: "amber", icon: "fa-lightbulb", tone: "propose", group: "other", summary: `vừa gửi ${meta.category === "suggest" ? "góp ý cải thiện" : "phản ánh sai sót"}${meta.topic ? ` · ${meta.topic}` : ""}` };
+      }
+      if (type === "report_submitted") {
+        return { label: "Báo cáo nội dung", badgeTone: "danger", icon: "fa-flag", tone: "warning", group: "moderation", summary: "vừa gửi báo cáo vi phạm nội dung" };
+      }
+      if (type === "support_ticket_created") {
+        return { label: "Hỗ trợ tài khoản", badgeTone: "", icon: "fa-life-ring", tone: "", group: "other", summary: "vừa gửi yêu cầu hỗ trợ tài khoản" };
+      }
+      if (type === "forbidden_word_violation") {
+        const lockedText = meta.account_status_after === "locked" ? " và bị khóa tự động (4/4)" : "";
+        return { label: "Vi phạm từ cấm (Auto)", badgeTone: "danger", icon: "fa-ban", tone: "warning", group: "moderation", summary: `bị hệ thống từ chối nội dung & tự động cảnh cáo${lockedText}` };
+      }
       if (type === "moderation_action") {
         const labels = {
-          warning_issued: "đã nhận một cảnh cáo",
+          warning_issued: "đã nhận một cảnh cáo từ Admin",
+          warning_and_comment_deleted: "đã nhận cảnh cáo & bị Admin xóa bình luận",
+          comment_deleted_by_admin: "đã bị Admin xóa bình luận vi phạm",
+          auto_warning_forbidden_word: "bị hệ thống tự động cảnh cáo do vi phạm quy tắc ngôn từ",
           warning_issued_and_auto_locked: "đã nhận cảnh cáo thứ 4 và bị khóa tự động",
           warning_removed: "đã được Admin gỡ một cảnh cáo",
           manually_locked: "đã bị Admin khóa tài khoản",
@@ -4235,9 +4657,9 @@
           notice_sent: "đã được Admin gửi thông báo riêng"
         };
         const action = meta.action_type || "moderation_action";
-        return { label: "Kiểm duyệt", icon: "fa-shield-halved", tone: "warning", summary: labels[action] || "vừa có thay đổi kiểm duyệt trên tài khoản" };
+        return { label: "Kiểm duyệt", badgeTone: "danger", icon: "fa-shield-halved", tone: "warning", group: "moderation", summary: labels[action] || "vừa có thay đổi kiểm duyệt trên tài khoản" };
       }
-      return { label: "Hoạt động", icon: "fa-clock", tone: "", summary: "vừa có hoạt động mới" };
+      return { label: "Hoạt động", badgeTone: "", icon: "fa-clock", tone: "", group: "other", summary: "vừa có hoạt động mới" };
     }
 
     function adminActivityTargetLabel(item) {
@@ -4247,11 +4669,30 @@
       if (item.target_type === "review") return "Đánh giá bị báo cáo";
       if (item.target_type === "feedback") return "Mục góp ý / phản ánh";
       if (item.target_type === "support_ticket") return "Yêu cầu hỗ trợ";
+      if (item.target_type === "profile") return "Hồ sơ tài khoản";
       return `${item.target_type}: ${item.target_id}`;
     }
 
     function adminActivityCanOpenTarget(item) {
-      return Boolean(item?.related_review_id && ["lecturer", "major"].includes(item.target_type) && item.target_id);
+      if (["review_deleted", "reply_deleted"].includes(item?.activity_type)) {
+        return Boolean(["lecturer", "major"].includes(item.target_type) && item.target_id);
+      }
+      return Boolean(["lecturer", "major"].includes(item?.target_type) && item?.target_id);
+    }
+
+    function filterActivityList(items, filterState) {
+      const group = filterState?.group || "all";
+      const q = normalizeSearch(filterState?.search || "");
+      return (items || []).filter(item => {
+        const info = adminActivityTypeInfo(item);
+        if (group !== "all" && info.group !== group) return false;
+        if (!q) return true;
+        const hay = normalizeSearch([
+          item.username, item.display_name, info.label, info.summary,
+          item.content_excerpt, adminActivityTargetLabel(item), item.performed_by_username
+        ].join(" "));
+        return hay.includes(q);
+      });
     }
 
     function renderAdminActivityItems(items, emptyText = "Chưa có hoạt động nào được ghi nhận.") {
@@ -4261,8 +4702,9 @@
         const username = item.username || "tài khoản đã xóa / chưa đồng bộ hồ sơ";
         const targetLabel = adminActivityTargetLabel(item);
         const activitySummary = info.summary;
-        const adminActor = item.activity_type === "moderation_action" && item.performed_by_username
-          ? `<span style="color:var(--muted);font-size:.76rem;">· Admin: @${escapeHtml(item.performed_by_username)}</span>` : "";
+        const adminActor = item.performed_by_username && item.performed_by_username !== item.username
+          ? `<span style="color:var(--muted);font-size:.76rem;">· bởi Admin @${escapeHtml(item.performed_by_username)}</span>` : "";
+        const isDeleted = item.activity_type === "review_deleted" || item.activity_type === "reply_deleted";
         return `<article class="admin-activity-item">
           <div class="admin-activity-icon ${info.tone}"><i class="fas ${info.icon}"></i></div>
           <div class="admin-activity-main">
@@ -4270,13 +4712,13 @@
               ${item.user_id
                 ? `<button type="button" class="admin-activity-user" onclick="adminOpenUserActivity(${jsArg(item.user_id)},${jsArg(username)},${jsArg(item.display_name || "")},${jsArg(item.warning_count || 0)},${jsArg(item.account_status || "active")},${jsArg(item.lock_reason || "")})">@${escapeHtml(username)}</button>`
                 : `<span style="color:var(--muted);font-weight:700;font-size:.88rem;">@${escapeHtml(username)}</span>`}
-              <span class="admin-activity-type">${escapeHtml(info.label)}</span>
+              <span class="admin-activity-type ${info.badgeTone || ""}">${escapeHtml(info.label)}</span>
               ${adminActor}
             </div>
             <div class="admin-activity-summary">${escapeHtml(activitySummary)}</div>
-            ${item.content_excerpt ? `<div class="admin-activity-excerpt">${escapeHtml(item.content_excerpt)}</div>` : ""}
+            ${item.content_excerpt ? `<div class="admin-activity-excerpt ${isDeleted ? "deleted" : ""}">${escapeHtml(item.content_excerpt)}</div>` : ""}
             ${targetLabel ? (adminActivityCanOpenTarget(item)
-              ? `<button type="button" class="admin-activity-target" onclick="adminOpenActivityTarget(${jsArg(item.target_type)},${jsArg(item.target_id)},${jsArg(item.related_review_id)},${jsArg(item.activity_type === "reply_created" ? item.content_id || "" : "")})"><i class="fas fa-arrow-up-right-from-square"></i> ${escapeHtml(targetLabel)}</button>`
+              ? `<button type="button" class="admin-activity-target" onclick="adminOpenActivityTarget(${jsArg(item.target_type)},${jsArg(item.target_id)},${jsArg(isDeleted ? "" : (item.related_review_id || ""))},${jsArg(item.activity_type === "reply_created" || item.activity_type === "reply_edited" ? (item.content_id || "") : "")})"><i class="fas fa-arrow-up-right-from-square"></i> ${escapeHtml(targetLabel)}</button>`
               : `<div style="margin-top:6px;color:#718399;font-size:.75rem;">${escapeHtml(targetLabel)}</div>`) : ""}
           </div>
           <time class="admin-activity-time" title="${escapeHtml(exactTime(item.created_at))}">${escapeHtml(timeAgo(item.created_at))}</time>
@@ -4284,20 +4726,66 @@
       }).join("");
     }
 
+    function paintAdminActivityFeed() {
+      const box = document.getElementById("admin-activity-feed");
+      if (!box) return;
+      const filtered = filterActivityList(ADMIN_ACTIVITY_CACHE, ADMIN_ACTIVITY_FILTER);
+      box.innerHTML = renderAdminActivityItems(
+        filtered,
+        ADMIN_ACTIVITY_CACHE.length
+          ? "Không có hoạt động nào khớp với bộ lọc hiện tại."
+          : "Chưa có hoạt động mới. Hãy chạy file supabase_v3_activity_and_autowarn.sql trong Supabase SQL Editor."
+      );
+    }
+
+    function paintAdminUserActivity() {
+      const box = document.getElementById("admin-user-activity");
+      if (!box) return;
+      const filtered = filterActivityList(ADMIN_USER_ACTIVITY_CACHE, ADMIN_USER_ACTIVITY_FILTER);
+      box.innerHTML = renderAdminActivityItems(
+        filtered,
+        ADMIN_USER_ACTIVITY_CACHE.length
+          ? "Không có hoạt động nào của tài khoản này khớp bộ lọc."
+          : "Tài khoản này chưa có hoạt động nào được ghi nhận."
+      );
+    }
+
+    window.setAdminActivityFilter = function(scope, group) {
+      if (scope === "user") {
+        ADMIN_USER_ACTIVITY_FILTER.group = group || "all";
+        document.querySelectorAll("#user-activity-filter-pills .activity-filter-pill").forEach(b => b.classList.toggle("active", b.dataset.group === ADMIN_USER_ACTIVITY_FILTER.group));
+        paintAdminUserActivity();
+      } else {
+        ADMIN_ACTIVITY_FILTER.group = group || "all";
+        document.querySelectorAll("#admin-activity-filter-pills .activity-filter-pill").forEach(b => b.classList.toggle("active", b.dataset.group === ADMIN_ACTIVITY_FILTER.group));
+        paintAdminActivityFeed();
+      }
+    };
+
+    window.setAdminActivitySearch = function(scope, value) {
+      if (scope === "user") {
+        ADMIN_USER_ACTIVITY_FILTER.search = value || "";
+        paintAdminUserActivity();
+      } else {
+        ADMIN_ACTIVITY_FILTER.search = value || "";
+        paintAdminActivityFeed();
+      }
+    };
+
     async function loadAdminActivityFeed() {
       const box = document.getElementById("admin-activity-feed");
       if (!supabaseClient || !isCurrentAdmin()) return;
-      if (box) box.innerHTML = `<div class="loading-box" style="padding:20px;"><i class="fas fa-spinner fa-spin"></i> Đang cập nhật...</div>`;
+      if (box && !ADMIN_ACTIVITY_CACHE.length) box.innerHTML = `<div class="loading-box" style="padding:20px;"><i class="fas fa-spinner fa-spin"></i> Đang cập nhật...</div>`;
       try {
-        const { data, error } = await supabaseClient.rpc("admin_get_activity_feed", { p_limit: 120 });
+        const { data, error } = await supabaseClient.rpc("admin_get_activity_feed", { p_limit: 200 });
         if (error) throw error;
         ADMIN_ACTIVITY_CACHE = Array.isArray(data) ? data : [];
-        if (box) box.innerHTML = renderAdminActivityItems(ADMIN_ACTIVITY_CACHE, "Chưa có hoạt động mới. Hoạt động sẽ xuất hiện sau khi bạn cài migration nhật ký Admin.");
+        paintAdminActivityFeed();
         const updated = document.getElementById("admin-activity-updated");
-        if (updated) updated.textContent = `Cập nhật lúc ${new Date().toLocaleString("vi-VN")}`;
+        if (updated) updated.textContent = `Cập nhật lúc ${new Date().toLocaleString("vi-VN")} · Tổng ${ADMIN_ACTIVITY_CACHE.length} hoạt động gần nhất`;
       } catch (error) {
         console.error("Load Admin activity feed error:", error);
-        if (box) box.innerHTML = `<div class="admin-activity-empty">Không tải được hoạt động. Hãy chạy file <b>supabase_admin_activity_migration.sql</b> sau migration quản lý người dùng. <div style="margin-top:6px;font-size:.76rem;">${escapeHtml(error?.message || "Lỗi không xác định")}</div></div>`;
+        if (box) box.innerHTML = `<div class="admin-activity-empty">Không tải được hoạt động. Hãy chạy file <b>supabase_v3_activity_and_autowarn.sql</b> trong Supabase SQL Editor. <div style="margin-top:6px;font-size:.76rem;">${escapeHtml(error?.message || "Lỗi không xác định")}</div></div>`;
       }
     }
 
@@ -4308,10 +4796,12 @@
       try {
         const { data, error } = await supabaseClient.rpc("admin_get_user_activity", { p_user_id: userId, p_limit: 300 });
         if (error) throw error;
-        box.innerHTML = renderAdminActivityItems(data || [], "Tài khoản này chưa có hoạt động được ghi nhận sau khi cài tính năng giám sát.");
+        ADMIN_USER_ACTIVITY_CACHE = Array.isArray(data) ? data : [];
+        paintAdminUserActivity();
       } catch (error) {
         console.error("Load per-user activity error:", error);
-        box.innerHTML = `<div class="admin-activity-empty">Không tải được hoạt động tài khoản. Hãy kiểm tra migration nhật ký Admin. <div style="font-size:.76rem;margin-top:6px;">${escapeHtml(error?.message || "Lỗi không xác định")}</div></div>`;
+        ADMIN_USER_ACTIVITY_CACHE = [];
+        box.innerHTML = `<div class="admin-activity-empty">Không tải được hoạt động tài khoản. Hãy chạy file <b>supabase_v3_activity_and_autowarn.sql</b>. <div style="font-size:.76rem;margin-top:6px;">${escapeHtml(error?.message || "Lỗi không xác định")}</div></div>`;
       }
     }
 
@@ -4332,6 +4822,7 @@
         lock_reason: lockReason || ""
       };
       ADMIN_USER_RESULTS = [ADMIN_SELECTED_USER];
+      ADMIN_USER_ACTIVITY_FILTER = { group: "all", search: "" };
       const resultsBox = document.getElementById("admin-user-results");
       if (resultsBox) resultsBox.innerHTML = `
         <div class="user-admin-result selected">
@@ -4381,43 +4872,162 @@
       ADMIN_ACTIVITY_CHANNEL = null;
     }
 
-    window.adminOpenQuickWarning = function(userId, displayName, contentType, contentId, excerpt) {
-      if (!supabaseClient || !isCurrentAdmin() || !userId || userId === currentUser?.id) return;
-      ADMIN_QUICK_WARNING_TARGET = { userId, displayName: displayName || "Thành viên", contentType, contentId };
+    // Modal hợp nhất: Cảnh cáo & Xóa bình luận HOẶC Xóa bình luận (Admin) với danh sách lý do bấm chọn nhanh
+    window.adminOpenCommentModeration = function(mode, commentKind, reviewId, replyId, userId, displayName, excerpt, reportId = "") {
+      if (!supabaseClient || !isCurrentAdmin()) return;
+      const isWarnMode = mode === "warn_and_delete";
+      const rev = REVIEWS_CACHE.find(x => x.id === reviewId);
+      ADMIN_QUICK_WARNING_TARGET = {
+        mode: isWarnMode ? "warn_and_delete" : "delete_only",
+        commentKind: commentKind === "reply" ? "reply" : "review",
+        reviewId,
+        replyId: replyId || "",
+        userId: userId || "",
+        displayName: displayName || "Thành viên",
+        excerpt: excerpt || "",
+        reportId: reportId || "",
+        targetType: rev?.targetType || null,
+        targetId: rev?.targetId || null
+      };
+
+      const titleEl = document.getElementById("adminQuickWarningTitle");
+      const bannerEl = document.getElementById("adminQuickWarningBanner");
       const userBox = document.getElementById("adminQuickWarningUser");
       const contextBox = document.getElementById("adminQuickWarningContext");
-      const reasonBox = document.getElementById("adminQuickWarningReason");
-      if (userBox) userBox.textContent = `Đối tượng: ${displayName || "Thành viên"} · Nội dung: ${contentType || "nội dung"}`;
+      const chipsBox = document.getElementById("adminQuickWarningChips");
+      const alsoWarnWrap = document.getElementById("adminQuickWarningAlsoWarnWrap");
+      const alsoWarnCheck = document.getElementById("adminQuickWarningAlsoWarn");
+      const submitBtn = document.getElementById("adminQuickWarningSubmit");
+      const kindLabel = commentKind === "reply" ? "phản hồi" : "đánh giá";
+
+      if (titleEl) {
+        titleEl.innerHTML = isWarnMode
+          ? `<i class="fas fa-gavel" style="color:var(--danger)"></i> Cảnh cáo &amp; Xóa ${kindLabel}`
+          : `<i class="fas fa-trash-can" style="color:var(--danger)"></i> Xóa ${kindLabel} (Admin)`;
+      }
+      if (bannerEl) {
+        bannerEl.className = `mod-mode-banner ${isWarnMode ? "danger" : "amber"}`;
+        bannerEl.innerHTML = isWarnMode
+          ? `<i class="fas fa-triangle-exclamation"></i><span>Khi xác nhận, ${kindLabel} này sẽ <b>tự động bị xóa</b> và tài khoản người viết sẽ nhận <b>+1 cảnh cáo</b> (đủ 4/4 tự động khóa).</span>`
+          : `<i class="fas fa-circle-info"></i><span>Chọn nhanh lý do xóa ${kindLabel} bên dưới. Thao tác xóa sẽ được lưu vào nhật ký hoạt động của Admin và hồ sơ người dùng.</span>`;
+      }
+      if (userBox) userBox.textContent = `Người viết: ${ADMIN_QUICK_WARNING_TARGET.displayName} · Loại: ${commentKind === "reply" ? "Phản hồi" : "Đánh giá"}`;
       if (contextBox) contextBox.textContent = excerpt || "Không có trích đoạn nội dung.";
-      if (reasonBox) reasonBox.value = "";
+      if (chipsBox) chipsBox.innerHTML = renderReasonChipsHTML(ADMIN_COMMENT_PRESET_REASONS);
+      resetReasonInput("adminQuickWarningChips", "adminQuickWarningReason");
+
+      const canWarn = Boolean(userId && userId !== currentUser?.id);
+      if (alsoWarnWrap && alsoWarnCheck) {
+        alsoWarnWrap.style.display = (!isWarnMode && canWarn) ? "flex" : "none";
+        alsoWarnCheck.checked = false;
+      }
+      if (submitBtn) {
+        submitBtn.innerHTML = isWarnMode
+          ? '<i class="fas fa-gavel"></i> Xác nhận Cảnh cáo &amp; Xóa'
+          : '<i class="fas fa-trash-can"></i> Xác nhận Xóa';
+      }
       document.getElementById("adminQuickWarningModal")?.classList.add("active");
-      setTimeout(() => reasonBox?.focus(), 60);
+    };
+
+    // Giữ tương thích nếu có lời gọi cũ
+    window.adminOpenQuickWarning = function(userId, displayName, contentType, contentId, excerpt) {
+      const kind = contentType === "phản hồi" ? "reply" : "review";
+      const rev = kind === "review" ? REVIEWS_CACHE.find(r => r.id === contentId) : REVIEWS_CACHE.find(r => r.replies.some(x => x.id === contentId));
+      window.adminOpenCommentModeration("warn_and_delete", kind, rev?.id || contentId, kind === "reply" ? contentId : "", userId, displayName, excerpt);
     };
 
     window.adminSubmitQuickWarning = async function() {
       if (!supabaseClient || !isCurrentAdmin() || !ADMIN_QUICK_WARNING_TARGET) return;
-      const reasonBox = document.getElementById("adminQuickWarningReason");
-      const reason = reasonBox?.value.trim() || "";
-      if (reason.length < 5 || reason.length > 1000) { alert("Lý do cảnh cáo cần từ 5 đến 1.000 ký tự."); reasonBox?.focus(); return; }
       const target = ADMIN_QUICK_WARNING_TARGET;
+      const shouldWarn = target.mode === "warn_and_delete"
+        || Boolean(document.getElementById("adminQuickWarningAlsoWarn")?.checked && target.userId && target.userId !== currentUser?.id);
+      const reason = collectReasonInput("adminQuickWarningChips", "adminQuickWarningReason");
+      if (!reason) {
+        alert("Vui lòng bấm chọn ít nhất 1 lý do có sẵn hoặc nhập ghi chú.");
+        return;
+      }
+      if (reason.length > 1000) {
+        alert("Lý do tối đa 1.000 ký tự.");
+        return;
+      }
+
       const button = document.getElementById("adminQuickWarningSubmit");
-      if (button) { button.disabled = true; button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi cảnh cáo...'; }
+      if (button?.disabled) return;
+      const origHtml = button ? button.innerHTML : "";
+      if (button) { button.disabled = true; button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...'; }
+
       try {
-        const { data, error } = await supabaseClient.rpc("admin_warn_user", { p_user_id: target.userId, p_reason: reason });
-        if (error) throw error;
-        const result = Array.isArray(data) ? data[0] : data;
+        let warnResult = null;
+        // 1. Gửi cảnh cáo nếu ở chế độ Cảnh cáo & Xóa (hoặc Admin có tick kèm cảnh cáo)
+        if (shouldWarn && target.userId && target.userId !== currentUser?.id) {
+          const { data, error } = await supabaseClient.rpc("admin_warn_user", {
+            p_user_id: target.userId,
+            p_reason: reason
+          });
+          if (error) throw error;
+          warnResult = Array.isArray(data) ? data[0] : data;
+        }
+
+        // 2. Xóa bình luận / phản hồi tương ứng
+        if (target.commentKind === "reply" && target.replyId) {
+          const del = await checkedDelete(
+            supabaseClient.from("review_replies").delete().eq("id", target.replyId),
+            "Xóa phản hồi"
+          );
+          if (!del.ok) return;
+        } else if (target.reviewId) {
+          const del = await checkedDelete(
+            supabaseClient.from("reviews").delete().eq("id", target.reviewId),
+            "Xóa đánh giá"
+          );
+          if (!del.ok) return;
+        }
+
+        // 3. Nếu mở từ tab Báo cáo vi phạm -> tự đóng báo cáo đó
+        if (target.reportId) {
+          await checkedDelete(
+            supabaseClient.from("reports").delete().eq("id", target.reportId),
+            "Đóng báo cáo", true, "id", true
+          );
+        }
+
+        // 4. Ghi nhận lý do kiểm duyệt vào lịch sử hoạt động (nếu đã cài RPC v3)
+        if (target.userId) {
+          try {
+            await supabaseClient.rpc("admin_log_moderation_action", {
+              p_user_id: target.userId,
+              p_action_type: shouldWarn ? "warning_and_comment_deleted" : "comment_deleted_by_admin",
+              p_reason: reason,
+              p_target_type: target.targetType,
+              p_target_id: target.targetId,
+              p_content_excerpt: target.excerpt,
+              p_related_review_id: target.commentKind === "reply" ? target.reviewId : null
+            });
+          } catch (logErr) {
+            console.warn("admin_log_moderation_action skipped:", logErr);
+          }
+        }
+
         closeModal("adminQuickWarningModal");
         ADMIN_QUICK_WARNING_TARGET = null;
-        alert(result?.locked
-          ? `Đã gửi cảnh cáo thứ ${result.warning_count}/4. Tài khoản đã tự động bị khóa.`
-          : `Đã gửi cảnh cáo cho ${target.displayName}. Hiện có ${result?.warning_count ?? "?"}/4 cảnh cáo.`);
-        await loadAdminActivityFeed();
+
+        await syncFromSupabase();
+        if (shouldWarn && warnResult) {
+          alert(warnResult.locked
+            ? `Đã xóa nội dung và gửi cảnh cáo thứ ${warnResult.warning_count}/4. Tài khoản đã tự động bị khóa.`
+            : `Đã xóa nội dung và gửi cảnh cáo cho ${target.displayName} (${warnResult.warning_count ?? "?"}/4 cảnh cáo).`);
+        } else {
+          alert("Đã xóa nội dung và ghi nhận lý do vào nhật ký quản trị.");
+        }
+
+        if (document.getElementById("admin-activity-feed")) loadAdminActivityFeed();
         if (ADMIN_SELECTED_USER?.id === target.userId) await refreshAdminSelectedUser();
+        rerender();
       } catch (error) {
-        console.error("Quick warning error:", error);
-        alert("Không gửi được cảnh cáo: " + (error?.message || "Lỗi không xác định"));
+        console.error("Comment moderation error:", error);
+        alert("Không thể hoàn tất thao tác: " + supabaseErrorText(error));
       } finally {
-        if (button) { button.disabled = false; button.innerHTML = '<i class="fas fa-gavel"></i> Xác nhận cảnh cáo'; }
+        if (button) { button.disabled = false; button.innerHTML = origHtml || '<i class="fas fa-gavel"></i> Xác nhận'; }
       }
     };
 
@@ -4518,14 +5128,18 @@
           </div>
           <div class="admin-public-reply" style="border-color:#fecaca;background:#fffafa;">
             <h3 style="font-size:1rem;margin:0 0 8px;color:#991b1b;"><i class="fas fa-triangle-exclamation"></i> Gửi cảnh cáo</h3>
-            <label for="admin-user-warning-reason">Lý do cảnh cáo</label>
-            <textarea id="admin-user-warning-reason" rows="3" maxlength="1000" placeholder="Nêu rõ nội dung vi phạm, thời điểm hoặc quy tắc đã vi phạm..."></textarea>
+            <label style="margin:0 0 4px;">Chọn nhanh lý do cảnh cáo:</label>
+            <div id="admin-user-warn-chips" class="reason-chip-grid">${renderReasonChipsHTML(ADMIN_USER_WARN_PRESET_REASONS)}</div>
+            <label for="admin-user-warning-reason">Ghi chú thêm <span style="font-weight:500;color:var(--muted);">(không bắt buộc nếu đã chọn ở trên)</span></label>
+            <textarea id="admin-user-warning-reason" rows="2" maxlength="1000" placeholder="Có thể bỏ trống nếu đã bấm chọn lý do..."></textarea>
             <button type="button" class="btn btn-sm btn-del" style="margin-top:10px;" onclick="adminWarnUser()"><i class="fas fa-gavel"></i> Gửi cảnh cáo</button>
             <p class="auth-help" style="margin-top:8px;">Cảnh cáo thứ 4 sẽ tự động khóa tài khoản. Mỗi cảnh cáo đều được lưu trong lịch sử.</p>
           </div>
           <div style="margin-top:14px;">
-            <label for="admin-user-action-reason">Lý do khi gỡ cảnh cáo / khóa / mở khóa</label>
-            <textarea id="admin-user-action-reason" rows="2" maxlength="1000" placeholder="Ghi rõ căn cứ xử lý hoặc lý do điều chỉnh..."></textarea>
+            <label style="margin:0 0 4px;">Chọn nhanh lý do gỡ cảnh cáo / khóa / mở khóa:</label>
+            <div id="admin-user-action-chips" class="reason-chip-grid">${renderReasonChipsHTML(ADMIN_USER_ACTION_PRESET_REASONS, "tone-blue")}</div>
+            <label for="admin-user-action-reason">Ghi chú thêm <span style="font-weight:500;color:var(--muted);">(không bắt buộc nếu đã chọn ở trên)</span></label>
+            <textarea id="admin-user-action-reason" rows="2" maxlength="1000" placeholder="Có thể bỏ trống nếu đã bấm chọn lý do..."></textarea>
             <div class="user-admin-actions">
               ${Number(u.warning_count || 0) > 0 ? `<button type="button" class="btn btn-sm" style="background:#64748b;" onclick="adminRemoveUserWarning()"><i class="fas fa-eraser"></i> Gỡ 1 cảnh cáo</button>` : ""}
               ${locked
@@ -4535,7 +5149,28 @@
             <p class="auth-help">Gỡ cảnh cáo không tự mở khóa tài khoản. Khi số cảnh cáo còn dưới 4, Admin có thể thực hiện mở khóa riêng.</p>
           </div>
           <div class="user-admin-history"><b><i class="fas fa-scale-balanced"></i> Lịch sử cảnh cáo / quản trị</b><div id="admin-user-history" style="margin-top:6px;color:var(--muted);font-size:.84rem;">Đang tải lịch sử...</div></div>
-          <div class="user-admin-history"><div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap;"><b><i class="fas fa-clock-rotate-left"></i> Toàn bộ hoạt động của @${escapeHtml(u.username || "")}</b><button type="button" class="btn btn-sm" style="margin:0;" onclick="loadAdminUserActivity(${jsArg(u.id)})"><i class="fas fa-rotate"></i> Làm mới</button></div><div id="admin-user-activity" style="margin-top:10px;"><div class="loading-box" style="padding:14px;">Đang tải hoạt động...</div></div></div>
+          <div class="user-admin-history">
+            <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px;">
+              <b><i class="fas fa-clock-rotate-left"></i> Toàn bộ lịch sử hoạt động của @${escapeHtml(u.username || "")}</b>
+              <button type="button" class="btn btn-sm" style="margin:0;" onclick="loadAdminUserActivity(${jsArg(u.id)})"><i class="fas fa-rotate"></i> Làm mới</button>
+            </div>
+            <div class="activity-controls" style="margin-bottom:10px;">
+              <div class="activity-controls-top">
+                <div class="activity-filter-pills" id="user-activity-filter-pills">
+                  <button type="button" class="activity-filter-pill ${ADMIN_USER_ACTIVITY_FILTER.group === "all" ? "active" : ""}" data-group="all" onclick="setAdminActivityFilter('user','all')">Tất cả</button>
+                  <button type="button" class="activity-filter-pill ${ADMIN_USER_ACTIVITY_FILTER.group === "posts" ? "active" : ""}" data-group="posts" onclick="setAdminActivityFilter('user','posts')">Đăng &amp; Sửa</button>
+                  <button type="button" class="activity-filter-pill ${ADMIN_USER_ACTIVITY_FILTER.group === "deletes" ? "active" : ""}" data-group="deletes" onclick="setAdminActivityFilter('user','deletes')">Xóa</button>
+                  <button type="button" class="activity-filter-pill ${ADMIN_USER_ACTIVITY_FILTER.group === "moderation" ? "active" : ""}" data-group="moderation" onclick="setAdminActivityFilter('user','moderation')">Vi phạm &amp; Cảnh cáo</button>
+                  <button type="button" class="activity-filter-pill ${ADMIN_USER_ACTIVITY_FILTER.group === "other" ? "active" : ""}" data-group="other" onclick="setAdminActivityFilter('user','other')">Khác</button>
+                </div>
+                <div class="activity-search-mini">
+                  <i class="fas fa-search" aria-hidden="true"></i>
+                  <input type="search" value="${escapeHtml(ADMIN_USER_ACTIVITY_FILTER.search)}" placeholder="Tìm trong lịch sử..." oninput="setAdminActivitySearch('user', this.value)" autocomplete="off" />
+                </div>
+              </div>
+            </div>
+            <div id="admin-user-activity" style="margin-top:8px;"><div class="loading-box" style="padding:14px;">Đang tải hoạt động...</div></div>
+          </div>
         </div>`;
     }
 
@@ -4589,13 +5224,14 @@
 
     window.adminWarnUser = async function() {
       if (!supabaseClient || !isCurrentAdmin() || !ADMIN_SELECTED_USER) return;
-      const reason = document.getElementById("admin-user-warning-reason")?.value.trim() || "";
-      if (reason.length < 5 || reason.length > 1000) { alert("Lý do cảnh cáo cần từ 5 đến 1.000 ký tự."); return; }
+      const reason = collectReasonInput("admin-user-warn-chips", "admin-user-warning-reason");
+      if (!reason || reason.length > 1000) { alert("Vui lòng chọn ít nhất 1 lý do có sẵn hoặc nhập ghi chú (tối đa 1.000 ký tự)."); return; }
       if (!confirm(`Gửi một cảnh cáo cho @${ADMIN_SELECTED_USER.username}? Cảnh cáo thứ 4 sẽ tự động khóa tài khoản.`)) return;
       try {
         const { data, error } = await supabaseClient.rpc("admin_warn_user", { p_user_id: ADMIN_SELECTED_USER.id, p_reason: reason });
         if (error) throw error;
         const result = Array.isArray(data) ? data[0] : data;
+        resetReasonInput("admin-user-warn-chips", "admin-user-warning-reason");
         alert(result?.locked
           ? `Đã gửi cảnh cáo thứ ${result.warning_count}. Tài khoản đã tự động bị khóa.`
           : `Đã gửi cảnh cáo. Người dùng hiện có ${result?.warning_count ?? "?"}/4 cảnh cáo.`);
@@ -4608,13 +5244,14 @@
 
     window.adminRemoveUserWarning = async function() {
       if (!supabaseClient || !isCurrentAdmin() || !ADMIN_SELECTED_USER) return;
-      const reason = document.getElementById("admin-user-action-reason")?.value.trim() || "";
-      if (reason.length < 5 || reason.length > 1000) { alert("Vui lòng ghi lý do gỡ cảnh cáo (5–1.000 ký tự)."); return; }
+      const reason = collectReasonInput("admin-user-action-chips", "admin-user-action-reason");
+      if (!reason || reason.length > 1000) { alert("Vui lòng chọn ít nhất 1 lý do có sẵn hoặc nhập ghi chú (tối đa 1.000 ký tự)."); return; }
       if (!confirm(`Gỡ một cảnh cáo của @${ADMIN_SELECTED_USER.username}? Lịch sử cảnh cáo cũ vẫn được lưu.`)) return;
       try {
         const { data, error } = await supabaseClient.rpc("admin_remove_user_warning", { p_user_id: ADMIN_SELECTED_USER.id, p_reason: reason });
         if (error) throw error;
         const result = Array.isArray(data) ? data[0] : data;
+        resetReasonInput("admin-user-action-chips", "admin-user-action-reason");
         alert(`Đã gỡ một cảnh cáo. Số cảnh cáo còn lại: ${result?.warning_count ?? "?"}.`);
         await refreshAdminSelectedUser();
       } catch (error) {
@@ -4625,8 +5262,8 @@
 
     window.adminSetUserLock = async function(locked) {
       if (!supabaseClient || !isCurrentAdmin() || !ADMIN_SELECTED_USER) return;
-      const reason = document.getElementById("admin-user-action-reason")?.value.trim() || "";
-      if (reason.length < 5 || reason.length > 1000) { alert("Vui lòng ghi lý do (5–1.000 ký tự)."); return; }
+      const reason = collectReasonInput("admin-user-action-chips", "admin-user-action-reason");
+      if (!reason || reason.length > 1000) { alert("Vui lòng chọn ít nhất 1 lý do có sẵn hoặc nhập ghi chú (tối đa 1.000 ký tự)."); return; }
       const action = locked ? "khóa" : "mở khóa";
       if (!confirm(`Bạn chắc chắn muốn ${action} tài khoản @${ADMIN_SELECTED_USER.username}?`)) return;
       try {
@@ -4634,6 +5271,7 @@
           p_user_id: ADMIN_SELECTED_USER.id, p_locked: Boolean(locked), p_reason: reason
         });
         if (error) throw error;
+        resetReasonInput("admin-user-action-chips", "admin-user-action-reason");
         alert(`Đã ${action} tài khoản và gửi thông báo cho người dùng.`);
         await refreshAdminSelectedUser();
       } catch (error) {
@@ -5227,7 +5865,10 @@
         const rating = parseInt(form.querySelector(".star-input")?.dataset.rating || "5", 10);
         if (content.length < 10 || content.length > 3000) { alert("Nội dung đánh giá cần từ 10 đến 3.000 ký tự."); return; }
         const badWord = containsForbiddenWord(content);
-        if (badWord) { alert(`Nội dung chứa từ khóa không phù hợp ("${badWord}").`); return; }
+        if (badWord) {
+          await handleForbiddenContentViolation("đánh giá", form.dataset.type || null, form.dataset.id || null);
+          return;
+        }
 
         if (btn?.disabled) return;
         if (btn) btn.disabled = true;
@@ -5267,7 +5908,10 @@
         if (name.length < 3) { alert("Tên giảng viên quá ngắn!"); return; }
         if (content.length < 10 || content.length > 3000) { alert("Nội dung đánh giá cần từ 10 đến 3.000 ký tự!"); return; }
         const bad = containsForbiddenWord(content);
-        if (bad) { alert(`Nội dung chứa từ khóa không phù hợp ("${bad}").`); return; }
+        if (bad) {
+          await handleForbiddenContentViolation("đánh giá đề xuất giảng viên", "lecturer", null);
+          return;
+        }
 
         if (btn?.disabled) return;
         if (btn) btn.disabled = true;
@@ -5580,6 +6224,12 @@
           if (m.id === "authModal") closeAuthModal();
           else closeModal(m.id);
         });
+      } else if (e.key === "/" && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        const tag = (document.activeElement?.tagName || "").toLowerCase();
+        if (!["input", "textarea", "select"].includes(tag) && !document.querySelector(".modal-overlay.active")) {
+          e.preventDefault();
+          globalSearchInput?.focus();
+        }
       }
     });
 
