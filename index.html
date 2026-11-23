@@ -3505,7 +3505,7 @@
               <label for="support-username">Tên đăng nhập HUIT Review (*)</label>
               <input id="support-username" type="text" minlength="4" maxlength="20" pattern="[A-Za-z0-9_]{4,20}" required autocomplete="username" value="${escapeHtml(currentProfile?.username || currentUser?.user_metadata?.username || "")}" ${currentUser ? "readonly" : ""} placeholder="VD: sinhvien_huit26" />
               <label for="support-contact">Phương thức để Admin liên hệ lại nếu cần thiết</label>
-              <input id="support-contact" type="text" minlength="5" maxlength="160" required placeholder="Email, Zalo, Facebook..." />
+              <input id="support-contact" type="text" maxlength="160" placeholder="Email, Zalo, Facebook... (không bắt buộc)" />
               <label for="support-category">Vấn đề cần hỗ trợ (*)</label>
               <select id="support-category" required>
                 <option value="Quên mật khẩu">Quên mật khẩu</option>
@@ -6092,13 +6092,18 @@
         const category = document.getElementById("support-category").value;
         const message = document.getElementById("support-message").value.trim();
         if (!isValidUsername(username)) { alert("Tên đăng nhập phải có 4–20 ký tự, gồm chữ không dấu, số hoặc dấu gạch dưới."); return; }
-        if (contact.length < 5 || contact.length > 160) { alert("Vui lòng nhập thông tin liên hệ hợp lệ (5–160 ký tự)."); return; }
+        if ((!currentUser && contact.length < 5) || (contact && contact.length < 5) || contact.length > 160) {
+          alert(currentUser
+            ? "Nếu nhập phương thức liên hệ, vui lòng nhập từ 5–160 ký tự."
+            : "Vì bạn chưa đăng nhập, vui lòng nhập phương thức liên hệ (5–160 ký tự) để Admin phản hồi lại.");
+          return;
+        }
         if (message.length < 10 || message.length > 2000) { alert("Mô tả cần từ 10 đến 2.000 ký tự."); return; }
         const btn = form.querySelector("button[type='submit']");
         btn.disabled = true;
         try {
           const { error } = await supabaseClient.from("support_tickets").insert({
-            username, contact, category, message, status: "new",
+            username, contact: contact || "Không cung cấp", category, message, status: "new",
             user_id: currentUser?.id || null
           });
           if (error) throw error;
