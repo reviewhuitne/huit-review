@@ -390,10 +390,41 @@
     .community-source-badge { display:inline-flex; align-items:center; gap:6px; margin:5px 6px 5px 0; padding:5px 10px; border-radius:999px; color:#7c4a03; background:#fff7e6; border:1px solid #f6d58b; font-size:.76rem; font-weight:700; }
     .admin-source-badge { display:inline-flex; align-items:center; gap:6px; margin:5px 6px 5px 0; padding:5px 10px; border-radius:999px; color:#14532d; background:#f0fdf4; border:1px solid #bbf7d0; font-size:.76rem; font-weight:700; }
     .hp-field { position:absolute !important; left:-10000px !important; top:auto !important; width:1px !important; height:1px !important; overflow:hidden !important; }
-    .support-status { display:inline-flex; align-items:center; padding:4px 9px; border-radius:999px; font-size:.75rem; font-weight:800; }
+    .support-status { display:inline-flex; align-items:center; padding:4px 10px; border-radius:999px; font-size:.75rem; font-weight:800; }
     .support-status.new { color:#92400e; background:#fef3c7; }
     .support-status.processing { color:#1d4ed8; background:#dbeafe; }
     .support-status.resolved { color:#166534; background:#dcfce7; }
+    .notif-icon.admin-response { background:#f3e8ff; color:#7e22ce; }
+    .admin-public-reply { width:100%; margin-top:14px; padding:14px; border:1px solid #dbeafe; border-radius:12px; background:#f8fbff; }
+    .admin-public-reply label { margin-top:0 !important; }
+    .admin-sent-list { margin-top:10px; padding:10px 12px; border-radius:10px; background:#f0fdf4; border:1px solid #bbf7d0; font-size:.84rem; color:#166534; }
+    .admin-sent-item + .admin-sent-item { margin-top:8px; padding-top:8px; border-top:1px dashed #bbf7d0; }
+    .response-detail { max-width:760px; margin:24px auto; }
+    .response-message { padding:20px; border:1px solid #dbeafe; border-radius:12px; background:#f8fbff; white-space:pre-wrap; line-height:1.8; }
+
+    /* ===== Trung tâm Hỗ trợ & Góp ý hợp nhất (3 chức năng tách biệt) ===== */
+    .hub-wrap { max-width:820px; margin:16px auto; }
+    .hub-tabs { display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:12px; margin:20px 0 24px; }
+    .hub-tab-btn { text-align:left; padding:16px 18px; border-radius:14px; border:2px solid var(--border); background:#fff; cursor:pointer; transition:.2s; display:flex; flex-direction:column; gap:5px; font-family:inherit; }
+    .hub-tab-btn:hover { border-color:var(--primary-light); background:#f8fbff; transform:translateY(-2px); }
+    .hub-tab-btn.active { border-color:var(--primary); background:linear-gradient(145deg, #eef6ff, #ffffff); box-shadow:0 6px 20px rgba(10,94,168,.12); }
+    .hub-tab-title { display:flex; align-items:center; gap:8px; font-weight:800; font-size:.96rem; color:var(--primary-dark); }
+    .hub-tab-title i { font-size:1rem; color:var(--primary); }
+    .hub-tab-desc { font-size:.8rem; color:var(--muted); line-height:1.45; }
+    .hub-tab-badge { align-self:flex-start; margin-top:4px; font-size:.7rem; font-weight:700; padding:2px 8px; border-radius:999px; background:#f1f5f9; color:#475569; }
+    .hub-tab-btn.active .hub-tab-badge { background:#dbeafe; color:var(--primary-dark); }
+    .hub-target-preview { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin:8px 0 4px; padding:10px 14px; border-radius:10px; background:#eef6ff; border:1px solid #bfdbfe; font-size:.86rem; color:var(--primary-dark); }
+    .hub-inbox-item { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:14px 16px; border:1px solid var(--border); border-radius:12px; background:#fff; margin-bottom:10px; color:var(--text); transition:.2s; }
+    .hub-inbox-item:hover { border-color:var(--primary); background:#f8fbff; transform:translateX(3px); }
+
+    /* ===== Click thẳng đến bình luận / đối tượng bị báo cáo trong Admin ===== */
+    .report-target-link { display:block; margin-top:8px; padding:12px 14px; border-radius:10px; background:#f8fafc; border:1px solid #cbd5e1; color:var(--text); transition:.2s; }
+    .report-target-link:hover { border-color:var(--primary); background:#eef6ff; color:var(--text); box-shadow:0 4px 12px rgba(10,94,168,.10); }
+    .report-target-head { display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; font-size:.82rem; font-weight:700; color:var(--primary); margin-bottom:6px; }
+    .report-target-snippet { color:#334155; font-size:.92rem; line-height:1.5; }
+    .admin-filter-pills { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+    .admin-filter-pill { border:1px solid var(--border); background:#fff; color:var(--muted); border-radius:999px; padding:6px 14px; font:700 .82rem Inter,sans-serif; cursor:pointer; transition:.2s; }
+    .admin-filter-pill.active, .admin-filter-pill:hover { border-color:var(--primary); background:#e6f0fb; color:var(--primary); }
 
     /* ===== Thống kê sao trung bình & phần trăm từng mức sao ===== */
     .rating-summary { display:grid; grid-template-columns:190px 1fr; gap:24px; align-items:center; background:#fff; border:1px solid var(--border); border-radius:var(--radius); padding:24px 28px; margin-bottom:28px; box-shadow:var(--shadow); }
@@ -419,6 +450,7 @@
 
     /* ===== Phản hồi lẫn nhau & Like phản hồi ===== */
     .reply-item.is-sub-reply { margin-left: 18px; border-left: 3px solid #bfdbfe; }
+    .reply-item.highlighted { border: 2px solid var(--accent); background-color: #fffdf5; animation: flash 2s ease-out; }
     .reply-mention { display: inline-block; background: #e6f0fb; color: var(--primary); font-weight: 700; font-size: .82rem; padding: 1px 7px; border-radius: 6px; margin-right: 6px; }
     .reply-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #e2e8f0; font-size: .8rem; }
     .reply-actions button { background: none; border: none; cursor: pointer; color: var(--muted); padding: 0; font: 600 .8rem Inter, sans-serif; display: inline-flex; align-items: center; gap: 5px; transition: .2s; }
@@ -442,6 +474,9 @@
       .main-nav { order:3; width:100%; padding-left:0; overflow:visible; padding-bottom:4px; justify-content:flex-start; flex-wrap:wrap; }
       .auth-user { max-width:115px; }
     }
+    @media (max-width: 720px) {
+      .hub-tabs { grid-template-columns:1fr; }
+    }
     @media (max-width: 650px) {
       .rating-summary { grid-template-columns:1fr; gap:18px; padding:20px; }
       .rating-score-box { border-right:0; border-bottom:1px solid var(--border); padding-right:0; padding-bottom:16px; }
@@ -460,7 +495,7 @@
         <a href="#/"><i class="fas fa-home"></i> Trang chủ</a>
         <a href="#/majors"><i class="fas fa-graduation-cap"></i> Ngành học</a>
         <a href="#/lecturers"><i class="fas fa-chalkboard-teacher"></i> Giảng viên</a>
-        <a href="#/feedback"><i class="fas fa-envelope-open-text"></i> Góp ý / Phản ánh</a>
+        <a href="#/support"><i class="fas fa-life-ring"></i> Hỗ trợ &amp; Góp ý</a>
       </nav>
       <div class="search-box">
         <i class="fas fa-search search-icon"></i>
@@ -478,6 +513,11 @@
   <footer class="site-footer">
     <div class="container">
       <p><i class="fas fa-graduation-cap" style="color:var(--accent);"></i> © 2026 HUIT Review — Nền tảng đánh giá cộng đồng độc lập.</p>
+      <p style="margin:8px 0 0;display:flex;justify-content:center;gap:16px;flex-wrap:wrap;">
+        <a href="#/support?tab=report-info"><i class="fas fa-flag"></i> Phản ánh thông tin sai</a>
+        <a href="#/support?tab=suggest"><i class="fas fa-lightbulb"></i> Góp ý cải thiện</a>
+        <a href="#/support?tab=account"><i class="fas fa-life-ring"></i> Hỗ trợ tài khoản</a>
+      </p>
     </div>
   </footer>
 
@@ -485,13 +525,14 @@
     <i class="fas fa-arrow-up"></i>
   </button>
 
-  <!-- Modal Báo cáo Review -->
+  <!-- Modal Báo cáo Review / Phản hồi -->
   <div class="modal-overlay" id="reportModal">
     <div class="modal-box">
-      <h3><i class="fas fa-flag" style="color:var(--danger)"></i> Báo cáo đánh giá</h3>
-      <p style="color:var(--muted); font-size:0.95rem;">Vui lòng cho biết lý do bạn báo cáo đánh giá này (spam, xúc phạm, sai sự thật...):</p>
-      <textarea id="reportReason" rows="3" placeholder="Nhập lý do..."></textarea>
+      <h3><i class="fas fa-flag" style="color:var(--danger)"></i> <span id="reportModalTitle">Báo cáo đánh giá</span></h3>
+      <p style="color:var(--muted); font-size:0.95rem;">Vui lòng cho biết lý do bạn báo cáo nội dung này (spam, xúc phạm, sai sự thật...):</p>
+      <textarea id="reportReason" rows="3" maxlength="1000" placeholder="Nhập lý do rõ ràng (ít nhất 5 ký tự)..."></textarea>
       <input type="hidden" id="reportReviewId">
+      <input type="hidden" id="reportReplyId">
       <div style="display:flex; gap:12px; margin-top:25px;">
         <button id="reportSubmitBtn" class="btn" onclick="submitReport()" style="margin:0; flex:1; justify-content:center;">Gửi báo cáo</button>
         <button class="btn" style="background:#cbd5e1; color:#334155; margin:0; flex:1; justify-content:center; box-shadow:none;" onclick="closeModal('reportModal')">Hủy</button>
@@ -510,6 +551,11 @@
       <input type="text" id="edit-lect-degree" list="degree-list" required>
       <label>Khoa công tác</label>
       <select id="edit-lect-faculty" required></select>
+      <div style="margin-top:15px; background:#f0fdf4; padding:12px; border-radius:8px; border:1px solid #bbf7d0;">
+        <label style="display:flex; align-items:center; gap:10px; cursor:pointer; margin:0; color:#166534; font-weight:700;">
+          <input type="checkbox" id="edit-lect-verified" style="width:18px; height:18px; margin:0;"> Đánh dấu đã xác minh chính thức (bỏ nhãn "Do cộng đồng đề xuất")
+        </label>
+      </div>
       <div style="display:flex; gap:12px; margin-top:25px;">
         <button class="btn" onclick="saveEditedLecturer()" style="margin:0; flex:1; justify-content:center;">Lưu thay đổi</button>
         <button class="btn" style="background:#cbd5e1; color:#334155; margin:0; flex:1; justify-content:center; box-shadow:none;" onclick="closeModal('editLecturerModal')">Hủy</button>
@@ -533,7 +579,7 @@
         <span data-v="5" onclick="setEditRating(5)"><i class="fas fa-star"></i></span>
       </div>
       <label>Nội dung đánh giá</label>
-      <textarea id="edit-review-content" rows="5" placeholder="Nội dung..." style="min-height:120px;"></textarea>
+      <textarea id="edit-review-content" rows="5" maxlength="3000" placeholder="Nội dung..." style="min-height:120px;"></textarea>
       <div style="margin-top:15px; background:#f0fdf4; padding:12px; border-radius:8px; border:1px solid #bbf7d0;">
         <label style="display:flex; align-items:center; gap:10px; cursor:pointer; margin:0; color:#166534; font-weight:700;">
           <input type="checkbox" id="edit-review-as-admin" style="width:18px; height:18px; margin:0;"> Đăng với tư cách Admin (Nổi bật)
@@ -580,7 +626,7 @@
         <div id="authMessage" class="auth-message" role="status" aria-live="polite"></div>
         <button id="authSubmitButton" type="submit" class="btn auth-submit"><i class="fas fa-sign-in-alt"></i> Đăng nhập</button>
       </form>
-      <p class="auth-help">Không cần email thật hoặc số điện thoại. Hãy tự lưu mật khẩu ở nơi an toàn. Nếu quên mật khẩu hoặc cần trợ giúp, <a href="#/support" onclick="closeAuthModal()">gửi yêu cầu hỗ trợ đến Admin</a>. Admin sẽ liên hệ qua thông tin bạn cung cấp để xác minh; tuyệt đối không gửi mật khẩu hiện tại cho bất kỳ ai.</p>
+      <p class="auth-help">Không cần email thật hoặc số điện thoại. Hãy tự lưu mật khẩu ở nơi an toàn. Nếu quên mật khẩu hoặc cần trợ giúp, <a href="#/support?tab=account" onclick="closeAuthModal()">gửi yêu cầu hỗ trợ tài khoản đến Admin</a>. Tuyệt đối không gửi mật khẩu hiện tại cho bất kỳ ai.</p>
     </div>
   </div>
 
@@ -600,7 +646,7 @@
         </div>
       </div>
       <label>Nội dung</label>
-      <textarea id="myEditContent" rows="5" style="min-height:120px;"></textarea>
+      <textarea id="myEditContent" rows="5" maxlength="3000" style="min-height:120px;"></textarea>
       <div style="display:flex; gap:12px; margin-top:25px;">
         <button id="myEditSaveBtn" class="btn" onclick="saveMyEdit()" style="margin:0; flex:1; justify-content:center;">Lưu thay đổi</button>
         <button class="btn" style="background:#cbd5e1; color:#334155; margin:0; flex:1; justify-content:center; box-shadow:none;" onclick="closeModal('myEditModal')">Hủy</button>
@@ -1203,6 +1249,7 @@
       reportedReviews: [],
       feedbacks: [],
       supportTickets: [],
+      adminResponses: [],
       notices: []
     };
     let REVIEWS_CACHE = [];
@@ -1214,6 +1261,7 @@
     let authReady = false;
     let notifOpen = false;
     let activeAdminTab = "tab-pending";
+    let activeFeedbackFilter = "all";
     let editReviewRating = 5;
     let myEditRating = 5;
     const replyTargetMap = {};
@@ -1318,6 +1366,58 @@
     }
     function rerender() { const y = window.scrollY; route(); window.scrollTo(0, y); }
 
+    // Tự động nhận diện đường dẫn đích (Giảng viên / Ngành học) từ báo cáo hoặc tên đối tượng
+    function resolveTargetLink(targetType, targetId, targetName, fallbackTypeLabel = "") {
+      if (targetType === "lecturer" && targetId) {
+        const l = getLecturer(targetId);
+        return { href: `#/lecturer/${targetId}`, label: `GV ${l ? l.name : (targetName || targetId)}`, icon: "fa-user-tie" };
+      }
+      if (targetType === "major" && targetId) {
+        const m = getMajor(targetId);
+        return { href: `#/major/${targetId}`, label: `Ngành ${m ? m.name : (targetName || targetId)}`, icon: "fa-book" };
+      }
+      const q = normalizeSearch(targetName || "");
+      if (!q) return null;
+      const hint = normalizeSearch(fallbackTypeLabel || "");
+      if (!hint || hint.includes("giang vien")) {
+        const l = DB.lecturers.find(x => normalizeSearch(x.name) === q) || DB.pendingLecturers.find(x => normalizeSearch(x.name) === q);
+        if (l) return { href: `#/lecturer/${l.id}`, label: `GV ${l.name}`, icon: "fa-user-tie" };
+      }
+      if (!hint || hint.includes("nganh")) {
+        const m = DB.majors.find(x => normalizeSearch(x.name) === q || String(x.code) === String(targetName || "").trim());
+        if (m) return { href: `#/major/${m.id}`, label: `Ngành ${m.name}`, icon: "fa-book" };
+      }
+      return null;
+    }
+
+    function reviewTargetLink(r, replyId = null) {
+      if (!r) return null;
+      const isLect = r.targetType === "lecturer";
+      const target = isLect ? getLecturer(r.targetId) : getMajor(r.targetId);
+      const base = `#/${isLect ? "lecturer" : "major"}/${r.targetId}?reviewId=${r.id}${replyId ? `&replyId=${replyId}` : ""}`;
+      return {
+        href: base,
+        label: `${isLect ? "GV" : "Ngành"} ${target ? target.name : r.targetId}`,
+        icon: isLect ? "fa-user-tie" : "fa-book"
+      };
+    }
+
+    function responsesForSource(sourceType, sourceId) {
+      return DB.adminResponses.filter(x => x.sourceType === sourceType && String(x.sourceId) === String(sourceId));
+    }
+
+    function adminSentResponsesHTML(sourceType, sourceId) {
+      const list = responsesForSource(sourceType, sourceId);
+      if (!list.length) return "";
+      return `<div class="admin-sent-list">
+        <div style="font-weight:800;margin-bottom:6px;"><i class="fas fa-check-circle"></i> Phản hồi đã gửi (${list.length}):</div>
+        ${list.map(res => `<div class="admin-sent-item">
+          <div style="white-space:pre-wrap;">${escapeHtml(res.message)}</div>
+          <small style="color:#15803d;">${exactTime(res.createdAt)}</small>
+        </div>`).join("")}
+      </div>`;
+    }
+
     /* ================= SUPABASE AUTH & SYNC ================= */
     function isSupabaseConfigured() {
       return Boolean(
@@ -1358,6 +1458,9 @@
           queries.push(
             supabaseClient.from("notifications").select("*").eq("to_user_id", currentUser.id).order("created_at", { ascending: false }).limit(50)
           );
+          queries.push(
+            supabaseClient.from("admin_responses").select("*").order("created_at", { ascending: false }).limit(100)
+          );
         }
         if (isCurrentAdmin()) {
           queries.push(supabaseClient.from("reports").select("*").order("created_at", { ascending: false }));
@@ -1368,7 +1471,7 @@
         const results = await Promise.all(queries);
         const [revRes, repRes, likeRes, repLikeRes, lectRes, majRes, notRes, wordRes] = results;
 
-        // 1. Reviews + Replies + Likes (kể cả Like cho phản hồi)
+        // 1. Reviews + Replies + Likes
         const likesByReply = {};
         (repLikeRes?.data || []).forEach(lk => {
           (likesByReply[lk.reply_id] ||= []).push(lk.user_id);
@@ -1414,7 +1517,7 @@
           };
         });
 
-        // 2. Giảng viên (gộp danh sách gốc + chỉnh sửa/thêm/xóa từ Supabase)
+        // 2. Giảng viên
         const lectMap = new Map(DEFAULT_LECTURERS.map(l => [l.id, { ...l }]));
         const pendingList = [];
         (lectRes?.data || []).forEach(rec => {
@@ -1454,18 +1557,27 @@
           ? [...DEFAULT_FORBIDDEN_WORDS]
           : (wordRes?.data || []).map(w => w.word);
 
-        // 5. Thông báo chuông cá nhân
+        // 5. Thông báo chuông cá nhân & Phản hồi từ Admin
         let idx = 8;
         if (currentUser) {
           const notifRes = results[idx++];
+          const respRes = results[idx++];
           NOTIFS_CACHE = (notifRes?.data || []).map(n => ({
             id: n.id, toUserId: n.to_user_id, actorId: n.actor_id,
-            type: n.type, actor: n.actor, reviewId: n.review_id,
-            targetType: n.target_type, targetId: n.target_id,
+            type: n.type, actor: n.actor, reviewId: n.review_id || null,
+            replyId: n.reply_id || null,
+            targetType: n.target_type || null, targetId: n.target_id || null,
+            responseId: n.response_id || null,
             snippet: n.snippet, read: n.is_read, createdAt: n.created_at
+          }));
+          DB.adminResponses = (respRes?.data || []).map(x => ({
+            id: x.id, sourceType: x.source_type, sourceId: x.source_id,
+            toUserId: x.to_user_id, title: x.title, message: x.message,
+            createdAt: x.created_at
           }));
         } else {
           NOTIFS_CACHE = [];
+          DB.adminResponses = [];
         }
 
         // 6. Dữ liệu chỉ dành cho Admin
@@ -1474,15 +1586,20 @@
           const fbRes = results[idx++];
           const supportRes = results[idx++];
           DB.reportedReviews = (repListRes?.data || []).map(r => ({
-            id: r.id, reviewId: r.review_id, reason: r.reason, createdAt: r.created_at
+            id: r.id, reviewId: r.review_id, replyId: r.reply_id || null,
+            userId: r.reporter_id || null, reason: r.reason, createdAt: r.created_at
           }));
           DB.feedbacks = (fbRes?.data || []).map(f => ({
-            id: f.id, type: f.type, target: f.target, content: f.content, createdAt: f.created_at
+            id: f.id, userId: f.user_id || null,
+            category: f.category || (f.type === "Góp ý chung" ? "suggest" : "report_info"),
+            type: f.type, target: f.target,
+            targetType: f.target_type || null, targetId: f.target_id || null,
+            content: f.content, createdAt: f.created_at
           }));
           DB.supportTickets = (supportRes?.data || []).map(t => ({
-            id: t.id, username: t.username, contact: t.contact, category: t.category,
-            message: t.message, status: t.status || "new", adminNote: t.admin_note || "",
-            createdAt: t.created_at
+            id: t.id, userId: t.user_id || null, username: t.username, contact: t.contact,
+            category: t.category, message: t.message, status: t.status || "new",
+            adminNote: t.admin_note || "", createdAt: t.created_at
           }));
         } else {
           DB.reportedReviews = [];
@@ -1724,7 +1841,7 @@
         const prevUserId = currentUser?.id || null;
         const nextUserId = session?.user?.id || null;
         currentUser = session?.user || null;
-     // Không vẽ lại trang khi chuyển qua lại giữa các tab cùng 1 tài khoản
+        // Không vẽ lại trang khi chuyển qua lại giữa các tab cùng 1 tài khoản
         if (event === "TOKEN_REFRESHED" || nextUserId === prevUserId) return;
         currentProfile = null;
         Promise.resolve().then(async () => {
@@ -1737,13 +1854,15 @@
     }
 
     /* ================= THÔNG BÁO CHUÔNG ================= */
-    async function pushNotif(toUserId, type, review, actorName, snippet) {
+    async function pushNotif(toUserId, type, review, actorName, snippet, replyId = null) {
       if (!supabaseClient || !toUserId || !currentUser || toUserId === currentUser.id) return;
       if (type === "like") {
-        await supabaseClient.from("notifications").delete()
+        let q = supabaseClient.from("notifications").delete()
           .eq("type", "like").eq("review_id", review.id).eq("actor_id", currentUser.id).eq("to_user_id", toUserId);
+        if (replyId) q = q.eq("reply_id", replyId);
+        await q;
       }
-      await supabaseClient.from("notifications").insert({
+      const payload = {
         to_user_id: toUserId,
         actor_id: currentUser.id,
         type,
@@ -1752,7 +1871,9 @@
         target_type: review.targetType,
         target_id: review.targetId,
         snippet: String(snippet || review.content || "").slice(0, 80)
-      });
+      };
+      if (replyId) payload.reply_id = replyId;
+      await supabaseClient.from("notifications").insert(payload);
     }
 
     function notifBellHTML() {
@@ -1760,10 +1881,16 @@
       const unread = list.filter(n => !n.read).length;
       const items = list.slice(0, 30).map(n => {
         const like = n.type === "like";
-        return `<div class="notif-item ${n.read ? "" : "unread"}" onclick="event.stopPropagation();openNotif('${n.id}')">
-          <span class="notif-icon ${like ? "like" : "reply"}"><i class="fas ${like ? "fa-thumbs-up" : "fa-reply"}"></i></span>
-          <span style="min-width:0"><b>${escapeHtml(n.actor)}</b> ${like ? "đã đánh dấu hữu ích bình luận của bạn" : "đã phản hồi bình luận của bạn"}
-            <span class="notif-snippet">“${escapeHtml(n.snippet)}”</span><span class="notif-time">${timeAgo(n.createdAt)}</span></span>
+        const adminResponse = n.type === "admin_response" && Boolean(n.responseId);
+        const iconClass = adminResponse ? "admin-response" : (like ? "like" : "reply");
+        const iconName = adminResponse ? "fa-user-shield" : (like ? "fa-thumbs-up" : "fa-reply");
+        const heading = adminResponse
+          ? "đã phản hồi yêu cầu của bạn"
+          : (like ? "đã đánh dấu hữu ích bình luận của bạn" : "đã phản hồi bình luận của bạn");
+        return `<div class="notif-item ${n.read ? "" : "unread"}" role="button" tabindex="0" onclick="event.stopPropagation();openNotif('${n.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openNotif('${n.id}');}">
+          <span class="notif-icon ${iconClass}"><i class="fas ${iconName}"></i></span>
+          <span style="min-width:0"><b>${escapeHtml(n.actor || "Quản trị viên")}</b> ${heading}
+            <span class="notif-snippet">${adminResponse ? escapeHtml(n.snippet || "Bấm để xem phản hồi") : `“${escapeHtml(n.snippet)}”`}</span><span class="notif-time">${timeAgo(n.createdAt)}</span></span>
         </div>`;
       }).join("");
       return `<div class="notif-wrap">
@@ -1791,9 +1918,41 @@
       }
       notifOpen = false;
       updateAuthActions();
-      const target = `#/${n.targetType === "major" ? "major" : "lecturer"}/${n.targetId}?reviewId=${n.reviewId}`;
+      if (n.type === "admin_response" && n.responseId) {
+        const target = `#/response/${n.responseId}`;
+        if (window.location.hash === target) route(); else window.location.hash = target;
+        return;
+      }
+      const target = `#/${n.targetType === "major" ? "major" : "lecturer"}/${n.targetId}?reviewId=${n.reviewId}${n.replyId ? `&replyId=${n.replyId}` : ""}`;
       if (window.location.hash === target) route(); else window.location.hash = target;
     };
+
+    async function loadAdminResponsePage(responseId) {
+      const app = document.getElementById("app");
+      if (!app) return;
+      if (!currentUser) {
+        app.innerHTML = `<div class="empty-state response-detail"><i class="fas fa-lock"></i><h2>Cần đăng nhập</h2><p>Đăng nhập đúng tài khoản đã gửi yêu cầu để xem phản hồi của Admin.</p><button class="btn" onclick="openAuthModal('login')">Đăng nhập</button></div>`;
+        return;
+      }
+      app.innerHTML = `<div class="loading-box"><i class="fas fa-spinner fa-spin"></i> Đang tải phản hồi...</div>`;
+      const { data, error } = await supabaseClient.from("admin_responses").select("id, source_type, title, message, created_at").eq("id", responseId).single();
+      if (error || !data) {
+        app.innerHTML = `<div class="empty-state response-detail"><i class="fas fa-file-circle-exclamation"></i><h2>Không tìm thấy phản hồi</h2><p>Phản hồi không tồn tại hoặc không thuộc tài khoản hiện đang đăng nhập.</p><a class="btn" href="#/">Về trang chủ</a></div>`;
+        return;
+      }
+      const sourceLabels = { support: "Yêu cầu hỗ trợ tài khoản", feedback: "Phản ánh / góp ý", report: "Báo cáo nội dung" };
+      app.innerHTML = `<div class="breadcrumb fade-up"><a href="#/">Trang chủ</a><i class="fas fa-chevron-right" style="font-size:.7rem;color:#cbd5e1;"></i><a href="#/support">Hỗ trợ &amp; Góp ý</a><i class="fas fa-chevron-right" style="font-size:.7rem;color:#cbd5e1;"></i> Phản hồi từ Admin</div>
+        <section class="admin-box response-detail fade-up">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><span class="badge"><i class="fas fa-user-shield"></i> Phản hồi chính thức từ Admin</span><span class="support-status resolved">Đã phản hồi</span></div>
+          <h1 style="font-size:1.55rem;margin:16px 0 8px;">${escapeHtml(data.title || "Phản hồi từ HUIT Review")}</h1>
+          <p style="color:var(--muted);margin:0 0 18px;">${escapeHtml(sourceLabels[data.source_type] || "Trao đổi với Admin")} · ${exactTime(data.created_at)}</p>
+          <div class="response-message">${escapeHtml(data.message)}</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:22px;">
+            <a class="btn" href="#/support" style="margin-top:0;"><i class="fas fa-life-ring"></i> Trung tâm Hỗ trợ &amp; Góp ý</a>
+            <a class="btn" href="#/" style="margin-top:0;background:#64748b;"><i class="fas fa-home"></i> Về trang chủ</a>
+          </div>
+        </section>`;
+    }
 
     /* ================= TỪ KHÓA CẤM ================= */
     function containsForbiddenWord(text) {
@@ -1841,7 +2000,8 @@
       const replyId = document.getElementById("myEditReplyId").value;
       const content = document.getElementById("myEditContent").value.trim();
       const min = kind === "reply" ? 2 : 10;
-      if (content.length < min || content.length > 3000) { alert(`Nội dung phải dài từ ${min} đến 3.000 ký tự!`); return; }
+      const max = kind === "reply" ? 2000 : 3000;
+      if (content.length < min || content.length > max) { alert(`Nội dung phải dài từ ${min} đến ${max.toLocaleString("vi-VN")} ký tự!`); return; }
       const bad = containsForbiddenWord(content);
       if (bad) { alert(`Nội dung chứa từ khóa không phù hợp ("${bad}"). Vui lòng điều chỉnh!`); return; }
       const { ok } = findMine(kind, reviewId, replyId);
@@ -1951,8 +2111,8 @@
           <div class="home-legal-note">
             <strong>Lưu ý về nội dung và pháp lý:</strong> Người dùng chịu trách nhiệm về nội dung do mình đăng tải. HUIT Review có thể tiếp nhận phản ánh, yêu cầu đính chính hoặc gỡ bỏ và xem xét ẩn/tạm ngừng hiển thị nội dung khi có dấu hiệu vi phạm hoặc xâm phạm quyền, lợi ích hợp pháp của người khác.
             <div class="home-legal-links">
-              <a href="#/feedback"><i class="fas fa-flag"></i> Gửi góp ý / báo cáo nội dung</a>
-              <a href="#/support"><i class="fas fa-life-ring"></i> Hỗ trợ tài khoản từ Admin</a>
+              <a href="#/support?tab=report-info"><i class="fas fa-flag"></i> Phản ánh / báo cáo nội dung</a>
+              <a href="#/support?tab=account"><i class="fas fa-life-ring"></i> Hỗ trợ tài khoản từ Admin</a>
               <a href="https://congbao.chinhphu.vn/van-ban/luat-so-91-2025-qh15-45578.htm" target="_blank" rel="noopener noreferrer">Luật Bảo vệ dữ liệu cá nhân 91/2025/QH15</a>
               <a href="https://congbao.chinhphu.vn/van-ban/nghi-dinh-so-356-2025-nd-cp-468371.htm" target="_blank" rel="noopener noreferrer">Nghị định 356/2025/NĐ-CP</a>
               <a href="https://vanban.chinhphu.vn/?classid=0&amp;docid=211654&amp;pageid=27160" target="_blank" rel="noopener noreferrer">Nghị định 147/2024/NĐ-CP</a>
@@ -2140,12 +2300,13 @@
           <a class="card" href="#/lecturer/${l.id}">
             <h3><i class="fas fa-user-tie"></i> ${escapeHtml(l.name)}</h3>
             <div class="meta"><i class="fas fa-graduation-cap"></i> ${escapeHtml(l.degree || "Giảng viên")}</div>
+            ${l.sourceType === "community" ? '<span class="community-source-badge"><i class="fas fa-users"></i> Do cộng đồng đề xuất</span>' : ""}
             ${cardRatingHTML("lecturer", l.id)}
           </a>`).join("")}</div>` : `<div class="empty-state"><i class="fas fa-users"></i><p>Chưa có giảng viên thuộc khoa này.</p></div>`}
       `;
     }
 
-    function viewMajor(id, highlightReviewId = null) {
+    function viewMajor(id, highlightReviewId = null, highlightReplyId = null) {
       const m = getMajor(id);
       if (!m) return `<div class="empty-state">Không tìm thấy ngành.</div>`;
       const facultyId = MAJOR_FACULTY[m.code || m.id];
@@ -2153,6 +2314,7 @@
       const avg = avgRating("major", id);
       const count = getReviewCount("major", id);
       const isAdmin = isCurrentAdmin();
+      const reportHref = `#/support?tab=report-info&type=${encodeURIComponent("Ngành học")}&target=${encodeURIComponent(m.name)}&targetType=major&targetId=${encodeURIComponent(m.id)}`;
       return `
         <div class="breadcrumb fade-up"><a href="#/majors">Ngành học</a> <i class="fas fa-chevron-right" style="font-size:.7rem;color:#cbd5e1"></i> ${faculty ? `<a href="#/faculty/${facultyId}/majors">${escapeHtml(faculty.name)}</a> <i class="fas fa-chevron-right" style="font-size:.7rem;color:#cbd5e1"></i>` : ""} ${escapeHtml(m.name)}</div>
         <div class="detail-header fade-up">
@@ -2163,12 +2325,12 @@
             ${avg ? `<span class="badge" style="background:#fff8e1; color:#b45309;"><i class="fas fa-star" style="color:var(--accent)"></i> ${starsHTML(avg)} ${avg.toFixed(1)}/5</span>` : ""}
           </div>
           <div style="margin-top:20px; display:flex; gap:10px; flex-wrap:wrap;">
-            <a href="#/feedback?type=Ngành&target=${encodeURIComponent(m.name)}" class="btn btn-report" style="margin:0;"><i class="fas fa-flag"></i> Báo cáo thông tin sai</a>
+            <a href="${reportHref}" class="btn btn-report" style="margin:0;"><i class="fas fa-flag"></i> Báo cáo thông tin sai</a>
             ${isAdmin ? `<button onclick="adminDeleteMajor('${m.id}')" class="btn" style="background:var(--danger);margin:0;padding:10px 20px;font-size:0.9rem;"><i class="fas fa-trash"></i> Xóa ngành (Admin)</button>` : ""}
           </div>
         </div>
         ${ratingSummaryHTML("major", id)}
-        ${reviewSectionHTML("major", id, "Đánh giá ngành", highlightReviewId)}
+        ${reviewSectionHTML("major", id, "Đánh giá ngành", highlightReviewId, highlightReplyId)}
       `;
     }
 
@@ -2218,7 +2380,7 @@
       `;
     }
 
-    function viewLecturer(id, highlightReviewId = null) {
+    function viewLecturer(id, highlightReviewId = null, highlightReplyId = null) {
       const l = getLecturer(id);
       if (!l) return `<div class="empty-state">Không tìm thấy giảng viên.</div>`;
       const avg = avgRating("lecturer", id);
@@ -2226,6 +2388,7 @@
       const isPending = DB.pendingLecturers.some(pl => pl.id === id);
       const isAdmin = isCurrentAdmin();
       const faculty = facultyForLecturer(l);
+      const reportHref = `#/support?tab=report-info&type=${encodeURIComponent("Giảng viên")}&target=${encodeURIComponent(l.name)}&targetType=lecturer&targetId=${encodeURIComponent(l.id)}`;
       return `
         <div class="breadcrumb fade-up"><a href="#/lecturers">Giảng viên</a> <i class="fas fa-chevron-right" style="font-size:0.7rem; color:#cbd5e1;"></i> ${escapeHtml(l.name)}</div>
         <div class="detail-header fade-up">
@@ -2237,7 +2400,7 @@
             ${avg ? `<span class="badge" style="background:#fff8e1; color:#b45309;"><i class="fas fa-star" style="color:var(--accent)"></i> ${starsHTML(avg)} ${avg.toFixed(1)}/5</span>` : ""}
           </div>
           <div style="margin-top:20px; display:flex; gap:10px; flex-wrap:wrap;">
-            <a href="#/feedback?type=Giảng viên&target=${encodeURIComponent(l.name)}" class="btn btn-report" style="margin:0;"><i class="fas fa-flag"></i> Báo cáo thông tin sai</a>
+            <a href="${reportHref}" class="btn btn-report" style="margin:0;"><i class="fas fa-flag"></i> Báo cáo thông tin sai</a>
             ${isAdmin && !isPending ? `
             <button onclick="openEditLecturerModal('${l.id}')" class="btn" style="background:var(--primary); margin:0; padding:10px 20px; font-size:0.9rem;"><i class="fas fa-edit"></i> Sửa (Admin)</button>
             <button onclick="adminDeleteLecturer('${l.id}')" class="btn" style="background:var(--danger); margin:0; padding:10px 20px; font-size:0.9rem;"><i class="fas fa-trash"></i> Xóa (Admin)</button>
@@ -2245,74 +2408,167 @@
           </div>
         </div>
         ${ratingSummaryHTML("lecturer", id)}
-        ${reviewSectionHTML("lecturer", id, `Đánh giá GV ${l.name}`, highlightReviewId)}
+        ${reviewSectionHTML("lecturer", id, `Đánh giá GV ${l.name}`, highlightReviewId, highlightReplyId)}
       `;
     }
 
-    function viewFeedback() {
+    /* ================= TRUNG TÂM HỖ TRỢ & GÓP Ý HỢP NHẤT ================= */
+    function viewSupportCenter(defaultTab = "report-info") {
       const params = new URLSearchParams(window.location.hash.split("?")[1] || "");
-      const type = params.get("type") || "";
+      const tabParam = params.get("tab");
+      const rawType = params.get("type") || "";
       const target = params.get("target") || "";
+      const targetType = params.get("targetType") || "";
+      const targetId = params.get("targetId") || "";
+
+      let activeTab = defaultTab;
+      if (["report-info", "suggest", "account"].includes(tabParam)) activeTab = tabParam;
+      else if (rawType || target || targetId) activeTab = "report-info";
+
+      const matchedTarget = resolveTargetLink(targetType, targetId, target, rawType);
+      const myResponses = currentUser
+        ? DB.adminResponses.filter(r => r.toUserId === currentUser.id).slice(0, 10)
+        : [];
+      const sourceLabels = { support: "Hỗ trợ tài khoản", feedback: "Phản ánh / Góp ý", report: "Báo cáo bình luận" };
+
       return `
-        <div class="breadcrumb fade-up"><a href="#/">Trang chủ</a> <i class="fas fa-chevron-right" style="font-size:0.7rem; color:#cbd5e1;"></i> Góp ý / Phản ánh</div>
-        <div class="admin-box fade-up" style="max-width: 650px; margin: 20px auto;">
-          <h2><i class="fas fa-envelope-open-text" style="color:var(--primary)"></i> Gửi Phản ánh đến Admin</h2>
-          <p style="color:var(--muted); font-size:0.95rem; margin-bottom:25px;">Bạn phát hiện thông tin sai lệch, lỗi web, hay có góp ý gì? Hãy gửi ngay cho Admin. Để hạn chế spam, bạn cần đăng nhập trước khi gửi.</p>
-          ${currentUser ? `<div class="comment-as-bar"><span>Đang gửi với tài khoản: <strong>${escapeHtml(myDisplayName())}</strong></span></div>` : `<div class="comment-as-bar"><span>Đăng nhập để gửi góp ý hoặc phản ánh.</span><button type="button" class="auth-btn auth-btn-primary" onclick="openAuthModal('login')">Đăng nhập</button></div>`}
-          <form id="feedbackForm">
-            <label>Loại phản ánh (*)</label>
-            <select id="fb-type" required>
-              <option value="Giảng viên" ${type === "Giảng viên" ? "selected" : ""}>Thông tin Giảng viên sai / cũ</option>
-              <option value="Ngành học" ${type === "Ngành" ? "selected" : ""}>Thông tin Ngành học sai</option>
-              <option value="Lỗi Website">Lỗi Website / Kỹ thuật</option>
-              <option value="Góp ý chung">Góp ý chung / Khác</option>
-            </select>
-            <label>Đối tượng (nếu có)</label>
-            <input type="text" id="fb-target" value="${escapeHtml(target)}" placeholder="VD: Tên giảng viên, tên ngành..." />
-            <label>Chi tiết nội dung (*)</label>
-            <textarea id="fb-content" required minlength="10" placeholder="Vui lòng mô tả chi tiết..."></textarea>
-            <button type="submit" class="btn" style="width:100%; justify-content:center; margin-top:25px;"><i class="fas fa-paper-plane"></i> Gửi Phản ánh</button>
-          </form>
+        <div class="breadcrumb fade-up"><a href="#/">Trang chủ</a> <i class="fas fa-chevron-right" style="font-size:.7rem;color:#cbd5e1;"></i> Trung tâm Hỗ trợ &amp; Góp ý</div>
+        <div class="hub-wrap fade-up">
+          <h1 style="margin-bottom:6px;"><i class="fas fa-life-ring" style="color:var(--primary)"></i> Trung tâm Hỗ trợ &amp; Góp ý</h1>
+          <p style="color:var(--muted);margin:0;">Chọn đúng mục bên dưới để yêu cầu của bạn được phân loại và chuyển trực tiếp đến Admin nhanh nhất.</p>
+
+          <div class="hub-tabs" role="tablist">
+            <button type="button" class="hub-tab-btn ${activeTab === "report-info" ? "active" : ""}" onclick="switchSupportHubTab('report-info')">
+              <span class="hub-tab-title"><i class="fas fa-triangle-exclamation" style="color:var(--danger)"></i> Phản ánh sai sót</span>
+              <span class="hub-tab-desc">Báo thông tin giảng viên/ngành học sai, thiếu hoặc lỗi kỹ thuật website.</span>
+              <span class="hub-tab-badge">Cần đăng nhập</span>
+            </button>
+            <button type="button" class="hub-tab-btn ${activeTab === "suggest" ? "active" : ""}" onclick="switchSupportHubTab('suggest')">
+              <span class="hub-tab-title"><i class="fas fa-lightbulb" style="color:var(--accent)"></i> Góp ý cải thiện</span>
+              <span class="hub-tab-desc">Đề xuất tính năng mới, cải thiện giao diện hoặc đóng góp cho cộng đồng.</span>
+              <span class="hub-tab-badge">Cần đăng nhập</span>
+            </button>
+            <button type="button" class="hub-tab-btn ${activeTab === "account" ? "active" : ""}" onclick="switchSupportHubTab('account')">
+              <span class="hub-tab-title"><i class="fas fa-user-shield" style="color:var(--primary)"></i> Hỗ trợ tài khoản</span>
+              <span class="hub-tab-desc">Quên mật khẩu, không đăng nhập được, tài khoản bị lỗi.</span>
+              <span class="hub-tab-badge">Không cần đăng nhập</span>
+            </button>
+          </div>
+
+          <!-- PANEL 1: PHẢN ÁNH THÔNG TIN SAI / LỖI WEB -->
+          <div id="hub-panel-report-info" class="admin-box" style="margin-top:0;display:${activeTab === "report-info" ? "block" : "none"};">
+            <h2 style="margin-bottom:8px;"><i class="fas fa-triangle-exclamation" style="color:var(--danger)"></i> Phản ánh thông tin sai &amp; Lỗi kỹ thuật</h2>
+            <p style="color:var(--muted);font-size:.92rem;margin:0 0 18px;">Thông tin sai lệch về học vị, khoa công tác, mã ngành hoặc lỗi hiển thị sẽ được Admin đối chiếu và chỉnh sửa. Khi Admin xử lý xong, bạn sẽ nhận thông báo ở quả chuông.</p>
+            ${currentUser
+              ? `<div class="comment-as-bar"><span><i class="fas fa-user-check" style="color:var(--primary)"></i> Đang gửi với tài khoản: <strong>${escapeHtml(myDisplayName())}</strong></span></div>`
+              : `<div class="comment-as-bar"><span>Để hạn chế spam và nhận phản hồi từ Admin, vui lòng đăng nhập trước khi gửi.</span><button type="button" class="auth-btn auth-btn-primary" onclick="openAuthModal('login')">Đăng nhập</button></div>`}
+            <form id="reportInfoForm">
+              <input type="hidden" id="ri-target-type" value="${escapeHtml(targetType)}" />
+              <input type="hidden" id="ri-target-id" value="${escapeHtml(targetId)}" />
+              <label for="ri-type">Loại sai sót (*)</label>
+              <select id="ri-type" required>
+                <option value="Giảng viên" ${rawType === "Giảng viên" ? "selected" : ""}>Thông tin Giảng viên sai / cũ</option>
+                <option value="Ngành học" ${rawType === "Ngành" || rawType === "Ngành học" ? "selected" : ""}>Thông tin Ngành học sai</option>
+                <option value="Lỗi Website" ${rawType === "Lỗi Website" ? "selected" : ""}>Lỗi Website / Kỹ thuật</option>
+              </select>
+              <label for="ri-target">Đối tượng cần chỉnh sửa (tên giảng viên, ngành hoặc trang bị lỗi)</label>
+              <input type="text" id="ri-target" maxlength="120" value="${escapeHtml(target)}" placeholder="VD: Nguyễn Văn A, Công nghệ thông tin..." />
+              ${matchedTarget ? `<div class="hub-target-preview"><span><i class="fas fa-link"></i> Đã gắn liên kết trực tiếp tới: <b>${escapeHtml(matchedTarget.label)}</b></span><a href="${matchedTarget.href}" style="font-weight:700;">Xem trang <i class="fas fa-arrow-right"></i></a></div>` : ""}
+              <label for="ri-content">Mô tả chi tiết điểm sai &amp; thông tin đúng nếu bạn biết (*)</label>
+              <textarea id="ri-content" rows="4" required minlength="10" maxlength="2000" placeholder="VD: Thầy đã chuyển sang Khoa..., hoặc chức danh hiện tại là Tiến sĩ..."></textarea>
+              <button type="submit" class="btn" style="width:100%;justify-content:center;"><i class="fas fa-paper-plane"></i> Gửi phản ánh sai sót</button>
+            </form>
+          </div>
+
+          <!-- PANEL 2: GÓP Ý CẢI THIỆN -->
+          <div id="hub-panel-suggest" class="admin-box" style="margin-top:0;display:${activeTab === "suggest" ? "block" : "none"};">
+            <h2 style="margin-bottom:8px;"><i class="fas fa-lightbulb" style="color:var(--accent)"></i> Góp ý cải thiện HUIT Review</h2>
+            <p style="color:var(--muted);font-size:.92rem;margin:0 0 18px;">Bạn có ý tưởng tính năng mới hoặc muốn cải thiện trải nghiệm sử dụng? Mọi đóng góp đều giúp cộng đồng tốt hơn.</p>
+            ${currentUser
+              ? `<div class="comment-as-bar"><span><i class="fas fa-user-check" style="color:var(--primary)"></i> Đang gửi với tài khoản: <strong>${escapeHtml(myDisplayName())}</strong></span></div>`
+              : `<div class="comment-as-bar"><span>Đăng nhập để gửi góp ý và nhận phản hồi từ Admin qua chuông thông báo.</span><button type="button" class="auth-btn auth-btn-primary" onclick="openAuthModal('login')">Đăng nhập</button></div>`}
+            <form id="suggestForm">
+              <label for="sg-type">Chủ đề góp ý (*)</label>
+              <select id="sg-type" required>
+                <option value="Đề xuất tính năng mới">Đề xuất tính năng mới</option>
+                <option value="Giao diện & trải nghiệm">Giao diện &amp; trải nghiệm</option>
+                <option value="Quy tắc cộng đồng">Nội dung &amp; quy tắc cộng đồng</option>
+                <option value="Góp ý chung">Góp ý chung / Khác</option>
+              </select>
+              <label for="sg-title">Tiêu đề ngắn (*)</label>
+              <input type="text" id="sg-title" required minlength="4" maxlength="120" placeholder="VD: Thêm bộ lọc theo điểm đánh giá trên trang chủ..." />
+              <label for="sg-content">Nội dung góp ý (*)</label>
+              <textarea id="sg-content" rows="4" required minlength="10" maxlength="2000" placeholder="Trình bày ý tưởng hoặc góp ý của bạn..."></textarea>
+              <button type="submit" class="btn" style="width:100%;justify-content:center;background:var(--accent);"><i class="fas fa-paper-plane"></i> Gửi góp ý</button>
+            </form>
+          </div>
+
+          <!-- PANEL 3: HỖ TRỢ TÀI KHOẢN -->
+          <div id="hub-panel-account" class="admin-box" style="margin-top:0;display:${activeTab === "account" ? "block" : "none"};">
+            <h2 style="margin-bottom:8px;"><i class="fas fa-user-shield" style="color:var(--primary)"></i> Hỗ trợ tài khoản từ Admin</h2>
+            <p style="color:var(--muted);font-size:.92rem;margin:0 0 16px;">Quên mật khẩu, không đăng nhập được hoặc gặp sự cố tài khoản? Biểu mẫu này <b>có thể gửi ngay cả khi bạn chưa đăng nhập</b>.</p>
+            <div class="notice-banner" style="margin:0 0 18px;">
+              <i class="fas fa-shield-halved"></i>
+              <div class="notice-content"><h4>Lưu ý bảo mật</h4><p>Tuyệt đối không nhập mật khẩu hiện tại, mật khẩu cũ, mã OTP hoặc mật khẩu cổng sinh viên HUIT vào biểu mẫu này.</p></div>
+            </div>
+            ${currentUser
+              ? `<div class="comment-as-bar"><span><i class="fas fa-user-check" style="color:var(--primary)"></i> Đã liên kết tài khoản: <strong>${escapeHtml(currentProfile?.username || "tài khoản của bạn")}</strong>. Khi Admin phản hồi, bạn sẽ nhận thông báo tại quả chuông.</span></div>`
+              : `<div class="comment-as-bar"><span>Đang gửi yêu cầu không đăng nhập. Admin sẽ liên hệ qua kênh liên hệ bạn điền bên dưới.</span><button type="button" class="auth-btn auth-btn-outline" onclick="openAuthModal('login')">Đăng nhập (nếu vào được)</button></div>`}
+            <form id="supportForm" novalidate>
+              <label for="support-username">Tên đăng nhập HUIT Review (*)</label>
+              <input id="support-username" type="text" minlength="4" maxlength="20" pattern="[A-Za-z0-9_]{4,20}" required autocomplete="username" value="${escapeHtml(currentProfile?.username || currentUser?.user_metadata?.username || "")}" ${currentUser ? "readonly" : ""} placeholder="VD: sinhvien_huit26" />
+              <label for="support-contact">Kênh để Admin liên hệ lại (*)</label>
+              <input id="support-contact" type="text" minlength="5" maxlength="160" required placeholder="Email, Zalo hoặc link Facebook để Admin xác minh" />
+              <label for="support-category">Vấn đề cần hỗ trợ (*)</label>
+              <select id="support-category" required>
+                <option value="Quên mật khẩu">Quên mật khẩu</option>
+                <option value="Không đăng nhập được">Không đăng nhập được</option>
+                <option value="Tài khoản bị khóa / gặp lỗi">Tài khoản bị khóa / gặp lỗi</option>
+                <option value="Vấn đề khác">Vấn đề khác</option>
+              </select>
+              <label for="support-message">Mô tả chi tiết (*)</label>
+              <textarea id="support-message" rows="4" minlength="10" maxlength="2000" required placeholder="Mô tả sự cố bạn gặp và thời điểm xảy ra. Không ghi mật khẩu hoặc OTP."></textarea>
+              <label class="hp-field" aria-hidden="true">Website<input id="support-website" type="text" tabindex="-1" autocomplete="off" /></label>
+              <button type="submit" class="btn" style="width:100%;justify-content:center;"><i class="fas fa-paper-plane"></i> Gửi yêu cầu hỗ trợ</button>
+            </form>
+            <p class="auth-help">Thông tin liên hệ của bạn chỉ hiển thị với Admin để xác minh và hỗ trợ, không công khai trên website.</p>
+          </div>
+
+          ${currentUser ? `
+          <section style="margin-top:32px;">
+            <h2 style="font-size:1.2rem;margin-bottom:14px;"><i class="fas fa-inbox" style="color:var(--primary)"></i> Phản hồi từ Admin dành cho bạn (${myResponses.length})</h2>
+            ${myResponses.length ? myResponses.map(res => `
+              <a class="hub-inbox-item" href="#/response/${res.id}">
+                <div style="min-width:0;">
+                  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                    <span class="badge" style="margin:0;padding:4px 10px;font-size:.76rem;">${escapeHtml(sourceLabels[res.sourceType] || "Phản hồi")}</span>
+                    <strong style="color:var(--primary-dark);">${escapeHtml(res.title || "Phản hồi từ Admin")}</strong>
+                  </div>
+                  <div style="color:var(--muted);font-size:.86rem;margin-top:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(res.message)}</div>
+                </div>
+                <span style="flex-shrink:0;color:var(--muted);font-size:.78rem;">${timeAgo(res.createdAt)} <i class="fas fa-chevron-right" style="margin-left:4px;"></i></span>
+              </a>
+            `).join("") : `<div class="empty-state" style="padding:28px 20px;"><p style="margin:0;font-size:.95rem;">Bạn chưa có phản hồi nào từ Admin.</p></div>`}
+          </section>` : ""}
         </div>
       `;
     }
 
-    function viewSupport() {
-      return `
-        <div class="breadcrumb fade-up"><a href="#/">Trang chủ</a> <i class="fas fa-chevron-right" style="font-size:.7rem;color:#cbd5e1;"></i> Hỗ trợ từ Admin</div>
-        <div class="admin-box fade-up" style="max-width:680px;margin:20px auto;">
-          <h1 style="font-size:1.65rem;"><i class="fas fa-life-ring" style="color:var(--primary);"></i> Hỗ trợ từ Admin</h1>
-          <p style="color:var(--muted);">Bạn quên mật khẩu, không đăng nhập được hoặc cần hỗ trợ về tài khoản? Gửi yêu cầu tại đây. Admin sẽ liên hệ qua thông tin bạn cung cấp để xác minh và hướng dẫn xử lý.</p>
-          <div class="notice-banner" style="margin:18px 0;">
-            <i class="fas fa-shield-halved"></i>
-            <div class="notice-content"><h4>Lưu ý bảo mật</h4><p>Không nhập mật khẩu hiện tại, mật khẩu cũ, mã OTP hoặc thông tin đăng nhập của trường. HUIT Review không yêu cầu các thông tin này.</p></div>
-          </div>
-          <form id="supportForm" novalidate>
-            <label for="support-username">Tên đăng nhập HUIT Review (*)</label>
-            <input id="support-username" type="text" minlength="4" maxlength="20" pattern="[A-Za-z0-9_]{4,20}" required autocomplete="username" placeholder="VD: sinhvien_huit26" />
-            <label for="support-contact">Thông tin để Admin liên hệ (*)</label>
-            <input id="support-contact" type="text" minlength="5" maxlength="160" required placeholder="Email, số điện thoại hoặc kênh liên hệ phù hợp" />
-            <label for="support-category">Nội dung cần hỗ trợ (*)</label>
-            <select id="support-category" required>
-              <option value="Quên mật khẩu">Quên mật khẩu</option>
-              <option value="Không đăng nhập được">Không đăng nhập được</option>
-              <option value="Tài khoản bị khóa / gặp lỗi">Tài khoản bị khóa / gặp lỗi</option>
-              <option value="Vấn đề khác">Vấn đề khác</option>
-            </select>
-            <label for="support-message">Mô tả chi tiết (*)</label>
-            <textarea id="support-message" rows="5" minlength="10" maxlength="2000" required placeholder="Mô tả lỗi bạn gặp và thời điểm xảy ra. Không ghi mật khẩu hoặc mã xác thực."></textarea>
-            <label class="hp-field" aria-hidden="true">Website<input id="support-website" type="text" tabindex="-1" autocomplete="off" /></label>
-            <button type="submit" class="btn" style="width:100%;justify-content:center;"><i class="fas fa-paper-plane"></i> Gửi yêu cầu hỗ trợ</button>
-          </form>
-          <p class="auth-help">Yêu cầu sẽ được chuyển vào hộp thư hỗ trợ nội bộ của Admin. Thông tin liên hệ chỉ dùng để xử lý yêu cầu và chỉ Admin được xem. Do tài khoản hiện không gắn email xác minh, quy trình này là hỗ trợ thủ công; việc khôi phục chỉ được xem xét sau khi Admin xác minh người gửi qua kênh liên hệ độc lập.</p>
-        </div>
-      `;
-    }
+    window.switchSupportHubTab = function(tab) {
+      const panels = ["report-info", "suggest", "account"];
+      panels.forEach(p => {
+        const el = document.getElementById(`hub-panel-${p}`);
+        if (el) el.style.display = (p === tab) ? "block" : "none";
+      });
+      document.querySelectorAll(".hub-tab-btn").forEach((btn, idx) => {
+        btn.classList.toggle("active", panels[idx] === tab);
+      });
+    };
 
     function viewAddLecturer() {
       return `
         <div class="breadcrumb fade-up"><a href="#/lecturers">Giảng viên</a> <i class="fas fa-chevron-right" style="font-size:0.7rem; color:#cbd5e1;"></i> Thêm mới</div>
-        <h1 class="fade-up"><i class="fas fa-user-plus"></i> Đề xuất Giảng viên & Đánh giá</h1>
+        <h1 class="fade-up"><i class="fas fa-user-plus"></i> Đề xuất Giảng viên &amp; Đánh giá</h1>
         <div class="admin-box fade-up" style="max-width: 600px; margin: 20px auto;">
           <p style="color:var(--muted); font-size:0.95rem; margin-bottom:20px;">Giảng viên bạn thêm sẽ được đưa vào danh sách <b>Chờ duyệt</b>. Admin sẽ xem xét và duyệt lên trang chính.</p>
           ${currentUser
@@ -2333,8 +2589,8 @@
               <span data-v="3"><i class="fas fa-star"></i></span><span data-v="4"><i class="fas fa-star"></i></span><span data-v="5"><i class="fas fa-star"></i></span>
             </div>
             <label>Nội dung đánh giá (*)</label>
-            <textarea id="new-lect-review" required minlength="10" placeholder="Chia sẻ trải nghiệm học tập của bạn..."></textarea>
-            <button type="submit" class="btn" style="width:100%; justify-content:center;">Gửi Đánh Giá & Đề Xuất</button>
+            <textarea id="new-lect-review" required minlength="10" maxlength="3000" placeholder="Chia sẻ trải nghiệm học tập của bạn..."></textarea>
+            <button type="submit" class="btn" style="width:100%; justify-content:center;">Gửi Đánh Giá &amp; Đề Xuất</button>
           </form>
         </div>
       `;
@@ -2353,13 +2609,20 @@
         `;
       }
       const isTab = (id) => activeAdminTab === id ? "active" : "";
+      const filteredFeedbacks = DB.feedbacks.filter(fb => {
+        if (activeFeedbackFilter === "all") return true;
+        return fb.category === activeFeedbackFilter;
+      });
+      const reportInfoCount = DB.feedbacks.filter(fb => fb.category === "report_info").length;
+      const suggestCount = DB.feedbacks.filter(fb => fb.category === "suggest").length;
+
       return `
         <div class="fade-up">
           <h1><i class="fas fa-shield-alt" style="color:var(--danger)"></i> Bảng điều khiển Quản trị viên</h1>
           <div class="admin-tabs">
             <div class="admin-tab ${isTab("tab-pending")}" onclick="switchTab('tab-pending', this)">Duyệt GV (${DB.pendingLecturers.length})</div>
-            <div class="admin-tab ${isTab("tab-reports")}" onclick="switchTab('tab-reports', this)">Báo cáo (${DB.reportedReviews.length})</div>
-            <div class="admin-tab ${isTab("tab-feedbacks")}" onclick="switchTab('tab-feedbacks', this)">Góp ý (${DB.feedbacks.length})</div>
+            <div class="admin-tab ${isTab("tab-reports")}" onclick="switchTab('tab-reports', this)">Báo cáo bình luận (${DB.reportedReviews.length})</div>
+            <div class="admin-tab ${isTab("tab-feedbacks")}" onclick="switchTab('tab-feedbacks', this)">Phản ánh &amp; Góp ý (${DB.feedbacks.length})</div>
             <div class="admin-tab ${isTab("tab-support")}" onclick="switchTab('tab-support', this)">Hỗ trợ tài khoản (${DB.supportTickets.length})</div>
             <div class="admin-tab ${isTab("tab-notices")}" onclick="switchTab('tab-notices', this)">Thông báo (${DB.notices.length})</div>
             <div class="admin-tab ${isTab("tab-words")}" onclick="switchTab('tab-words', this)">Từ cấm (${DB.forbiddenWords.length})</div>
@@ -2371,8 +2634,8 @@
               const fac = FACULTY_BY_ID[l.facultyId]?.name || l.facultyId;
               const revs = getReviewsFor("lecturer", l.id);
               return `<div class="admin-item">
-                <div>
-                  <strong>${escapeHtml(l.name)}</strong> — ${escapeHtml(l.degree)} (${escapeHtml(fac)})
+                <div style="max-width:720px;flex:1;">
+                  <a href="#/lecturer/${l.id}" style="font-size:1.05rem;font-weight:800;">${escapeHtml(l.name)} <i class="fas fa-arrow-up-right-from-square" style="font-size:.78rem;"></i></a> — ${escapeHtml(l.degree)} (${escapeHtml(fac)})
                   <div><span class="community-source-badge"><i class="fas fa-users"></i> Đề xuất từ cộng đồng · Chờ Admin duyệt</span></div>
                   ${revs[0] ? `<div style="color:var(--muted);font-size:.88rem;margin-top:6px;">Đánh giá kèm theo (${revs[0].rating}★): “${escapeHtml(revs[0].content)}”</div>` : ""}
                 </div>
@@ -2387,56 +2650,107 @@
           <div id="tab-reports" class="admin-content ${isTab("tab-reports")}">
             ${DB.reportedReviews.length ? DB.reportedReviews.map(rep => {
               const r = REVIEWS_CACHE.find(x => x.id === rep.reviewId);
-              return `<div class="admin-item">
-                <div style="max-width:720px;">
-                  <div style="color:var(--danger);font-weight:700;">Lý do: ${escapeHtml(rep.reason)}</div>
-                  <div style="font-size:.9rem;margin-top:6px;"><b>Nội dung bị báo cáo:</b> ${r ? escapeHtml(r.content) : "<i>(Đánh giá đã bị xóa)</i>"}</div>
-                  <small style="color:var(--muted);">${exactTime(rep.createdAt)}</small>
+              const replyObj = (r && rep.replyId) ? r.replies.find(x => x.id === rep.replyId) : null;
+              const linkObj = r ? reviewTargetLink(r, rep.replyId) : null;
+              const reportedText = rep.replyId
+                ? (replyObj ? replyObj.content : null)
+                : (r ? r.content : null);
+              const reportedAuthor = rep.replyId
+                ? (replyObj?.author || "Thành viên")
+                : (r?.author || "Thành viên");
+              return `<div class="admin-item" style="align-items:flex-start;">
+                <div style="max-width:720px;flex:1;min-width:260px;">
+                  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                    <span class="badge" style="margin:0;background:#fee2e2;color:#991b1b;">${rep.replyId ? "Báo cáo phản hồi" : "Báo cáo đánh giá"}</span>
+                    <span style="color:var(--danger);font-weight:700;">Lý do: ${escapeHtml(rep.reason)}</span>
+                  </div>
+                  ${reportedText && linkObj ? `
+                    <a class="report-target-link" href="${linkObj.href}" title="Bấm để đi tới đúng vị trí bình luận này">
+                      <div class="report-target-head">
+                        <span><i class="fas ${linkObj.icon}"></i> ${escapeHtml(linkObj.label)} · Người đăng: ${escapeHtml(reportedAuthor)}</span>
+                        <span>Đi tới bình luận <i class="fas fa-arrow-right"></i></span>
+                      </div>
+                      <div class="report-target-snippet">“${escapeHtml(reportedText)}”</div>
+                    </a>` : `<div style="font-size:.9rem;margin-top:8px;color:var(--muted);"><i>(Nội dung bị báo cáo đã bị xóa)</i></div>`}
+                  <div style="margin-top:6px;"><small style="color:var(--muted);">${exactTime(rep.createdAt)}</small></div>
+                  ${adminSentResponsesHTML("report", rep.id)}
+                  ${rep.userId ? `<div class="admin-public-reply"><label for="admin-response-report-${rep.id}">Phản hồi gửi đến người báo cáo</label><textarea id="admin-response-report-${rep.id}" rows="2" maxlength="3000" placeholder="Viết kết quả xử lý gửi đến chuông thông báo của người báo cáo..."></textarea><button class="btn btn-sm btn-approve" style="margin-top:10px;" onclick="adminSendResponse('report','${rep.id}')"><i class="fas fa-paper-plane"></i> Gửi phản hồi &amp; thông báo</button></div>` : `<p class="auth-help">Báo cáo này chưa gắn tài khoản người gửi nên không thể gửi thông báo chuông.</p>`}
                 </div>
-                <div style="display:flex;gap:8px;">
-                  ${r ? `<button class="btn btn-sm btn-del" onclick="deleteReview('${r.id}', '${rep.id}')"><i class="fas fa-trash"></i> Xóa đánh giá</button>` : ""}
-                  <button class="btn btn-sm" style="background:#94a3b8;" onclick="dismissReport('${rep.id}')">Bỏ qua</button>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                  ${linkObj && reportedText ? `<a class="btn btn-sm" href="${linkObj.href}"><i class="fas fa-arrow-up-right-from-square"></i> Xem chỗ đó</a>` : ""}
+                  ${rep.replyId && replyObj ? `<button class="btn btn-sm btn-del" onclick="deleteReportedReply('${r.id}', '${replyObj.id}', '${rep.id}')"><i class="fas fa-trash"></i> Xóa phản hồi</button>` : ""}
+                  ${!rep.replyId && r ? `<button class="btn btn-sm btn-del" onclick="deleteReview('${r.id}', '${rep.id}')"><i class="fas fa-trash"></i> Xóa đánh giá</button>` : ""}
+                  <button class="btn btn-sm" style="background:#94a3b8;" onclick="dismissReport('${rep.id}')">Bỏ qua / Đóng</button>
                 </div>
               </div>`;
             }).join("") : `<div class="empty-state"><p>Không có báo cáo vi phạm nào.</p></div>`}
           </div>
 
           <div id="tab-feedbacks" class="admin-content ${isTab("tab-feedbacks")}">
-            ${DB.feedbacks.length ? DB.feedbacks.map(fb => `
-              <div class="admin-item">
-                <div style="max-width:720px;">
-                  <span class="badge">${escapeHtml(fb.type)}</span> ${fb.target ? `<b>${escapeHtml(fb.target)}</b>` : ""}
-                  <p style="margin:8px 0 4px;">${escapeHtml(fb.content)}</p>
-                  <small style="color:var(--muted);">${exactTime(fb.createdAt)}</small>
+            <div class="admin-filter-pills">
+              <button type="button" class="admin-filter-pill ${activeFeedbackFilter === "all" ? "active" : ""}" onclick="setFeedbackFilter('all')">Tất cả (${DB.feedbacks.length})</button>
+              <button type="button" class="admin-filter-pill ${activeFeedbackFilter === "report_info" ? "active" : ""}" onclick="setFeedbackFilter('report_info')"><i class="fas fa-triangle-exclamation"></i> Phản ánh sai sót (${reportInfoCount})</button>
+              <button type="button" class="admin-filter-pill ${activeFeedbackFilter === "suggest" ? "active" : ""}" onclick="setFeedbackFilter('suggest')"><i class="fas fa-lightbulb"></i> Góp ý cải thiện (${suggestCount})</button>
+            </div>
+            ${filteredFeedbacks.length ? filteredFeedbacks.map(fb => {
+              const targetLink = resolveTargetLink(fb.targetType, fb.targetId, fb.target, fb.type);
+              const isSuggest = fb.category === "suggest";
+              return `
+              <div class="admin-item" style="align-items:flex-start;">
+                <div style="max-width:720px;flex:1;min-width:260px;">
+                  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                    <span class="badge" style="margin:0;${isSuggest ? "background:#fff8e1;color:#92400e;" : "background:#fee2e2;color:#991b1b;"}">
+                      <i class="fas ${isSuggest ? "fa-lightbulb" : "fa-triangle-exclamation"}"></i> ${isSuggest ? "Góp ý cải thiện" : "Phản ánh sai sót"}
+                    </span>
+                    <span class="badge" style="margin:0;">${escapeHtml(fb.type)}</span>
+                    ${fb.target && !targetLink ? `<b>${escapeHtml(fb.target)}</b>` : ""}
+                  </div>
+                  ${targetLink ? `
+                    <a class="report-target-link" href="${targetLink.href}" title="Bấm để mở đúng trang đối tượng này">
+                      <div class="report-target-head">
+                        <span><i class="fas ${targetLink.icon}"></i> Đối tượng: ${escapeHtml(targetLink.label)}</span>
+                        <span>Đi tới trang đối tượng <i class="fas fa-arrow-right"></i></span>
+                      </div>
+                      <div class="report-target-snippet">${escapeHtml(fb.content)}</div>
+                    </a>` : `<p style="margin:10px 0 6px;white-space:pre-wrap;">${escapeHtml(fb.content)}</p>`}
+                  <div style="margin-top:6px;"><small style="color:var(--muted);">${exactTime(fb.createdAt)}</small></div>
+                  ${adminSentResponsesHTML("feedback", fb.id)}
+                  ${fb.userId ? `<div class="admin-public-reply"><label for="admin-response-feedback-${fb.id}">Phản hồi gửi đến người gửi</label><textarea id="admin-response-feedback-${fb.id}" rows="2" maxlength="3000" placeholder="Viết phản hồi, thông báo đã sửa hoặc lời cảm ơn..."></textarea><button class="btn btn-sm btn-approve" style="margin-top:10px;" onclick="adminSendResponse('feedback','${fb.id}')"><i class="fas fa-paper-plane"></i> Gửi phản hồi &amp; thông báo</button></div>` : `<p class="auth-help">Mục này không có tài khoản người gửi để nhận thông báo.</p>`}
                 </div>
-                <button class="btn btn-sm btn-approve" onclick="adminDeleteFeedback('${fb.id}')"><i class="fas fa-check"></i> Đã xử lý</button>
-              </div>
-            `).join("") : `<div class="empty-state"><p>Chưa có góp ý / phản ánh nào.</p></div>`}
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                  ${targetLink ? `<a class="btn btn-sm" href="${targetLink.href}"><i class="fas fa-arrow-up-right-from-square"></i> Mở trang</a>` : ""}
+                  <button class="btn btn-sm btn-del" onclick="adminDeleteFeedback('${fb.id}')"><i class="fas fa-check"></i> Đã xử lý &amp; Xóa</button>
+                </div>
+              </div>`;
+            }).join("") : `<div class="empty-state"><p>Không có mục phản ánh / góp ý nào trong bộ lọc này.</p></div>`}
           </div>
 
           <div id="tab-support" class="admin-content ${isTab("tab-support")}">
-            <p style="color:var(--muted);margin-top:0;">Yêu cầu hỗ trợ được gửi từ biểu mẫu công khai. Admin cần xác minh người gửi qua thông tin liên hệ độc lập trước khi hướng dẫn khôi phục tài khoản. Không yêu cầu người dùng gửi mật khẩu hoặc OTP.</p>
+            <p style="color:var(--muted);margin-top:0;">Yêu cầu hỗ trợ tài khoản (gửi cả khi chưa đăng nhập). Admin cần xác minh người gửi qua thông tin liên hệ độc lập trước khi đặt lại mật khẩu. Không yêu cầu mật khẩu hoặc OTP.</p>
             ${DB.supportTickets.length ? DB.supportTickets.map(t => `
               <div class="admin-item" style="align-items:flex-start;">
                 <div style="max-width:720px;flex:1;min-width:240px;">
                   <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px;">
                     <b>${escapeHtml(t.username)}</b>
-                    <span class="badge">${escapeHtml(t.category)}</span>
+                    <span class="badge" style="margin:0;">${escapeHtml(t.category)}</span>
                     <span class="support-status ${escapeHtml(t.status)}">${t.status === "resolved" ? "Đã xử lý" : t.status === "processing" ? "Đang xử lý" : "Mới"}</span>
                   </div>
                   <div><b>Liên hệ:</b> ${escapeHtml(t.contact)}</div>
                   <p style="margin:8px 0;white-space:pre-wrap;">${escapeHtml(t.message)}</p>
-                  <small style="color:var(--muted);">${exactTime(t.createdAt)} · Mã yêu cầu: ${escapeHtml(t.id)}</small>
-                  <label for="support-note-${t.id}">Ghi chú xử lý nội bộ (không gửi tự động cho người dùng)</label>
-                  <textarea id="support-note-${t.id}" rows="2" maxlength="1000" placeholder="Ghi chú xác minh / cách xử lý...">${escapeHtml(t.adminNote)}</textarea>
+                  <small style="color:var(--muted);">${exactTime(t.createdAt)} · Mã: ${escapeHtml(t.id)}</small>
+                  <label for="support-note-${t.id}" style="margin-top:12px;">Ghi chú xử lý nội bộ (chỉ Admin nhìn thấy)</label>
+                  <textarea id="support-note-${t.id}" rows="2" maxlength="1000" placeholder="Ghi chú xác minh / cách xử lý nội bộ...">${escapeHtml(t.adminNote)}</textarea>
+                  ${adminSentResponsesHTML("support", t.id)}
+                  ${t.userId ? `<div class="admin-public-reply"><label for="admin-response-support-${t.id}">Phản hồi gửi đến chuông thông báo của người dùng</label><textarea id="admin-response-support-${t.id}" rows="2" maxlength="3000" placeholder="Viết hướng dẫn hoặc kết quả xử lý..."></textarea><button class="btn btn-sm btn-approve" style="margin-top:10px;" onclick="adminSendResponse('support','${t.id}')"><i class="fas fa-paper-plane"></i> Gửi phản hồi &amp; thông báo</button></div>` : `<div class="admin-public-reply"><b>Chưa liên kết tài khoản HUIT Review.</b><p class="auth-help" style="margin-top:4px;">Yêu cầu này được gửi khi chưa đăng nhập. Hãy liên hệ qua kênh liên hệ ở trên để hỗ trợ trực tiếp.</p></div>`}
                 </div>
-                <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-                  <select id="support-status-${t.id}" aria-label="Trạng thái yêu cầu hỗ trợ" style="width:auto;min-width:140px;">
+                <div style="display:flex;flex-direction:column;gap:8px;min-width:165px;">
+                  <select id="support-status-${t.id}" aria-label="Trạng thái yêu cầu hỗ trợ" style="padding:9px 12px;">
                     <option value="new" ${t.status === "new" ? "selected" : ""}>Mới</option>
                     <option value="processing" ${t.status === "processing" ? "selected" : ""}>Đang xử lý</option>
                     <option value="resolved" ${t.status === "resolved" ? "selected" : ""}>Đã xử lý</option>
                   </select>
-                  <button class="btn btn-sm btn-approve" onclick="adminSaveSupportTicket('${t.id}')"><i class="fas fa-save"></i> Lưu</button>
+                  <button class="btn btn-sm btn-approve" style="justify-content:center;" onclick="adminSaveSupportTicket('${t.id}')"><i class="fas fa-save"></i> Lưu trạng thái</button>
+                  <button class="btn btn-sm btn-del" style="justify-content:center;" onclick="adminDeleteSupportTicket('${t.id}')"><i class="fas fa-trash"></i> Xóa yêu cầu</button>
                 </div>
               </div>
             `).join("") : `<div class="empty-state"><p>Chưa có yêu cầu hỗ trợ tài khoản nào.</p></div>`}
@@ -2511,7 +2825,12 @@
       `;
     }
 
-    function reviewSectionHTML(type, targetId, title, highlightReviewId = null) {
+    window.setFeedbackFilter = function(val) {
+      activeFeedbackFilter = val;
+      route();
+    };
+
+    function reviewSectionHTML(type, targetId, title, highlightReviewId = null, highlightReplyId = null) {
       const reviews = getReviewsFor(type, targetId);
       const isAdmin = isCurrentAdmin();
       return `
@@ -2532,10 +2851,10 @@
             <span data-v="3"><i class="fas fa-star"></i></span><span data-v="4"><i class="fas fa-star"></i></span><span data-v="5"><i class="fas fa-star"></i></span>
           </div>
           <label>Nội dung đánh giá</label>
-          <textarea id="rv-content" required minlength="10" placeholder="Chia sẻ cảm nhận thực tế của bạn..."></textarea>
+          <textarea id="rv-content" required minlength="10" maxlength="3000" placeholder="Chia sẻ cảm nhận thực tế của bạn..."></textarea>
           <button type="submit" class="btn"><i class="fas fa-paper-plane"></i> Gửi đánh giá</button>
         </form>
-        <div class="fade-up">${reviews.length ? reviews.map(r => reviewCardHTML(r, isAdmin, highlightReviewId)).join("") : `
+        <div class="fade-up">${reviews.length ? reviews.map(r => reviewCardHTML(r, isAdmin, highlightReviewId, highlightReplyId)).join("") : `
           <div class="empty-state">
             <i class="far fa-comment-dots"></i>
             <p>Chưa có đánh giá nào. Hãy là người đầu tiên!</p>
@@ -2543,10 +2862,10 @@
       `;
     }
 
-    function reviewCardHTML(r, isAdmin = false, highlightReviewId = null) {
+    function reviewCardHTML(r, isAdmin = false, highlightReviewId = null, highlightReplyId = null) {
       const hasLiked = Boolean(currentUser && (r.likedBy || []).includes(currentUser.id));
       const mine = isMine(r);
-      const isHighlighted = r.id === highlightReviewId;
+      const isHighlighted = r.id === highlightReviewId && !highlightReplyId;
       return `
         <div class="review ${isHighlighted ? "highlighted" : ""} ${r.isAdmin ? "is-admin-comment" : ""}" id="review-${r.id}">
           <div class="review-head">
@@ -2559,8 +2878,9 @@
               ${r.replies.map(reply => {
                 const replyLiked = Boolean(currentUser && (reply.likedBy || []).includes(currentUser.id));
                 const replyMine = isMine(reply);
+                const replyHighlighted = reply.id === highlightReplyId;
                 return `
-                <div class="reply-item ${reply.isAdmin ? "is-admin-comment" : ""} ${reply.parentReplyId ? "is-sub-reply" : ""}" id="reply-${reply.id}">
+                <div class="reply-item ${reply.isAdmin ? "is-admin-comment" : ""} ${reply.parentReplyId ? "is-sub-reply" : ""} ${replyHighlighted ? "highlighted" : ""}" id="reply-${reply.id}">
                   <div class="reply-head">
                     <span class="reply-author"><i class="fas fa-reply" style="transform: scaleX(-1); font-size:0.8rem;"></i> ${escapeHtml(reply.author || "Thành viên")}${replyMine ? '<span class="own-badge">Bạn</span>' : ""} ${reply.isAdmin ? '<span class="admin-badge">ADMIN</span>' : ""}</span>
                     <span class="reply-date" title="${exactTime(reply.createdAt)}">${timeAgo(reply.createdAt)}</span>
@@ -2569,7 +2889,9 @@
                   <div class="reply-actions">
                     <button type="button" class="helpful ${replyLiked ? "active" : ""}" onclick="likeReply('${r.id}','${reply.id}')"><i class="fas fa-thumbs-up"></i> Hữu ích (${reply.likes || 0})</button>
                     <button type="button" onclick="replyToReply('${r.id}','${reply.id}')" style="color:var(--primary);"><i class="fas fa-reply"></i> Phản hồi</button>
-                    ${replyMine ? `<button type="button" onclick="openMyEdit('reply','${r.id}','${reply.id}')"><i class="fas fa-edit"></i> Sửa</button><button type="button" class="del" onclick="deleteMyReply('${r.id}','${reply.id}')"><i class="fas fa-trash"></i> Xóa</button>` : ""}
+                    ${replyMine
+                      ? `<button type="button" onclick="openMyEdit('reply','${r.id}','${reply.id}')"><i class="fas fa-edit"></i> Sửa</button><button type="button" class="del" onclick="deleteMyReply('${r.id}','${reply.id}')"><i class="fas fa-trash"></i> Xóa</button>`
+                      : `<button type="button" class="del" onclick="openReportModal('${r.id}','${reply.id}')"><i class="fas fa-flag"></i> Báo cáo</button>`}
                     ${isAdmin ? `<button type="button" class="del" style="margin-left:auto;" onclick="adminDeleteReply('${r.id}', '${reply.id}')" title="Xóa phản hồi"><i class="fas fa-trash"></i> Xóa (Admin)</button>` : ""}
                   </div>
                 </div>`;
@@ -2596,7 +2918,7 @@
                 <input type="checkbox" id="reply-as-admin-${r.id}" style="width:16px; height:16px; margin:0;"> Đăng với tư cách Admin (Nổi bật)
               </label>
             </div>` : ""}
-            <textarea id="reply-content-${r.id}" rows="3" placeholder="Nhập nội dung phản hồi..." style="margin-bottom:12px; padding:10px 14px; font-size:0.9rem;"></textarea>
+            <textarea id="reply-content-${r.id}" rows="3" maxlength="2000" placeholder="Nhập nội dung phản hồi..." style="margin-bottom:12px; padding:10px 14px; font-size:0.9rem;"></textarea>
             <div style="display:flex; gap:12px;">
               <button id="reply-btn-${r.id}" class="btn btn-sm" onclick="submitReply('${r.id}')" style="background:var(--primary);"><i class="fas fa-paper-plane"></i> Gửi phản hồi</button>
               <button class="btn btn-sm" style="background:#e2e8f0; color:#334155; box-shadow:none;" onclick="closeReplyForm('${r.id}')">Hủy</button>
@@ -2672,7 +2994,7 @@
       const btn = document.getElementById(`reply-btn-${reviewId}`);
       if (btn) btn.disabled = true;
       const displayAuthor = isAdminReply ? "Quản trị viên" : myDisplayName();
-      const { error } = await supabaseClient.from("review_replies").insert({
+      const { data: insertedReply, error } = await supabaseClient.from("review_replies").insert({
         review_id: reviewId,
         user_id: currentUser.id,
         author: displayAuthor,
@@ -2681,16 +3003,17 @@
         parent_reply_id: target?.parentReplyId || null,
         reply_to_user_id: target?.toUserId || null,
         reply_to_author: target?.toAuthor || null
-      });
+      }).select("id").single();
       if (btn) btn.disabled = false;
       if (error) { alert("Lỗi gửi phản hồi: " + error.message); return; }
       delete replyTargetMap[reviewId];
 
+      const newReplyId = insertedReply?.id || null;
       if (target?.toUserId) {
-        await pushNotif(target.toUserId, "reply", rev, displayAuthor, content);
+        await pushNotif(target.toUserId, "reply", rev, displayAuthor, content, newReplyId);
       }
       if (rev.userId && rev.userId !== target?.toUserId) {
-        await pushNotif(rev.userId, "reply", rev, displayAuthor, content);
+        await pushNotif(rev.userId, "reply", rev, displayAuthor, content, newReplyId);
       }
       await syncFromSupabase();
       rerender();
@@ -2725,11 +3048,11 @@
       if (already) {
         await supabaseClient.from("reply_likes").delete().eq("reply_id", replyId).eq("user_id", currentUser.id);
         await supabaseClient.from("notifications").delete()
-          .eq("type", "like").eq("review_id", reviewId).eq("actor_id", currentUser.id).eq("to_user_id", rep.userId);
+          .eq("type", "like").eq("review_id", reviewId).eq("reply_id", replyId).eq("actor_id", currentUser.id).eq("to_user_id", rep.userId);
       } else {
         const { error } = await supabaseClient.from("reply_likes").insert({ reply_id: replyId, user_id: currentUser.id });
         if (error) { alert("Lỗi đánh dấu hữu ích: " + error.message); return; }
-        await pushNotif(rep.userId, "like", rev, myDisplayName(), rep.content);
+        await pushNotif(rep.userId, "like", rev, myDisplayName(), rep.content, replyId);
       }
       await syncFromSupabase();
       rerender();
@@ -2766,6 +3089,42 @@
     };
 
     /* ================= ADMIN ACTIONS ================= */
+    window.adminSendResponse = async function(sourceType, sourceId) {
+      if (!supabaseClient || !isCurrentAdmin()) return;
+      if (!["support", "feedback", "report"].includes(sourceType)) return;
+      const field = document.getElementById(`admin-response-${sourceType}-${sourceId}`);
+      const message = field?.value.trim() || "";
+      if (message.length < 5 || message.length > 3000) {
+        alert("Phản hồi cần có từ 5 đến 3.000 ký tự.");
+        return;
+      }
+      const button = field?.parentElement?.querySelector("button");
+      if (button) button.disabled = true;
+      try {
+        const titleMap = {
+          support: "Phản hồi yêu cầu hỗ trợ tài khoản",
+          feedback: "Phản hồi góp ý / phản ánh",
+          report: "Kết quả xử lý báo cáo nội dung"
+        };
+        const { error } = await supabaseClient.from("admin_responses").insert({
+          source_type: sourceType,
+          source_id: sourceId,
+          title: titleMap[sourceType],
+          message
+        });
+        if (error) throw error;
+        if (field) field.value = "";
+        await syncFromSupabase();
+        alert("Đã gửi phản hồi! Người dùng sẽ nhận thông báo ở quả chuông và xem được trong mục Hỗ trợ & Góp ý.");
+        route();
+      } catch (error) {
+        console.error("Admin response error:", error);
+        alert("Không gửi được phản hồi: " + (error?.message || "Lỗi không xác định"));
+      } finally {
+        if (button) button.disabled = false;
+      }
+    };
+
     window.adminSaveSupportTicket = async function(id) {
       if (!supabaseClient || !isCurrentAdmin()) return;
       const status = document.getElementById(`support-status-${id}`)?.value;
@@ -2784,6 +3143,14 @@
       route();
     };
 
+    window.adminDeleteSupportTicket = async function(id) {
+      if (!supabaseClient || !isCurrentAdmin() || !confirm("Xóa yêu cầu hỗ trợ này khỏi danh sách?")) return;
+      const { error } = await supabaseClient.from("support_tickets").delete().eq("id", id);
+      if (error) { alert("Không xóa được yêu cầu: " + error.message); return; }
+      await syncFromSupabase();
+      route();
+    };
+
     window.openEditLecturerModal = function(id) {
       if (!isCurrentAdmin()) return;
       const l = getLecturer(id);
@@ -2794,6 +3161,8 @@
       document.getElementById("edit-lect-name").value = l.name;
       document.getElementById("edit-lect-degree").value = l.degree;
       sel.value = facultyForLecturer(l)?.id || FACULTIES[0].id;
+      const verBox = document.getElementById("edit-lect-verified");
+      if (verBox) verBox.checked = l.sourceType !== "community";
       document.getElementById("editLecturerModal").classList.add("active");
     };
     window.saveEditedLecturer = async function() {
@@ -2802,8 +3171,10 @@
       const name = toTitleCase(document.getElementById("edit-lect-name").value.trim());
       const degree = document.getElementById("edit-lect-degree").value.trim();
       const facultyId = document.getElementById("edit-lect-faculty").value;
+      const verified = document.getElementById("edit-lect-verified")?.checked;
       const { error } = await supabaseClient.from("lecturer_records").upsert({
-        id, name, degree, faculty_id: facultyId, status: "approved"
+        id, name, degree, faculty_id: facultyId, status: "approved",
+        source_type: verified ? "admin" : "community"
       });
       if (error) { alert("Lỗi lưu giảng viên: " + error.message); return; }
       closeModal("editLecturerModal");
@@ -2816,7 +3187,8 @@
       const l = getLecturer(id);
       await supabaseClient.from("reviews").delete().eq("target_type", "lecturer").eq("target_id", id);
       await supabaseClient.from("lecturer_records").upsert({
-        id, name: l?.name || id, degree: l?.degree || "", faculty_id: l?.facultyId || "", status: "deleted"
+        id, name: l?.name || id, degree: l?.degree || "", faculty_id: l?.facultyId || "",
+        status: "deleted", source_type: l?.sourceType || "admin"
       });
       await syncFromSupabase();
       alert("Đã xóa giảng viên!");
@@ -2871,15 +3243,22 @@
         return;
       }
       if (!data || data.length === 0) {
-        alert("Supabase chưa cho phép xóa từ này (0 dòng bị xóa). Hãy chạy lệnh SQL cấp quyền DELETE cho bảng forbidden_words.");
+        alert("Supabase chưa cho phép xóa từ này (0 dòng bị xóa). Hãy chạy lại đoạn SQL mới.");
         return;
       }
       await syncFromSupabase();
       route();
     };
     window.deleteReview = async function(reviewId, reportId) {
-      if (!supabaseClient || !isCurrentAdmin()) return;
+      if (!supabaseClient || !isCurrentAdmin() || !confirm("Xóa đánh giá vi phạm này?")) return;
       await supabaseClient.from("reviews").delete().eq("id", reviewId);
+      if (reportId) await supabaseClient.from("reports").delete().eq("id", reportId);
+      await syncFromSupabase();
+      route();
+    };
+    window.deleteReportedReply = async function(reviewId, replyId, reportId) {
+      if (!supabaseClient || !isCurrentAdmin() || !confirm("Xóa phản hồi vi phạm này?")) return;
+      await supabaseClient.from("review_replies").delete().eq("id", replyId);
       if (reportId) await supabaseClient.from("reports").delete().eq("id", reportId);
       await syncFromSupabase();
       route();
@@ -2909,7 +3288,7 @@
       route();
     };
     window.adminDeleteFeedback = async function(id) {
-      if (!supabaseClient || !isCurrentAdmin() || !confirm("Đánh dấu đã xử lý và xóa phản ánh này?")) return;
+      if (!supabaseClient || !isCurrentAdmin() || !confirm("Đánh dấu đã xử lý và xóa mục này khỏi danh sách?")) return;
       await supabaseClient.from("feedbacks").delete().eq("id", id);
       await syncFromSupabase();
       route();
@@ -2956,8 +3335,15 @@
       rerender();
     };
 
-    window.openReportModal = function(reviewId) {
+    window.openReportModal = function(reviewId, replyId = "") {
+      if (!currentUser) {
+        openAuthModal("login");
+        setAuthMessage("Bạn cần đăng nhập trước khi gửi báo cáo vi phạm.", "info");
+        return;
+      }
       document.getElementById("reportReviewId").value = reviewId;
+      document.getElementById("reportReplyId").value = replyId || "";
+      document.getElementById("reportModalTitle").textContent = replyId ? "Báo cáo bình luận phản hồi" : "Báo cáo đánh giá";
       document.getElementById("reportReason").value = "";
       document.getElementById("reportModal").classList.add("active");
     };
@@ -2966,15 +3352,14 @@
       if (!supabaseClient) { alert("Chưa kết nối Supabase."); return; }
       if (!currentUser) { closeModal("reportModal"); openAuthModal("login"); setAuthMessage("Bạn cần đăng nhập để gửi báo cáo.", "info"); return; }
       const reviewId = document.getElementById("reportReviewId").value;
+      const replyId = document.getElementById("reportReplyId").value || null;
       const reason = document.getElementById("reportReason").value.trim();
       if (reason.length < 5 || reason.length > 1000) { alert("Lý do báo cáo cần từ 5 đến 1.000 ký tự."); return; }
       const btn = document.getElementById("reportSubmitBtn");
       if (btn) btn.disabled = true;
-      const { error } = await supabaseClient.from("reports").insert({
-        review_id: reviewId,
-        reporter_id: currentUser?.id || null,
-        reason
-      });
+      const payload = { review_id: reviewId, reporter_id: currentUser.id, reason };
+      if (replyId) payload.reply_id = replyId;
+      const { error } = await supabaseClient.from("reports").insert(payload);
       if (btn) btn.disabled = false;
       if (error) { alert("Gửi báo cáo thất bại: " + error.message); return; }
       closeModal("reportModal");
@@ -2988,17 +3373,19 @@
       const parts = path.split("/").filter(Boolean);
       const params = new URLSearchParams(queryString || "");
       const highlightReviewId = params.get("reviewId");
+      const highlightReplyId = params.get("replyId");
 
       let html = "";
       if (parts.length === 0) html = viewHome();
       else if (parts[0] === "majors") html = viewMajors();
       else if (parts[0] === "faculty" && parts[2] === "majors") html = viewFacultyMajors(parts[1]);
       else if (parts[0] === "faculty") html = viewFaculty(parts[1]);
-      else if (parts[0] === "major") html = viewMajor(parts[1], highlightReviewId);
+      else if (parts[0] === "major") html = viewMajor(parts[1], highlightReviewId, highlightReplyId);
       else if (parts[0] === "lecturers") html = viewLecturers();
-      else if (parts[0] === "lecturer") html = viewLecturer(parts[1], highlightReviewId);
-      else if (parts[0] === "feedback") html = viewFeedback();
-      else if (parts[0] === "support") html = viewSupport();
+      else if (parts[0] === "lecturer") html = viewLecturer(parts[1], highlightReviewId, highlightReplyId);
+      else if (parts[0] === "feedback") html = viewSupportCenter("report-info");
+      else if (parts[0] === "support") html = viewSupportCenter("report-info");
+      else if (parts[0] === "response") html = `<div class="loading-box"><i class="fas fa-spinner fa-spin"></i> Đang tải phản hồi...</div>`;
       else if (parts[0] === "add-lecturer") html = viewAddLecturer();
       else if (parts[0] === "admin") html = viewAdmin();
       else html = `<div class="empty-state fade-up"><h2>404</h2><a href="#/" class="btn">Về trang chủ</a></div>`;
@@ -3009,20 +3396,24 @@
       if (parts.length === 0) document.querySelector('.main-nav a[href="#/"]')?.classList.add("active");
       else if (parts[0] === "majors" || parts[0] === "major" || (parts[0] === "faculty" && parts[2] === "majors")) document.querySelector('.main-nav a[href="#/majors"]')?.classList.add("active");
       else if (parts[0] === "lecturers" || parts[0] === "lecturer" || parts[0] === "faculty") document.querySelector('.main-nav a[href="#/lecturers"]')?.classList.add("active");
-      else if (parts[0] === "feedback") document.querySelector('.main-nav a[href="#/feedback"]')?.classList.add("active");
+      else if (parts[0] === "feedback" || parts[0] === "support" || parts[0] === "response") document.querySelector('.main-nav a[href="#/support"]')?.classList.add("active");
+      if (parts[0] === "response" && parts[1]) loadAdminResponsePage(parts[1]);
 
       if (document.querySelector("#app .review-form")) initReviewForm();
       if (document.querySelector("#app .star-input")) initStarInput();
       if (document.getElementById("addLecturerForm")) initAddLecturerForm();
       if (document.getElementById("adminAddLecturerForm")) initAdminAddLecturerForm();
       if (document.getElementById("adminAddMajorForm")) initAdminAddMajorForm();
-      if (document.getElementById("feedbackForm")) initFeedbackForm();
+      if (document.getElementById("reportInfoForm")) initReportInfoForm();
+      if (document.getElementById("suggestForm")) initSuggestForm();
       if (document.getElementById("supportForm")) initSupportForm();
       if (document.getElementById("adminAddNoticeForm")) initAdminAddNoticeForm();
 
-      if (highlightReviewId) {
-        const el = document.getElementById(`review-${highlightReviewId}`);
-        if (el) setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "center" }), 100);
+      const focusEl = highlightReplyId
+        ? document.getElementById(`reply-${highlightReplyId}`)
+        : (highlightReviewId ? document.getElementById(`review-${highlightReviewId}`) : null);
+      if (focusEl) {
+        setTimeout(() => focusEl.scrollIntoView({ behavior: "smooth", block: "center" }), 120);
       } else {
         window.scrollTo(0, 0);
       }
@@ -3071,7 +3462,7 @@
         const content = document.getElementById("new-lect-review").value.trim();
         const rating = parseInt(document.querySelector("#app .star-input")?.dataset.rating || "5", 10);
         if (name.length < 3) { alert("Tên giảng viên quá ngắn!"); return; }
-        if (content.length < 10) { alert("Nội dung đánh giá cần ít nhất 10 ký tự!"); return; }
+        if (content.length < 10 || content.length > 3000) { alert("Nội dung đánh giá cần từ 10 đến 3.000 ký tự!"); return; }
         const bad = containsForbiddenWord(content);
         if (bad) { alert(`Nội dung chứa từ khóa không phù hợp ("${bad}").`); return; }
 
@@ -3135,23 +3526,69 @@
       });
     }
 
-    function initFeedbackForm() {
-      document.getElementById("feedbackForm")?.addEventListener("submit", async (event) => {
+    function initReportInfoForm() {
+      document.getElementById("reportInfoForm")?.addEventListener("submit", async (event) => {
         event.preventDefault();
         if (!supabaseClient) { alert("Chưa kết nối Supabase."); return; }
-        if (!currentUser) { openAuthModal("login"); setAuthMessage("Bạn cần đăng nhập để gửi góp ý hoặc phản ánh.", "info"); return; }
+        if (!currentUser) { openAuthModal("login"); setAuthMessage("Bạn cần đăng nhập để gửi phản ánh sai sót.", "info"); return; }
         const btn = event.currentTarget.querySelector("button[type='submit']");
-        const type = document.getElementById("fb-type").value;
-        const target = document.getElementById("fb-target").value.trim();
-        const content = document.getElementById("fb-content").value.trim();
+        const type = document.getElementById("ri-type").value;
+        const target = document.getElementById("ri-target").value.trim();
+        let targetType = document.getElementById("ri-target-type").value || null;
+        let targetId = document.getElementById("ri-target-id").value || null;
+        const content = document.getElementById("ri-content").value.trim();
         if (content.length < 10 || content.length > 2000) { alert("Nội dung cần từ 10 đến 2.000 ký tự."); return; }
+
+        // Nếu người dùng tự gõ tên giảng viên / ngành mà không bấm từ nút báo cáo, thử tự khớp ID
+        if ((!targetType || !targetId) && target) {
+          const auto = resolveTargetLink("", "", target, type);
+          if (auto) {
+            if (auto.href.startsWith("#/lecturer/")) { targetType = "lecturer"; targetId = auto.href.replace("#/lecturer/", ""); }
+            else if (auto.href.startsWith("#/major/")) { targetType = "major"; targetId = auto.href.replace("#/major/", ""); }
+          }
+        }
+
         btn.disabled = true;
         const { error } = await supabaseClient.from("feedbacks").insert({
-          user_id: currentUser.id, type, target: target || null, content
+          user_id: currentUser.id,
+          category: "report_info",
+          type,
+          target: target || null,
+          target_type: targetType,
+          target_id: targetId,
+          content
         });
         btn.disabled = false;
         if (error) { alert("Gửi phản ánh lỗi: " + error.message); return; }
-        alert("Cảm ơn bạn! Phản ánh đã được gửi đến Admin.");
+        alert("Cảm ơn bạn! Phản ánh sai sót đã được gửi đến Admin.");
+        event.currentTarget.reset();
+        document.getElementById("ri-target-type").value = "";
+        document.getElementById("ri-target-id").value = "";
+      });
+    }
+
+    function initSuggestForm() {
+      document.getElementById("suggestForm")?.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        if (!supabaseClient) { alert("Chưa kết nối Supabase."); return; }
+        if (!currentUser) { openAuthModal("login"); setAuthMessage("Bạn cần đăng nhập để gửi góp ý.", "info"); return; }
+        const btn = event.currentTarget.querySelector("button[type='submit']");
+        const type = document.getElementById("sg-type").value;
+        const title = document.getElementById("sg-title").value.trim();
+        const content = document.getElementById("sg-content").value.trim();
+        if (title.length < 4 || title.length > 120) { alert("Tiêu đề cần từ 4 đến 120 ký tự."); return; }
+        if (content.length < 10 || content.length > 2000) { alert("Nội dung góp ý cần từ 10 đến 2.000 ký tự."); return; }
+        btn.disabled = true;
+        const { error } = await supabaseClient.from("feedbacks").insert({
+          user_id: currentUser.id,
+          category: "suggest",
+          type,
+          target: title,
+          content
+        });
+        btn.disabled = false;
+        if (error) { alert("Gửi góp ý lỗi: " + error.message); return; }
+        alert("Cảm ơn bạn đã đóng góp ý kiến cho HUIT Review!");
         event.currentTarget.reset();
       });
     }
@@ -3161,10 +3598,9 @@
         event.preventDefault();
         if (!supabaseClient) { alert("Hệ thống chưa kết nối Supabase. Vui lòng thử lại sau."); return; }
         const form = event.currentTarget;
-        // Honeypot: bot điền trường ẩn sẽ không được ghi vào database.
         if (document.getElementById("support-website")?.value.trim()) {
           form.reset();
-          alert("Yêu cầu đã được ghi nhận nếu thông tin hợp lệ.");
+          alert("Yêu cầu đã được ghi nhận.");
           return;
         }
         const username = normalizeUsername(document.getElementById("support-username").value);
@@ -3178,15 +3614,22 @@
         btn.disabled = true;
         try {
           const { error } = await supabaseClient.from("support_tickets").insert({
-            username, contact, category, message, status: "new"
+            username, contact, category, message, status: "new",
+            user_id: currentUser?.id || null
           });
           if (error) throw error;
           form.reset();
-          alert("Đã gửi yêu cầu hỗ trợ. Admin sẽ liên hệ qua thông tin bạn cung cấp.");
+          if (currentUser) {
+            const usernameField = document.getElementById("support-username");
+            if (usernameField) usernameField.value = currentProfile?.username || username;
+            alert("Đã gửi yêu cầu hỗ trợ! Khi Admin phản hồi, thông báo sẽ xuất hiện ở quả chuông.");
+          } else {
+            alert("Đã gửi yêu cầu hỗ trợ! Admin sẽ liên hệ qua kênh liên hệ bạn vừa cung cấp.");
+          }
         } catch (error) {
           console.error("Support request error:", error);
           alert(error?.message?.includes("HUIT_RATE_LIMIT")
-            ? "Bạn vừa gửi yêu cầu gần đây. Vui lòng chờ trước khi gửi lại."
+            ? "Bạn vừa gửi yêu cầu gần đây. Vui lòng chờ vài phút trước khi gửi lại."
             : "Không gửi được yêu cầu hỗ trợ: " + (error?.message || "Lỗi không xác định"));
         } finally {
           btn.disabled = false;
