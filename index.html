@@ -62,7 +62,7 @@
     .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.9rem;}
     .search-results { position: absolute; top: calc(100% + 10px); left: 0; right: 0; background: #fff; border: 1px solid var(--border); border-radius: var(--radius); max-height: 350px; overflow-y: auto; display: none; z-index: 60; box-shadow: var(--shadow-hover); }
     .search-results.active { display: block; animation: fadeInUp 0.2s ease-out;}
-    .search-results a { display: block; padding: 12px 16px; border-bottom: 1px solid var(--border); color: var(--text); font-size: 0.9rem;}
+    .search-results a { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--border); color: var(--text); font-size: 0.9rem;}
     .search-results a:hover { background: #f8fafc; color: var(--primary); }
     .search-results a i { margin-right: 10px; color: var(--primary); }
 
@@ -184,7 +184,6 @@
     .auth-btn-primary:hover { background:var(--primary-dark); color:#fff; }
     .auth-btn-outline { background:#fff; color:var(--primary); }
     .auth-btn-outline:hover { background:#e6f0fb; color:var(--primary-dark); }
-    .auth-user { color:var(--primary-dark); font-size:.82rem; font-weight:700; max-width:135px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     .auth-modal-box { max-width:440px; }
     .auth-modal-title { display:flex; justify-content:space-between; align-items:center; gap:12px; }
     .auth-close { border:0; background:#f1f5f9; color:#475569; border-radius:50%; width:34px; height:34px; cursor:pointer; font-size:1rem; }
@@ -204,7 +203,6 @@
     .migration-notice { margin:18px 0 0; padding:12px 16px; border:1px solid #f6d58b; border-radius:10px; background:#fffbeb; color:#92400e; font-size:.85rem; }
     @media (max-width:900px) {
       .auth-actions { margin-left:auto; }
-      .auth-user { max-width:95px; }
       .auth-btn { padding:8px 10px; font-size:.78rem; }
     }
 
@@ -444,7 +442,6 @@
     .card-rating-row { margin-top:auto; padding-top:14px; display:flex; justify-content:space-between; align-items:center; gap:8px; }
     .card-rating-pill { display:inline-flex; align-items:center; gap:6px; font-size:.86rem; }
     .card-rating-pill b { color:var(--accent); font-size:.98rem; }
-    .search-results a { display:flex; align-items:center; justify-content:space-between; gap:10px; }
     .search-result-label { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     .search-star { flex-shrink:0; color:var(--accent); font-weight:700; font-size:.82rem; display:inline-flex; align-items:center; gap:4px; }
     .search-star i { margin-right:0 !important; color:var(--accent) !important; }
@@ -568,6 +565,8 @@
     .admin-catalog-row-main{min-width:220px;flex:1}.admin-catalog-row-title{font-weight:800;color:var(--primary-dark)}
     .admin-catalog-row-meta{font-size:.8rem;color:var(--muted);margin-top:3px}
     .admin-catalog-row-actions{display:flex;gap:7px;flex-wrap:wrap}
+    .inline-link-btn{border:0;background:none;padding:0;color:var(--primary);font:inherit;font-weight:700;cursor:pointer;text-decoration:underline;}
+    .inline-link-btn:hover{color:var(--primary-dark);}
     @media(max-width:650px){.admin-catalog-toolbar{grid-template-columns:1fr}.admin-catalog-row-main{min-width:0}.admin-catalog-row-actions{width:100%}.admin-catalog-row-actions .btn{flex:1;justify-content:center}}
   </style>
 </head>
@@ -662,7 +661,7 @@
       <label for="edit-major-faculty">Thuộc khoa</label>
       <select id="edit-major-faculty" required></select>
       <div style="display:flex;gap:12px;margin-top:25px;">
-        <button class="btn" type="button" onclick="saveEditedMajor()" style="margin:0;flex:1;justify-content:center;">Lưu thay đổi</button>
+        <button id="edit-major-save-btn" class="btn" type="button" onclick="saveEditedMajor()" style="margin:0;flex:1;justify-content:center;">Lưu thay đổi</button>
         <button class="btn" type="button" onclick="closeModal('editMajorModal')" style="background:#cbd5e1;color:#334155;margin:0;flex:1;justify-content:center;box-shadow:none;">Hủy</button>
       </div>
     </div>
@@ -691,7 +690,7 @@
         </label>
       </div>
       <div style="display:flex; gap:12px; margin-top:25px;">
-        <button class="btn" onclick="saveEditedReview()" style="margin:0; flex:1; justify-content:center;">Lưu thay đổi</button>
+        <button id="edit-review-save-btn" class="btn" type="button" onclick="saveEditedReview()" style="margin:0; flex:1; justify-content:center;">Lưu thay đổi</button>
         <button class="btn" style="background:#cbd5e1; color:#334155; margin:0; flex:1; justify-content:center; box-shadow:none;" onclick="closeModal('editReviewModal')">Hủy</button>
       </div>
     </div>
@@ -887,11 +886,6 @@
       "7510605":"iem", "7810101":"dulichamthuc", "7510601":"iem"
     };
     const FACULTY_BY_ID = Object.fromEntries(FACULTIES.map(f => [f.id, f]));
-    const FACULTY_BY_MAJOR_NAME = Object.fromEntries(DEFAULT_MAJORS.map(m => [m.name.toLocaleLowerCase('vi'), FACULTY_BY_ID[MAJOR_FACULTY[m.code]]?.id || null]));
-    function facultyForMajor(major) {
-      const found = DEFAULT_MAJORS.find(m => m.name.toLocaleLowerCase('vi') === String(major || '').toLocaleLowerCase('vi'));
-      return found ? FACULTY_BY_ID[MAJOR_FACULTY[found.code]] || null : null;
-    }
     function facultyForLecturer(lecturer) {
       // Lecturer profiles are assigned to a faculty only; no teaching-major field is used.
       return FACULTY_BY_ID[lecturer?.facultyId] || null;
@@ -1402,6 +1396,7 @@
     let currentProfile = null;
     let authMode = "login";
     let authReady = false;
+    let authActionInProgress = false;
     let notifOpen = false;
     let activeAdminTab = "tab-admin-activity";
     let activeFeedbackFilter = "all";
@@ -1419,20 +1414,33 @@
       majors: { search: "", faculty: "", sort: "default" }
     };
 
+    let REVIEW_STATS_MAP = new Map();
+    function rebuildReviewStats() {
+      const map = new Map();
+      for (const r of REVIEWS_CACHE) {
+        const key = `${r.targetType}:${r.targetId}`;
+        let entry = map.get(key);
+        if (!entry) {
+          entry = { count: 0, sum: 0, avg: null, reviews: [] };
+          map.set(key, entry);
+        }
+        entry.count += 1;
+        entry.sum += Number(r.rating) || 0;
+        entry.reviews.push(r);
+      }
+      for (const entry of map.values()) {
+        entry.avg = entry.count ? (entry.sum / entry.count) : null;
+        entry.reviews.sort((a, b) => (b.likes || 0) - (a.likes || 0) || b.createdAt.localeCompare(a.createdAt));
+      }
+      REVIEW_STATS_MAP = map;
+    }
+    function getReviewStats(type, targetId) {
+      return REVIEW_STATS_MAP.get(`${type}:${targetId}`) || { count: 0, sum: 0, avg: null, reviews: [] };
+    }
     function getReviews() { return REVIEWS_CACHE; }
-    function getReviewCount(type, targetId) {
-      return REVIEWS_CACHE.filter(r => r.targetType === type && r.targetId === targetId).length;
-    }
-    function getReviewsFor(type, targetId) {
-      return REVIEWS_CACHE
-        .filter(r => r.targetType === type && r.targetId === targetId)
-        .sort((a, b) => (b.likes || 0) - (a.likes || 0) || b.createdAt.localeCompare(a.createdAt));
-    }
-    function avgRating(type, targetId) {
-      const rs = getReviewsFor(type, targetId);
-      if (!rs.length) return null;
-      return rs.reduce((s, r) => s + r.rating, 0) / rs.length;
-    }
+    function getReviewCount(type, targetId) { return getReviewStats(type, targetId).count; }
+    function getReviewsFor(type, targetId) { return getReviewStats(type, targetId).reviews; }
+    function avgRating(type, targetId) { return getReviewStats(type, targetId).avg; }
     function starsHTML(rating) {
       let html = '<span class="stars">';
       const r = Number(rating) || 0;
@@ -1699,91 +1707,106 @@
         const results = await Promise.all(queries);
         const [revRes, repRes, likeRes, repLikeRes, lectRes, majRes, notRes, wordRes] = results;
 
-        // 1. Reviews + Replies + Likes
-        const likesByReply = {};
-        (repLikeRes?.data || []).forEach(lk => {
-          (likesByReply[lk.reply_id] ||= []).push(lk.user_id);
-        });
-        const repliesByReview = {};
-        (repRes?.data || []).forEach(rep => {
-          const likedBy = likesByReply[rep.id] || [];
-          (repliesByReview[rep.review_id] ||= []).push({
-            id: rep.id,
-            userId: rep.user_id,
-            author: rep.author,
-            isAdmin: rep.is_admin,
-            content: rep.content,
-            parentReplyId: rep.parent_reply_id || null,
-            replyToUserId: rep.reply_to_user_id || null,
-            replyToAuthor: rep.reply_to_author || null,
-            likedBy,
-            likes: likedBy.length,
-            createdAt: rep.created_at,
-            editedAt: rep.edited_at
+        // 1. Reviews + Replies + Likes (chỉ ghi đè khi truy vấn không lỗi)
+        if (!revRes?.error) {
+          const likesByReply = {};
+          if (!repLikeRes?.error) {
+            (repLikeRes?.data || []).forEach(lk => {
+              (likesByReply[lk.reply_id] ||= []).push(lk.user_id);
+            });
+          }
+          const repliesByReview = {};
+          if (!repRes?.error) {
+            (repRes?.data || []).forEach(rep => {
+              const likedBy = likesByReply[rep.id] || [];
+              (repliesByReview[rep.review_id] ||= []).push({
+                id: rep.id,
+                userId: rep.user_id,
+                author: rep.author,
+                isAdmin: rep.is_admin,
+                content: rep.content,
+                parentReplyId: rep.parent_reply_id || null,
+                replyToUserId: rep.reply_to_user_id || null,
+                replyToAuthor: rep.reply_to_author || null,
+                likedBy,
+                likes: likedBy.length,
+                createdAt: rep.created_at,
+                editedAt: rep.edited_at
+              });
+            });
+          }
+          const likesByReview = {};
+          if (!likeRes?.error) {
+            (likeRes?.data || []).forEach(lk => {
+              (likesByReview[lk.review_id] ||= []).push(lk.user_id);
+            });
+          }
+          REVIEWS_CACHE = (revRes?.data || []).map(r => {
+            const likedBy = likesByReview[r.id] || [];
+            return {
+              id: r.id,
+              userId: r.user_id,
+              targetType: r.target_type,
+              targetId: r.target_id,
+              author: r.author,
+              isAdmin: r.is_admin,
+              rating: r.rating,
+              content: r.content,
+              createdAt: r.created_at,
+              editedAt: r.edited_at,
+              likedBy,
+              likes: likedBy.length,
+              replies: repliesByReview[r.id] || []
+            };
           });
-        });
-        const likesByReview = {};
-        (likeRes?.data || []).forEach(lk => {
-          (likesByReview[lk.review_id] ||= []).push(lk.user_id);
-        });
-        REVIEWS_CACHE = (revRes?.data || []).map(r => {
-          const likedBy = likesByReview[r.id] || [];
-          return {
-            id: r.id,
-            userId: r.user_id,
-            targetType: r.target_type,
-            targetId: r.target_id,
-            author: r.author,
-            isAdmin: r.is_admin,
-            rating: r.rating,
-            content: r.content,
-            createdAt: r.created_at,
-            editedAt: r.edited_at,
-            likedBy,
-            likes: likedBy.length,
-            replies: repliesByReview[r.id] || []
-          };
-        });
+          rebuildReviewStats();
+        }
 
         // 2. Giảng viên
-        const lectMap = new Map(DEFAULT_LECTURERS.map(l => [l.id, { ...l }]));
-        const pendingList = [];
-        (lectRes?.data || []).forEach(rec => {
-          if (rec.status === "deleted") {
-            lectMap.delete(rec.id);
-          } else if (rec.status === "approved") {
-            lectMap.set(rec.id, {
-              id: rec.id, name: rec.name, degree: rec.degree,
-              facultyId: rec.faculty_id, sourceType: rec.source_type || "admin"
-            });
-          } else if (rec.status === "pending") {
-            pendingList.push({
-              id: rec.id, name: rec.name, degree: rec.degree,
-              facultyId: rec.faculty_id, sourceType: rec.source_type || "community",
-              createdAt: rec.created_at
-            });
-          }
-        });
-        DB.lecturers = [...lectMap.values()];
-        DB.pendingLecturers = pendingList;
+        if (!lectRes?.error) {
+          const lectMap = new Map(DEFAULT_LECTURERS.map(l => [l.id, { ...l }]));
+          const pendingList = [];
+          (lectRes?.data || []).forEach(rec => {
+            if (rec.status === "deleted") {
+              lectMap.delete(rec.id);
+            } else if (rec.status === "approved") {
+              lectMap.set(rec.id, {
+                id: rec.id, name: rec.name, degree: rec.degree,
+                facultyId: rec.faculty_id, sourceType: rec.source_type || "admin"
+              });
+            } else if (rec.status === "pending") {
+              pendingList.push({
+                id: rec.id, name: rec.name, degree: rec.degree,
+                facultyId: rec.faculty_id, sourceType: rec.source_type || "community",
+                createdAt: rec.created_at
+              });
+            }
+          });
+          DB.lecturers = [...lectMap.values()];
+          DB.pendingLecturers = pendingList;
+        }
 
         // 3. Ngành học
-        const majMap = new Map(DEFAULT_MAJORS.map(m => [m.id, { ...m }]));
-        (majRes?.data || []).forEach(rec => {
-          if (rec.status === "deleted") {
-            majMap.delete(rec.id);
-          } else {
-            majMap.set(rec.id, { id: rec.id, code: rec.code, name: rec.name });
-            if (rec.faculty_id) MAJOR_FACULTY[rec.code] = rec.faculty_id;
-          }
-        });
-        DB.majors = [...majMap.values()];
+        if (!majRes?.error) {
+          const majMap = new Map(DEFAULT_MAJORS.map(m => [m.id, { ...m }]));
+          (majRes?.data || []).forEach(rec => {
+            if (rec.status === "deleted") {
+              majMap.delete(rec.id);
+            } else {
+              majMap.set(rec.id, { id: rec.id, code: rec.code, name: rec.name });
+              if (rec.faculty_id) MAJOR_FACULTY[rec.code] = rec.faculty_id;
+            }
+          });
+          DB.majors = [...majMap.values()];
+        }
 
         // 4. Thông báo trang chủ & từ khóa cấm
-        DB.notices = (notRes?.data || []).map(n => ({ id: n.id, title: n.title, content: n.content, createdAt: n.created_at }));
-        DB.forbiddenWords = wordRes?.error
-          ? [...DEFAULT_FORBIDDEN_WORDS]
-          : (wordRes?.data || []).map(w => w.word);
+        if (!notRes?.error) {
+          DB.notices = (notRes?.data || []).map(n => ({ id: n.id, title: n.title, content: n.content, createdAt: n.created_at }));
+        }
+        if (!wordRes?.error) {
+          DB.forbiddenWords = (wordRes?.data || []).map(w => w.word);
+        }
 
         // 5. Thông báo chuông cá nhân & Phản hồi từ Admin
         let idx = 8;
@@ -1791,24 +1814,30 @@
           const notifRes = results[idx++];
           const respRes = results[idx++];
           const userNotifRes = results[idx++];
-          NOTIFS_CACHE = (notifRes?.data || []).map(n => ({
-            id: n.id, toUserId: n.to_user_id, actorId: n.actor_id,
-            type: n.type, actor: n.actor, reviewId: n.review_id || null,
-            replyId: n.reply_id || null,
-            targetType: n.target_type || null, targetId: n.target_id || null,
-            responseId: n.response_id || null,
-            snippet: n.snippet, read: n.is_read, createdAt: n.created_at
-          }));
-          DB.adminResponses = (respRes?.data || []).map(x => ({
-            id: x.id, sourceType: x.source_type, sourceId: x.source_id,
-            toUserId: x.to_user_id, title: x.title, message: x.message,
-            createdAt: x.created_at
-          }));
-          USER_NOTIFS_CACHE = (userNotifRes?.data || []).map(n => ({
-            id: n.id, userId: n.user_id, senderId: n.sender_id,
-            type: n.type, title: n.title, message: n.message,
-            read: Boolean(n.is_read), createdAt: n.created_at
-          }));
+          if (!notifRes?.error) {
+            NOTIFS_CACHE = (notifRes?.data || []).map(n => ({
+              id: n.id, toUserId: n.to_user_id, actorId: n.actor_id,
+              type: n.type, actor: n.actor, reviewId: n.review_id || null,
+              replyId: n.reply_id || null,
+              targetType: n.target_type || null, targetId: n.target_id || null,
+              responseId: n.response_id || null,
+              snippet: n.snippet, read: n.is_read, createdAt: n.created_at
+            }));
+          }
+          if (!respRes?.error) {
+            DB.adminResponses = (respRes?.data || []).map(x => ({
+              id: x.id, sourceType: x.source_type, sourceId: x.source_id,
+              toUserId: x.to_user_id, title: x.title, message: x.message,
+              createdAt: x.created_at
+            }));
+          }
+          if (!userNotifRes?.error) {
+            USER_NOTIFS_CACHE = (userNotifRes?.data || []).map(n => ({
+              id: n.id, userId: n.user_id, senderId: n.sender_id,
+              type: n.type, title: n.title, message: n.message,
+              read: Boolean(n.is_read), createdAt: n.created_at
+            }));
+          }
         } else {
           NOTIFS_CACHE = [];
           USER_NOTIFS_CACHE = [];
@@ -1820,22 +1849,28 @@
           const repListRes = results[idx++];
           const fbRes = results[idx++];
           const supportRes = results[idx++];
-          DB.reportedReviews = (repListRes?.data || []).map(r => ({
-            id: r.id, reviewId: r.review_id, replyId: r.reply_id || null,
-            userId: r.reporter_id || null, reason: r.reason, createdAt: r.created_at
-          }));
-          DB.feedbacks = (fbRes?.data || []).map(f => ({
-            id: f.id, userId: f.user_id || null,
-            category: f.category || (f.type === "Góp ý chung" ? "suggest" : "report_info"),
-            type: f.type, target: f.target,
-            targetType: f.target_type || null, targetId: f.target_id || null,
-            content: f.content, createdAt: f.created_at
-          }));
-          DB.supportTickets = (supportRes?.data || []).map(t => ({
-            id: t.id, userId: t.user_id || null, username: t.username, contact: t.contact,
-            category: t.category, message: t.message, status: t.status || "new",
-            adminNote: t.admin_note || "", createdAt: t.created_at
-          }));
+          if (!repListRes?.error) {
+            DB.reportedReviews = (repListRes?.data || []).map(r => ({
+              id: r.id, reviewId: r.review_id, replyId: r.reply_id || null,
+              userId: r.reporter_id || null, reason: r.reason, createdAt: r.created_at
+            }));
+          }
+          if (!fbRes?.error) {
+            DB.feedbacks = (fbRes?.data || []).map(f => ({
+              id: f.id, userId: f.user_id || null,
+              category: f.category || (f.type === "Góp ý chung" ? "suggest" : "report_info"),
+              type: f.type, target: f.target,
+              targetType: f.target_type || null, targetId: f.target_id || null,
+              content: f.content, createdAt: f.created_at
+            }));
+          }
+          if (!supportRes?.error) {
+            DB.supportTickets = (supportRes?.data || []).map(t => ({
+              id: t.id, userId: t.user_id || null, username: t.username, contact: t.contact,
+              category: t.category, message: t.message, status: t.status || "new",
+              adminNote: t.admin_note || "", createdAt: t.created_at
+            }));
+          }
         } else {
           DB.reportedReviews = [];
           DB.feedbacks = [];
@@ -2000,6 +2035,7 @@
 
       submitButton.disabled = true;
       submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
+      authActionInProgress = true;
       try {
         const internalEmail = usernameToAuthEmail(username);
         if (authMode === "signup") {
@@ -2017,6 +2053,7 @@
           await loadCurrentProfile();
           await syncFromSupabase();
           subscribeUserNotifications();
+          subscribeAdminActivityRealtime();
           updateAuthActions();
           closeAuthModal();
           route();
@@ -2028,6 +2065,7 @@
           await loadCurrentProfile();
           await syncFromSupabase();
           subscribeUserNotifications();
+          subscribeAdminActivityRealtime();
           updateAuthActions();
           closeAuthModal();
           route();
@@ -2036,6 +2074,7 @@
         console.error("Auth error:", error);
         setAuthMessage(friendlyAuthError(error, authMode), "error");
       } finally {
+        authActionInProgress = false;
         submitButton.disabled = false;
         submitButton.innerHTML = authMode === "signup"
           ? '<i class="fas fa-user-plus"></i> Tạo tài khoản'
@@ -2045,15 +2084,20 @@
 
     window.logoutUser = async function() {
       if (!supabaseClient) return;
-      const { error } = await supabaseClient.auth.signOut();
-      if (error) { alert("Chưa đăng xuất được. Vui lòng thử lại."); return; }
-      unsubscribeUserNotifications();
-      unsubscribeAdminActivityRealtime();
-      currentUser = null;
-      currentProfile = null;
-      await syncFromSupabase();
-      updateAuthActions();
-      route();
+      authActionInProgress = true;
+      try {
+        const { error } = await supabaseClient.auth.signOut();
+        if (error) { alert("Chưa đăng xuất được. Vui lòng thử lại."); return; }
+        unsubscribeUserNotifications();
+        unsubscribeAdminActivityRealtime();
+        currentUser = null;
+        currentProfile = null;
+        await syncFromSupabase();
+        updateAuthActions();
+        route();
+      } finally {
+        authActionInProgress = false;
+      }
     };
 
     function subscribeUserNotifications() {
@@ -2123,7 +2167,7 @@
       route();
 
       supabaseClient.auth.onAuthStateChange((event, session) => {
-        if (event === "INITIAL_SESSION") return;
+        if (event === "INITIAL_SESSION" || authActionInProgress) return;
         const prevUserId = currentUser?.id || null;
         const nextUserId = session?.user?.id || null;
         if (prevUserId !== nextUserId) { unsubscribeUserNotifications(); unsubscribeAdminActivityRealtime(); }
@@ -2176,7 +2220,7 @@
           const isWarning = n.type === "warning";
           const iconClass = isWarning ? "warning" : "admin-response";
           const iconName = isWarning ? "fa-triangle-exclamation" : (n.type === "notice" ? "fa-bullhorn" : "fa-user-shield");
-          return `<div class="notif-item ${n.read ? "" : "unread"}" role="button" tabindex="0" onclick="event.stopPropagation();openUserNotification('${escapeHtml(n.id)}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openUserNotification('${escapeHtml(n.id)}');}">
+          return `<div class="notif-item ${n.read ? "" : "unread"}" role="button" tabindex="0" onclick="event.stopPropagation();openUserNotification(${jsArg(n.id)})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openUserNotification(${jsArg(n.id)});}">
             <span class="notif-icon ${iconClass}"><i class="fas ${iconName}"></i></span>
             <span style="min-width:0"><b>${escapeHtml(n.title || "Thông báo từ Admin")}</b>
               <span class="notif-snippet">${escapeHtml(n.message || "Bấm để đọc nội dung")}</span><span class="notif-time">${timeAgo(n.createdAt)}</span></span>
@@ -2189,7 +2233,7 @@
         const heading = adminResponse
           ? "đã phản hồi yêu cầu của bạn"
           : (like ? "đã đánh dấu hữu ích bình luận của bạn" : "đã phản hồi bình luận của bạn");
-        return `<div class="notif-item ${n.read ? "" : "unread"}" role="button" tabindex="0" onclick="event.stopPropagation();openNotif('${escapeHtml(n.id)}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openNotif('${escapeHtml(n.id)}');}">
+        return `<div class="notif-item ${n.read ? "" : "unread"}" role="button" tabindex="0" onclick="event.stopPropagation();openNotif(${jsArg(n.id)})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openNotif(${jsArg(n.id)});}">
           <span class="notif-icon ${iconClass}"><i class="fas ${iconName}"></i></span>
           <span style="min-width:0"><b>${escapeHtml(n.actor || "Quản trị viên")}</b> ${heading}
             <span class="notif-snippet">${adminResponse ? escapeHtml(n.snippet || "Bấm để xem phản hồi") : `“${escapeHtml(n.snippet)}”`}</span><span class="notif-time">${timeAgo(n.createdAt)}</span></span>
@@ -2346,17 +2390,23 @@
       if (!ok) { alert("Bạn chỉ có thể sửa bình luận của chính mình."); closeModal("myEditModal"); return; }
 
       const btn = document.getElementById("myEditSaveBtn");
+      if (btn?.disabled) return;
       if (btn) btn.disabled = true;
-      const editedAt = new Date().toISOString();
-      const { data, error } = kind === "review"
-        ? await supabaseClient.from("reviews").update({ content, rating: myEditRating, edited_at: editedAt }).eq("id", reviewId).select("id")
-        : await supabaseClient.from("review_replies").update({ content, edited_at: editedAt }).eq("id", replyId).select("id");
-      if (btn) btn.disabled = false;
-      if (error) { alert("Không lưu được chỉnh sửa: " + supabaseErrorText(error)); return; }
-      if (!data?.length) { alert("Không lưu được chỉnh sửa: Supabase trả về 0 dòng được cập nhật. Kiểm tra quyền hoặc nội dung đã thay đổi."); return; }
-      closeModal("myEditModal");
-      await syncFromSupabase();
-      rerender();
+      try {
+        const editedAt = new Date().toISOString();
+        const { data, error } = kind === "review"
+          ? await supabaseClient.from("reviews").update({ content, rating: myEditRating, edited_at: editedAt }).eq("id", reviewId).select("id")
+          : await supabaseClient.from("review_replies").update({ content, edited_at: editedAt }).eq("id", replyId).select("id");
+        if (error) { alert("Không lưu được chỉnh sửa: " + supabaseErrorText(error)); return; }
+        if (!data?.length) { alert("Không lưu được chỉnh sửa: Supabase trả về 0 dòng được cập nhật. Kiểm tra quyền hoặc nội dung đã thay đổi."); return; }
+        closeModal("myEditModal");
+        await syncFromSupabase();
+        rerender();
+      } catch (err) {
+        alert("Không lưu được chỉnh sửa: " + supabaseErrorText(err));
+      } finally {
+        if (btn) btn.disabled = false;
+      }
     };
     window.deleteMyReview = async function(id) {
       if (!ensureAccountActive() || !supabaseClient) return;
@@ -2572,7 +2622,11 @@
     function viewMajors() {
       const total = DB.majors.length;
       const facultiesWithMajors = FACULTIES.filter(f => !FACULTIES_WITHOUT_MAJORS.has(f.id));
-      const initial = renderMajorGroupsHTML("", "", "default");
+      const initial = renderMajorGroupsHTML(
+        normalizeSearch(CATALOG_FILTERS.majors.search),
+        CATALOG_FILTERS.majors.faculty,
+        CATALOG_FILTERS.majors.sort
+      );
       return `
         <div class="section-title fade-up" style="margin-top:10px;">
           <h2><i class="fas fa-graduation-cap"></i> Danh sách ngành học (${total})</h2>
@@ -2599,7 +2653,7 @@
               <option value="name_asc" ${CATALOG_FILTERS.majors.sort === "name_asc" ? "selected" : ""}>Tên ngành (A - Z)</option>
             </select>
           </div>
-          <span id="majorResultCount" class="catalog-result-count" aria-live="polite"><i class="fas fa-list-ol" aria-hidden="true"></i> ${total} ngành</span>
+          <span id="majorResultCount" class="catalog-result-count" aria-live="polite"><i class="fas fa-list-ol" aria-hidden="true"></i> ${initial.count} / ${total} ngành</span>
         </div>
         <div id="majorListContainer">${initial.html}</div>
       `;
@@ -2680,7 +2734,7 @@
           </div>
           <div style="margin-top:20px; display:flex; gap:10px; flex-wrap:wrap;">
             <a href="${reportHref}" class="btn btn-report" style="margin:0;"><i class="fas fa-flag"></i> Báo cáo thông tin sai</a>
-            ${isAdmin ? `<button onclick="adminDeleteMajor('${m.id}')" class="btn" style="background:var(--danger);margin:0;padding:10px 20px;font-size:0.9rem;"><i class="fas fa-trash"></i> Xóa ngành (Admin)</button>` : ""}
+            ${isAdmin ? `<button type="button" onclick="adminDeleteMajor(${jsArg(m.id)})" class="btn" style="background:var(--danger);margin:0;padding:10px 20px;font-size:0.9rem;"><i class="fas fa-trash"></i> Xóa ngành (Admin)</button>` : ""}
           </div>
         </div>
         ${ratingSummaryHTML("major", id)}
@@ -2722,7 +2776,7 @@
             const avg = avgRating("lecturer", l.id);
             const count = getReviewCount("lecturer", l.id);
             const faculty = facultyForLecturer(l);
-            return `<a class="card lecturer-card fade-up" href="#/lecturer/${l.id}" data-faculty="${faculty?.id || ""}" data-source-order="${index}" data-reviews="${count}" data-rating="${avg || 0}" data-name="${escapeHtml(l.name.toLocaleLowerCase("vi"))}" data-search="${escapeHtml(normalizeSearch(l.name))}">
+            return `<a class="card lecturer-card fade-up" href="#/lecturer/${encodeURIComponent(l.id)}" data-faculty="${faculty?.id || ""}" data-source-order="${index}" data-reviews="${count}" data-rating="${avg || 0}" data-name="${escapeHtml(l.name.toLocaleLowerCase("vi"))}" data-search="${escapeHtml(normalizeSearch(l.name))}">
               <h3><i class="fas fa-user-tie"></i> ${escapeHtml(l.name)}</h3>
               <div class="meta"><i class="fas fa-graduation-cap"></i> ${escapeHtml(l.degree || "")}</div>
               <div class="meta"><i class="fas fa-building-columns"></i> ${faculty ? `<span>${escapeHtml(faculty.name)}</span>` : '<span style="color:#a16207">Đang xác minh khoa</span>'}</div>
@@ -2731,6 +2785,7 @@
             </a>`;
           }).join("")}
         </div>
+        <div id="lecturerEmptyState" class="empty-state" style="display:none;"><i class="fas fa-user-slash"></i><p>Không tìm thấy giảng viên phù hợp với bộ lọc hiện tại.</p></div>
       `;
     }
 
@@ -2756,12 +2811,12 @@
           <div style="margin-top:20px; display:flex; gap:10px; flex-wrap:wrap;">
             <a href="${reportHref}" class="btn btn-report" style="margin:0;"><i class="fas fa-flag"></i> Báo cáo thông tin sai</a>
             ${isAdmin && isPending ? `
-            <button onclick="approveLecturer('${l.id}')" class="btn btn-approve" style="margin:0;padding:10px 20px;font-size:.9rem;"><i class="fas fa-check"></i> Duyệt giảng viên</button>
-            <button onclick="rejectLecturer('${l.id}')" class="btn btn-del" style="margin:0;padding:10px 20px;font-size:.9rem;"><i class="fas fa-times"></i> Từ chối</button>
+            <button type="button" onclick="approveLecturer(${jsArg(l.id)})" class="btn btn-approve" style="margin:0;padding:10px 20px;font-size:.9rem;"><i class="fas fa-check"></i> Duyệt giảng viên</button>
+            <button type="button" onclick="rejectLecturer(${jsArg(l.id)})" class="btn btn-del" style="margin:0;padding:10px 20px;font-size:.9rem;"><i class="fas fa-times"></i> Từ chối</button>
             ` : ""}
             ${isAdmin && !isPending ? `
-            <button onclick="openEditLecturerModal('${l.id}')" class="btn" style="background:var(--primary); margin:0; padding:10px 20px; font-size:0.9rem;"><i class="fas fa-edit"></i> Sửa (Admin)</button>
-            <button onclick="adminDeleteLecturer('${l.id}')" class="btn" style="background:var(--danger); margin:0; padding:10px 20px; font-size:0.9rem;"><i class="fas fa-trash"></i> Xóa (Admin)</button>
+            <button type="button" onclick="openEditLecturerModal(${jsArg(l.id)})" class="btn" style="background:var(--primary); margin:0; padding:10px 20px; font-size:0.9rem;"><i class="fas fa-edit"></i> Sửa (Admin)</button>
+            <button type="button" onclick="adminDeleteLecturer(${jsArg(l.id)})" class="btn" style="background:var(--danger); margin:0; padding:10px 20px; font-size:0.9rem;"><i class="fas fa-trash"></i> Xóa (Admin)</button>
             ` : ""}
           </div>
         </div>
@@ -3040,8 +3095,8 @@
                   ${revs[0] ? `<div style="color:var(--muted);font-size:.88rem;margin-top:6px;">Đánh giá kèm theo (${revs[0].rating}★): “${escapeHtml(revs[0].content)}”</div>` : ""}
                 </div>
                 <div style="display:flex;gap:8px;">
-                  <button class="btn btn-sm btn-approve" onclick="approveLecturer('${l.id}')"><i class="fas fa-check"></i> Duyệt</button>
-                  <button class="btn btn-sm btn-del" onclick="rejectLecturer('${l.id}')"><i class="fas fa-times"></i> Từ chối</button>
+                  <button type="button" class="btn btn-sm btn-approve" onclick="approveLecturer(${jsArg(l.id)})"><i class="fas fa-check"></i> Duyệt</button>
+                  <button type="button" class="btn btn-sm btn-del" onclick="rejectLecturer(${jsArg(l.id)})"><i class="fas fa-times"></i> Từ chối</button>
                 </div>
               </div>`;
             }).join("") : `<div class="empty-state"><p>Không có giảng viên nào đang chờ duyệt.</p></div>`}
@@ -3074,13 +3129,13 @@
                     </a>` : `<div style="font-size:.9rem;margin-top:8px;color:var(--muted);"><i>(Nội dung bị báo cáo đã bị xóa)</i></div>`}
                   <div style="margin-top:6px;"><small style="color:var(--muted);">${exactTime(rep.createdAt)}</small></div>
                   ${adminSentResponsesHTML("report", rep.id)}
-                  ${rep.userId ? `<div class="admin-public-reply"><label for="admin-response-report-${rep.id}">Phản hồi gửi đến người báo cáo</label><textarea id="admin-response-report-${rep.id}" rows="2" maxlength="3000" placeholder="Viết kết quả xử lý gửi đến chuông thông báo của người báo cáo..."></textarea><button class="btn btn-sm btn-approve" style="margin-top:10px;" onclick="adminSendResponse('report','${rep.id}')"><i class="fas fa-paper-plane"></i> Gửi phản hồi &amp; thông báo</button></div>` : `<p class="auth-help">Báo cáo này chưa gắn tài khoản người gửi nên không thể gửi thông báo chuông.</p>`}
+                  ${rep.userId ? `<div class="admin-public-reply"><label for="admin-response-report-${escapeHtml(rep.id)}">Phản hồi gửi đến người báo cáo</label><textarea id="admin-response-report-${escapeHtml(rep.id)}" rows="2" maxlength="3000" placeholder="Viết kết quả xử lý gửi đến chuông thông báo của người báo cáo..."></textarea><button type="button" class="btn btn-sm btn-approve" style="margin-top:10px;" onclick="adminSendResponse('report',${jsArg(rep.id)})"><i class="fas fa-paper-plane"></i> Gửi phản hồi &amp; thông báo</button></div>` : `<p class="auth-help">Báo cáo này chưa gắn tài khoản người gửi nên không thể gửi thông báo chuông.</p>`}
                 </div>
                 <div style="display:flex;gap:8px;flex-wrap:wrap;">
                   ${linkObj && reportedText ? `<a class="btn btn-sm" href="${linkObj.href}"><i class="fas fa-arrow-up-right-from-square"></i> Xem chỗ đó</a>` : ""}
-                  ${rep.replyId && replyObj ? `<button class="btn btn-sm btn-del" onclick="deleteReportedReply('${r.id}', '${replyObj.id}', '${rep.id}')"><i class="fas fa-trash"></i> Xóa phản hồi</button>` : ""}
-                  ${!rep.replyId && r ? `<button class="btn btn-sm btn-del" onclick="deleteReview('${r.id}', '${rep.id}')"><i class="fas fa-trash"></i> Xóa đánh giá</button>` : ""}
-                  <button class="btn btn-sm" style="background:#94a3b8;" onclick="dismissReport('${rep.id}')">Bỏ qua / Đóng</button>
+                  ${rep.replyId && replyObj ? `<button type="button" class="btn btn-sm btn-del" onclick="deleteReportedReply(${jsArg(r.id)},${jsArg(replyObj.id)},${jsArg(rep.id)})"><i class="fas fa-trash"></i> Xóa phản hồi</button>` : ""}
+                  ${!rep.replyId && r ? `<button type="button" class="btn btn-sm btn-del" onclick="deleteReview(${jsArg(r.id)},${jsArg(rep.id)})"><i class="fas fa-trash"></i> Xóa đánh giá</button>` : ""}
+                  <button type="button" class="btn btn-sm" style="background:#94a3b8;" onclick="dismissReport(${jsArg(rep.id)})">Bỏ qua / Đóng</button>
                 </div>
               </div>`;
             }).join("") : `<div class="empty-state"><p>Không có báo cáo vi phạm nào.</p></div>`}
@@ -3115,11 +3170,11 @@
                     </a>` : `<p style="margin:10px 0 6px;white-space:pre-wrap;">${escapeHtml(fb.content)}</p>`}
                   <div style="margin-top:6px;"><small style="color:var(--muted);">${exactTime(fb.createdAt)}</small></div>
                   ${adminSentResponsesHTML("feedback", fb.id)}
-                  ${fb.userId ? `<div class="admin-public-reply"><label for="admin-response-feedback-${fb.id}">Phản hồi gửi đến người gửi</label><textarea id="admin-response-feedback-${fb.id}" rows="2" maxlength="3000" placeholder="Viết phản hồi, thông báo đã sửa hoặc lời cảm ơn..."></textarea><button class="btn btn-sm btn-approve" style="margin-top:10px;" onclick="adminSendResponse('feedback','${fb.id}')"><i class="fas fa-paper-plane"></i> Gửi phản hồi &amp; thông báo</button></div>` : `<p class="auth-help">Mục này không có tài khoản người gửi để nhận thông báo.</p>`}
+                  ${fb.userId ? `<div class="admin-public-reply"><label for="admin-response-feedback-${escapeHtml(fb.id)}">Phản hồi gửi đến người gửi</label><textarea id="admin-response-feedback-${escapeHtml(fb.id)}" rows="2" maxlength="3000" placeholder="Viết phản hồi, thông báo đã sửa hoặc lời cảm ơn..."></textarea><button type="button" class="btn btn-sm btn-approve" style="margin-top:10px;" onclick="adminSendResponse('feedback',${jsArg(fb.id)})"><i class="fas fa-paper-plane"></i> Gửi phản hồi &amp; thông báo</button></div>` : `<p class="auth-help">Mục này không có tài khoản người gửi để nhận thông báo.</p>`}
                 </div>
                 <div style="display:flex;gap:8px;flex-wrap:wrap;">
                   ${targetLink ? `<a class="btn btn-sm" href="${targetLink.href}"><i class="fas fa-arrow-up-right-from-square"></i> Mở trang</a>` : ""}
-                  <button class="btn btn-sm btn-del" onclick="adminDeleteFeedback('${fb.id}')"><i class="fas fa-check"></i> Đã xử lý &amp; Xóa</button>
+                  <button type="button" class="btn btn-sm btn-del" onclick="adminDeleteFeedback(${jsArg(fb.id)})"><i class="fas fa-check"></i> Đã xử lý &amp; Xóa</button>
                 </div>
               </div>`;
             }).join("") : `<div class="empty-state"><p>Không có mục phản ánh / góp ý nào trong bộ lọc này.</p></div>`}
@@ -3141,16 +3196,16 @@
                   <label for="support-note-${t.id}" style="margin-top:12px;">Ghi chú xử lý nội bộ (chỉ Admin nhìn thấy)</label>
                   <textarea id="support-note-${t.id}" rows="2" maxlength="1000" placeholder="Ghi chú xác minh / cách xử lý nội bộ...">${escapeHtml(t.adminNote)}</textarea>
                   ${adminSentResponsesHTML("support", t.id)}
-                  ${t.userId ? `<div class="admin-public-reply"><label for="admin-response-support-${t.id}">Phản hồi gửi đến chuông thông báo của người dùng</label><textarea id="admin-response-support-${t.id}" rows="2" maxlength="3000" placeholder="Viết hướng dẫn hoặc kết quả xử lý..."></textarea><button class="btn btn-sm btn-approve" style="margin-top:10px;" onclick="adminSendResponse('support','${t.id}')"><i class="fas fa-paper-plane"></i> Gửi phản hồi &amp; thông báo</button></div>` : `<div class="admin-public-reply"><b>Chưa liên kết tài khoản HUIT Review.</b><p class="auth-help" style="margin-top:4px;">Yêu cầu này được gửi khi chưa đăng nhập. Hãy liên hệ qua kênh liên hệ ở trên để hỗ trợ trực tiếp.</p></div>`}
+                  ${t.userId ? `<div class="admin-public-reply"><label for="admin-response-support-${escapeHtml(t.id)}">Phản hồi gửi đến chuông thông báo của người dùng</label><textarea id="admin-response-support-${escapeHtml(t.id)}" rows="2" maxlength="3000" placeholder="Viết hướng dẫn hoặc kết quả xử lý..."></textarea><button type="button" class="btn btn-sm btn-approve" style="margin-top:10px;" onclick="adminSendResponse('support',${jsArg(t.id)})"><i class="fas fa-paper-plane"></i> Gửi phản hồi &amp; thông báo</button></div>` : `<div class="admin-public-reply"><b>Chưa liên kết tài khoản HUIT Review.</b><p class="auth-help" style="margin-top:4px;">Yêu cầu này được gửi khi chưa đăng nhập. Hãy liên hệ qua kênh liên hệ ở trên để hỗ trợ trực tiếp.</p></div>`}
                 </div>
                 <div style="display:flex;flex-direction:column;gap:8px;min-width:165px;">
-                  <select id="support-status-${t.id}" aria-label="Trạng thái yêu cầu hỗ trợ" style="padding:9px 12px;">
+                  <select id="support-status-${escapeHtml(t.id)}" aria-label="Trạng thái yêu cầu hỗ trợ" style="padding:9px 12px;">
                     <option value="new" ${t.status === "new" ? "selected" : ""}>Mới</option>
                     <option value="processing" ${t.status === "processing" ? "selected" : ""}>Đang xử lý</option>
                     <option value="resolved" ${t.status === "resolved" ? "selected" : ""}>Đã xử lý</option>
                   </select>
-                  <button class="btn btn-sm btn-approve" style="justify-content:center;" onclick="adminSaveSupportTicket('${t.id}')"><i class="fas fa-save"></i> Lưu trạng thái</button>
-                  <button class="btn btn-sm btn-del" style="justify-content:center;" onclick="adminDeleteSupportTicket('${t.id}')"><i class="fas fa-trash"></i> Xóa yêu cầu</button>
+                  <button type="button" class="btn btn-sm btn-approve" style="justify-content:center;" onclick="adminSaveSupportTicket(${jsArg(t.id)})"><i class="fas fa-save"></i> Lưu trạng thái</button>
+                  <button type="button" class="btn btn-sm btn-del" style="justify-content:center;" onclick="adminDeleteSupportTicket(${jsArg(t.id)})"><i class="fas fa-trash"></i> Xóa yêu cầu</button>
                 </div>
               </div>
             `).join("") : `<div class="empty-state"><p>Chưa có yêu cầu hỗ trợ tài khoản nào.</p></div>`}
@@ -3170,7 +3225,7 @@
             ${DB.notices.map(n => `
               <div class="admin-item">
                 <div><b>${escapeHtml(n.title)}</b><p style="margin:4px 0 0;color:var(--muted);">${escapeHtml(n.content)}</p></div>
-                <button class="btn btn-sm btn-del" onclick="adminDeleteNotice('${n.id}')"><i class="fas fa-trash"></i> Xóa</button>
+                <button type="button" class="btn btn-sm btn-del" onclick="adminDeleteNotice(${jsArg(n.id)})"><i class="fas fa-trash"></i> Xóa</button>
               </div>
             `).join("")}
           </div>
@@ -3183,10 +3238,10 @@
                 <button class="btn" style="margin:0;white-space:nowrap;" onclick="addForbiddenWord()">Thêm</button>
               </div>
               <div style="display:flex;flex-wrap:wrap;gap:8px;">
-                ${DB.forbiddenWords.map((w, i) => `
+                ${DB.forbiddenWords.map(w => `
                   <span class="badge" style="background:#fee2e2;color:#991b1b;">
                     ${escapeHtml(w)}
-                    <button onclick="removeForbiddenWord(${i})" style="border:none;background:none;color:#991b1b;cursor:pointer;font-weight:800;">&times;</button>
+                    <button type="button" onclick="removeForbiddenWord(${jsArg(w)})" aria-label="Xóa từ cấm ${escapeHtml(w)}" style="border:none;background:none;color:#991b1b;cursor:pointer;font-weight:800;">&times;</button>
                   </span>
                 `).join("")}
               </div>
@@ -3365,43 +3420,43 @@
                   </div>
                   <div style="color:#334155;">${reply.replyToAuthor ? `<span class="reply-mention">@${escapeHtml(reply.replyToAuthor)}</span>` : ""}${escapeHtml(reply.content)}${reply.editedAt ? '<span class="edited-tag">(đã chỉnh sửa)</span>' : ""}</div>
                   <div class="reply-actions">
-                    <button type="button" class="helpful ${replyLiked ? "active" : ""}" data-like-reply="${escapeHtml(reply.id)}" aria-pressed="${replyLiked ? "true" : "false"}" onclick="likeReply('${r.id}','${reply.id}')"><i class="fas fa-thumbs-up"></i> Hữu ích (${reply.likes || 0})</button>
-                    <button type="button" onclick="replyToReply('${r.id}','${reply.id}')" style="color:var(--primary);"><i class="fas fa-reply"></i> Phản hồi</button>
+                    <button type="button" class="helpful ${replyLiked ? "active" : ""}" data-like-reply="${escapeHtml(reply.id)}" aria-pressed="${replyLiked ? "true" : "false"}" onclick="likeReply(${jsArg(r.id)},${jsArg(reply.id)})"><i class="fas fa-thumbs-up"></i> Hữu ích (${reply.likes || 0})</button>
+                    <button type="button" onclick="replyToReply(${jsArg(r.id)},${jsArg(reply.id)})" style="color:var(--primary);"><i class="fas fa-reply"></i> Phản hồi</button>
                     ${replyMine
-                      ? `<button type="button" onclick="openMyEdit('reply','${r.id}','${reply.id}')"><i class="fas fa-edit"></i> Sửa</button><button type="button" class="del" onclick="deleteMyReply('${r.id}','${reply.id}')"><i class="fas fa-trash"></i> Xóa</button>`
-                      : `<button type="button" class="del" onclick="openReportModal('${r.id}','${reply.id}')"><i class="fas fa-flag"></i> Báo cáo</button>`}
+                      ? `<button type="button" onclick="openMyEdit('reply',${jsArg(r.id)},${jsArg(reply.id)})"><i class="fas fa-edit"></i> Sửa</button><button type="button" class="del" onclick="deleteMyReply(${jsArg(r.id)},${jsArg(reply.id)})"><i class="fas fa-trash"></i> Xóa</button>`
+                      : `<button type="button" class="del" onclick="openReportModal(${jsArg(r.id)},${jsArg(reply.id)})"><i class="fas fa-flag"></i> Báo cáo</button>`}
                     ${isAdmin && reply.userId && !reply.isAdmin && reply.userId !== currentUser?.id ? `<button type="button" class="admin-inline-warn" onclick="adminOpenQuickWarning(${jsArg(reply.userId)},${jsArg(reply.author || "Thành viên")},${jsArg("phản hồi")},${jsArg(reply.id)},${jsArg(String(reply.content || "").slice(0,220))})" title="Cảnh cáo tài khoản của người viết phản hồi"><i class="fas fa-triangle-exclamation"></i> Cảnh cáo</button>` : ""}
-                    ${isAdmin ? `<button type="button" class="del" style="margin-left:auto;" onclick="adminDeleteReply('${r.id}', '${reply.id}')" title="Xóa phản hồi"><i class="fas fa-trash"></i> Xóa (Admin)</button>` : ""}
+                    ${isAdmin ? `<button type="button" class="del" style="margin-left:auto;" onclick="adminDeleteReply(${jsArg(r.id)},${jsArg(reply.id)})" title="Xóa phản hồi"><i class="fas fa-trash"></i> Xóa (Admin)</button>` : ""}
                   </div>
                 </div>`;
               }).join("")}
             </div>` : ""}
           <div class="review-actions">
-            <button type="button" class="helpful ${hasLiked ? "active" : ""}" data-like-review="${escapeHtml(r.id)}" aria-pressed="${hasLiked ? "true" : "false"}" onclick="likeReview('${r.id}')"><i class="fas fa-thumbs-up"></i> Hữu ích (${r.likes || 0})</button>
-            <button onclick="toggleReplyForm('${r.id}')" style="color:var(--primary);"><i class="fas fa-reply"></i> Phản hồi (${r.replies.length})</button>
-            ${mine ? `<button class="own-edit" onclick="openMyEdit('review','${r.id}')"><i class="fas fa-pen"></i> Sửa bình luận</button>
-            <button onclick="deleteMyReview('${r.id}')"><i class="fas fa-trash"></i> Xóa bình luận</button>` : `<button onclick="openReportModal('${r.id}')"><i class="fas fa-flag"></i> Báo cáo vi phạm</button>`}
+            <button type="button" class="helpful ${hasLiked ? "active" : ""}" data-like-review="${escapeHtml(r.id)}" aria-pressed="${hasLiked ? "true" : "false"}" onclick="likeReview(${jsArg(r.id)})"><i class="fas fa-thumbs-up"></i> Hữu ích (${r.likes || 0})</button>
+            <button type="button" onclick="toggleReplyForm(${jsArg(r.id)})" style="color:var(--primary);"><i class="fas fa-reply"></i> Phản hồi (${r.replies.length})</button>
+            ${mine ? `<button type="button" class="own-edit" onclick="openMyEdit('review',${jsArg(r.id)})"><i class="fas fa-pen"></i> Sửa bình luận</button>
+            <button type="button" onclick="deleteMyReview(${jsArg(r.id)})"><i class="fas fa-trash"></i> Xóa bình luận</button>` : `<button type="button" onclick="openReportModal(${jsArg(r.id)})"><i class="fas fa-flag"></i> Báo cáo vi phạm</button>`}
             ${isAdmin ? `
             ${r.userId && !r.isAdmin && r.userId !== currentUser?.id ? `<button type="button" class="admin-inline-warn" onclick="adminOpenQuickWarning(${jsArg(r.userId)},${jsArg(r.author || "Thành viên")},${jsArg("đánh giá")},${jsArg(r.id)},${jsArg(String(r.content || "").slice(0,220))})"><i class="fas fa-triangle-exclamation"></i> Cảnh cáo người viết</button>` : ""}
-            <button onclick="openEditReviewModal('${r.id}')" style="color:var(--primary);"><i class="fas fa-edit"></i> Sửa (Admin)</button>
-            <button onclick="adminDeleteReview('${r.id}')" style="color:var(--danger); margin-left:auto;"><i class="fas fa-trash"></i> Xóa (Admin)</button>
+            <button type="button" onclick="openEditReviewModal(${jsArg(r.id)})" style="color:var(--primary);"><i class="fas fa-edit"></i> Sửa (Admin)</button>
+            <button type="button" onclick="adminDeleteReview(${jsArg(r.id)})" style="color:var(--danger); margin-left:auto;"><i class="fas fa-trash"></i> Xóa (Admin)</button>
             ` : ""}
           </div>
-          <div class="reply-form-box" id="reply-form-${r.id}">
+          <div class="reply-form-box" id="reply-form-${escapeHtml(r.id)}">
             ${currentUser
               ? `<div style="font-size:.82rem;color:var(--muted);margin-bottom:8px;">Phản hồi với tên: <b style="color:var(--primary-dark);">${escapeHtml(myDisplayName())}</b></div>`
-              : `<div style="font-size:.84rem;color:var(--muted);margin-bottom:8px;">Bạn cần <a href="javascript:void(0)" onclick="openAuthModal('login')">đăng nhập</a> để gửi phản hồi.</div>`}
-            <div class="reply-target-bar" id="reply-target-${r.id}"></div>
+              : `<div style="font-size:.84rem;color:var(--muted);margin-bottom:8px;">Bạn cần <button type="button" class="inline-link-btn" onclick="openAuthModal('login')">đăng nhập</button> để gửi phản hồi.</div>`}
+            <div class="reply-target-bar" id="reply-target-${escapeHtml(r.id)}"></div>
             ${isAdmin ? `
             <div style="margin-bottom:10px;">
               <label style="display:flex; align-items:center; gap:10px; cursor:pointer; font-weight:600; font-size:0.9rem; margin:0; color:#166534;">
-                <input type="checkbox" id="reply-as-admin-${r.id}" style="width:16px; height:16px; margin:0;"> Đăng với tư cách Admin (Nổi bật)
+                <input type="checkbox" id="reply-as-admin-${escapeHtml(r.id)}" style="width:16px; height:16px; margin:0;"> Đăng với tư cách Admin (Nổi bật)
               </label>
             </div>` : ""}
-            <textarea id="reply-content-${r.id}" rows="3" maxlength="2000" placeholder="Nhập nội dung phản hồi..." style="margin-bottom:12px; padding:10px 14px; font-size:0.9rem;"></textarea>
+            <textarea id="reply-content-${escapeHtml(r.id)}" rows="3" maxlength="2000" placeholder="Nhập nội dung phản hồi..." style="margin-bottom:12px; padding:10px 14px; font-size:0.9rem;"></textarea>
             <div style="display:flex; gap:12px;">
-              <button id="reply-btn-${r.id}" class="btn btn-sm" onclick="submitReply('${r.id}')" style="background:var(--primary);"><i class="fas fa-paper-plane"></i> Gửi phản hồi</button>
-              <button class="btn btn-sm" style="background:#e2e8f0; color:#334155; box-shadow:none;" onclick="closeReplyForm('${r.id}')">Hủy</button>
+              <button type="button" id="reply-btn-${escapeHtml(r.id)}" class="btn btn-sm" onclick="submitReply(${jsArg(r.id)})" style="background:var(--primary);"><i class="fas fa-paper-plane"></i> Gửi phản hồi</button>
+              <button type="button" class="btn btn-sm" style="background:#e2e8f0; color:#334155; box-shadow:none;" onclick="closeReplyForm(${jsArg(r.id)})">Hủy</button>
             </div>
           </div>
         </div>`;
@@ -3448,7 +3503,7 @@
       };
       const tagBox = document.getElementById(`reply-target-${reviewId}`);
       if (tagBox) {
-        tagBox.innerHTML = `<span class="reply-target-pill"><i class="fas fa-reply"></i> Đang phản hồi <b>@${escapeHtml(targetAuthor)}</b> <button type="button" onclick="clearReplyTarget('${reviewId}')" title="Chuyển về phản hồi bình luận gốc">&times;</button></span>`;
+        tagBox.innerHTML = `<span class="reply-target-pill"><i class="fas fa-reply"></i> Đang phản hồi <b>@${escapeHtml(targetAuthor)}</b> <button type="button" onclick="clearReplyTarget(${jsArg(reviewId)})" title="Chuyển về phản hồi bình luận gốc">&times;</button></span>`;
         tagBox.style.display = "block";
       }
       const box = document.getElementById(`reply-form-${reviewId}`);
@@ -3472,31 +3527,37 @@
       if (!rev) return;
       const target = replyTargetMap[reviewId] || null;
       const btn = document.getElementById(`reply-btn-${reviewId}`);
+      if (btn?.disabled) return;
       if (btn) btn.disabled = true;
-      const displayAuthor = isAdminReply ? "Quản trị viên" : myDisplayName();
-      const { data: insertedReply, error } = await supabaseClient.from("review_replies").insert({
-        review_id: reviewId,
-        user_id: currentUser.id,
-        author: displayAuthor,
-        is_admin: isAdminReply,
-        content,
-        parent_reply_id: target?.parentReplyId || null,
-        reply_to_user_id: target?.toUserId || null,
-        reply_to_author: target?.toAuthor || null
-      }).select("id").single();
-      if (btn) btn.disabled = false;
-      if (error) { alert("Lỗi gửi phản hồi: " + error.message); return; }
-      delete replyTargetMap[reviewId];
+      try {
+        const displayAuthor = isAdminReply ? "Quản trị viên" : myDisplayName();
+        const { data: insertedReply, error } = await supabaseClient.from("review_replies").insert({
+          review_id: reviewId,
+          user_id: currentUser.id,
+          author: displayAuthor,
+          is_admin: isAdminReply,
+          content,
+          parent_reply_id: target?.parentReplyId || null,
+          reply_to_user_id: target?.toUserId || null,
+          reply_to_author: target?.toAuthor || null
+        }).select("id").single();
+        if (error) { alert("Lỗi gửi phản hồi: " + supabaseErrorText(error)); return; }
+        delete replyTargetMap[reviewId];
 
-      const newReplyId = insertedReply?.id || null;
-      if (target?.toUserId) {
-        await pushNotif(target.toUserId, "reply", rev, displayAuthor, content, newReplyId);
+        const newReplyId = insertedReply?.id || null;
+        if (target?.toUserId) {
+          await pushNotif(target.toUserId, "reply", rev, displayAuthor, content, newReplyId);
+        }
+        if (rev.userId && rev.userId !== target?.toUserId) {
+          await pushNotif(rev.userId, "reply", rev, displayAuthor, content, newReplyId);
+        }
+        await syncFromSupabase();
+        rerender();
+      } catch (err) {
+        alert("Lỗi gửi phản hồi: " + supabaseErrorText(err));
+      } finally {
+        if (btn) btn.disabled = false;
       }
-      if (rev.userId && rev.userId !== target?.toUserId) {
-        await pushNotif(rev.userId, "reply", rev, displayAuthor, content, newReplyId);
-      }
-      await syncFromSupabase();
-      rerender();
     };
 
     function paintLikeButton(kind, id, item, isLiked, disabled = false) {
@@ -3533,11 +3594,13 @@
             "Bỏ đánh dấu hữu ích", false, "review_id", true
           );
           if (!ok) throw (deleteError || new Error("Không thể bỏ đánh dấu hữu ích."));
-          try {
-            const { error: notifError } = await supabaseClient.from("notifications").delete()
-              .eq("type", "like").eq("review_id", id).eq("actor_id", currentUser.id).eq("to_user_id", rev.userId);
-            if (notifError) console.warn("Không xóa được thông báo Like:", notifError);
-          } catch (notificationError) { console.warn(notificationError); }
+          if (rev.userId && rev.userId !== currentUser.id) {
+            try {
+              const { error: notifError } = await supabaseClient.from("notifications").delete()
+                .eq("type", "like").eq("review_id", id).eq("actor_id", currentUser.id).eq("to_user_id", rev.userId);
+              if (notifError) console.warn("Không xóa được thông báo Like:", notifError);
+            } catch (notificationError) { console.warn(notificationError); }
+          }
         } else {
           const { error } = await supabaseClient.from("review_likes").insert({ review_id: id, user_id: currentUser.id });
           if (error) throw error;
@@ -3572,11 +3635,13 @@
             "Bỏ đánh dấu phản hồi hữu ích", false, "reply_id", true
           );
           if (!ok) throw (deleteError || new Error("Không thể bỏ đánh dấu phản hồi hữu ích."));
-          try {
-            const { error: notifError } = await supabaseClient.from("notifications").delete()
-              .eq("type", "like").eq("review_id", reviewId).eq("reply_id", replyId).eq("actor_id", currentUser.id).eq("to_user_id", rep.userId);
-            if (notifError) console.warn("Không xóa được thông báo Like phản hồi:", notifError);
-          } catch (notificationError) { console.warn(notificationError); }
+          if (rep.userId && rep.userId !== currentUser.id) {
+            try {
+              const { error: notifError } = await supabaseClient.from("notifications").delete()
+                .eq("type", "like").eq("review_id", reviewId).eq("reply_id", replyId).eq("actor_id", currentUser.id).eq("to_user_id", rep.userId);
+              if (notifError) console.warn("Không xóa được thông báo Like phản hồi:", notifError);
+            } catch (notificationError) { console.warn(notificationError); }
+          }
         } else {
           const { error } = await supabaseClient.from("reply_likes").insert({ reply_id: replyId, user_id: currentUser.id });
           if (error) throw error;
@@ -3615,6 +3680,8 @@
       grid.replaceChildren(fragment);
       const label = document.getElementById("resultCount");
       if (label) label.innerHTML = `<i class="fas fa-users" aria-hidden="true"></i> ${count} / ${cards.length} giảng viên`;
+      const emptyBox = document.getElementById("lecturerEmptyState");
+      if (emptyBox) emptyBox.style.display = count === 0 ? "flex" : "none";
     }
     window.filterAndSortLecturers = function(immediate = false) {
       // Lưu trạng thái ngay để thao tác mở trang chi tiết không làm mất bộ lọc.
@@ -3690,7 +3757,9 @@
           <div class="admin-activity-icon ${info.tone}"><i class="fas ${info.icon}"></i></div>
           <div class="admin-activity-main">
             <div class="admin-activity-line">
-              <button type="button" class="admin-activity-user" onclick="adminOpenUserActivity(${jsArg(item.user_id)},${jsArg(username)},${jsArg(item.display_name || "")},${jsArg(item.warning_count || 0)},${jsArg(item.account_status || "active")},${jsArg(item.lock_reason || "")})">@${escapeHtml(username)}</button>
+              ${item.user_id
+                ? `<button type="button" class="admin-activity-user" onclick="adminOpenUserActivity(${jsArg(item.user_id)},${jsArg(username)},${jsArg(item.display_name || "")},${jsArg(item.warning_count || 0)},${jsArg(item.account_status || "active")},${jsArg(item.lock_reason || "")})">@${escapeHtml(username)}</button>`
+                : `<span style="color:var(--muted);font-weight:700;font-size:.88rem;">@${escapeHtml(username)}</span>`}
               <span class="admin-activity-type">${escapeHtml(info.label)}</span>
               ${adminActor}
             </div>
@@ -3767,12 +3836,12 @@
 
     window.adminOpenActivityTarget = function(targetType, targetId, reviewId, replyId) {
       if (!isCurrentAdmin() || !targetId) return;
-      const route = targetType === "lecturer" ? "lecturer" : (targetType === "major" ? "major" : "");
-      if (!route) return;
+      const targetPath = targetType === "lecturer" ? "lecturer" : (targetType === "major" ? "major" : "");
+      if (!targetPath) return;
       const params = new URLSearchParams();
       if (reviewId) params.set("reviewId", reviewId);
       if (replyId) params.set("replyId", replyId);
-      window.location.hash = `#/${route}/${encodeURIComponent(targetId)}${params.toString() ? `?${params.toString()}` : ""}`;
+      window.location.hash = `#/${targetPath}/${encodeURIComponent(targetId)}${params.toString() ? `?${params.toString()}` : ""}`;
     };
 
     function subscribeAdminActivityRealtime() {
@@ -3876,7 +3945,7 @@
             <div class="user-admin-result-main">
               <div class="user-admin-avatar" aria-hidden="true">${escapeHtml(String(u.username || "U").charAt(0))}</div>
               <div class="user-admin-identity">
-                <button type="button" class="user-admin-open-profile" onclick="adminSelectUser('${escapeHtml(u.id)}')">@${escapeHtml(u.username || "")} <i class="fas fa-arrow-up-right-from-square" style="font-size:.68rem;"></i></button>
+                <button type="button" class="user-admin-open-profile" onclick="adminSelectUser(${jsArg(u.id)})">@${escapeHtml(u.username || "")} <i class="fas fa-arrow-up-right-from-square" style="font-size:.68rem;"></i></button>
                 <span class="user-admin-display-name">${escapeHtml(u.display_name || "Chưa có tên hiển thị")}</span>
                 <div class="user-admin-result-meta">
                   <span class="user-state-pill ${u.account_status === "locked" ? "locked" : "active"}"><i class="fas ${u.account_status === "locked" ? "fa-lock" : "fa-check-circle"}"></i> ${u.account_status === "locked" ? "Đang khóa" : "Hoạt động"}</span>
@@ -3884,7 +3953,7 @@
                 </div>
               </div>
             </div>
-            <button type="button" class="btn btn-sm user-admin-select-btn" onclick="adminSelectUser('${escapeHtml(u.id)}')"><i class="fas fa-user-gear"></i> Quản lý <i class="fas fa-arrow-right" style="font-size:.72rem;margin-left:2px;"></i></button>
+            <button type="button" class="btn btn-sm user-admin-select-btn" onclick="adminSelectUser(${jsArg(u.id)})"><i class="fas fa-user-gear"></i> Quản lý <i class="fas fa-arrow-right" style="font-size:.72rem;margin-left:2px;"></i></button>
           </div>`).join("") : `<div class="empty-state" style="padding:24px;"><p style="margin:0;font-size:.9rem;">Không tìm thấy người dùng.</p></div>`;
         if (ADMIN_SELECTED_USER) {
           const refreshed = ADMIN_USER_RESULTS.find(u => u.id === ADMIN_SELECTED_USER.id);
@@ -3956,7 +4025,7 @@
             <p class="auth-help">Gỡ cảnh cáo không tự mở khóa tài khoản. Khi số cảnh cáo còn dưới 4, Admin có thể thực hiện mở khóa riêng.</p>
           </div>
           <div class="user-admin-history"><b><i class="fas fa-scale-balanced"></i> Lịch sử cảnh cáo / quản trị</b><div id="admin-user-history" style="margin-top:6px;color:var(--muted);font-size:.84rem;">Đang tải lịch sử...</div></div>
-          <div class="user-admin-history"><div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap;"><b><i class="fas fa-clock-rotate-left"></i> Toàn bộ hoạt động của @${escapeHtml(u.username || "")}</b><button type="button" class="btn btn-sm" style="margin:0;" onclick="loadAdminUserActivity('${escapeHtml(u.id)}')"><i class="fas fa-rotate"></i> Làm mới</button></div><div id="admin-user-activity" style="margin-top:10px;"><div class="loading-box" style="padding:14px;">Đang tải hoạt động...</div></div></div>
+          <div class="user-admin-history"><div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap;"><b><i class="fas fa-clock-rotate-left"></i> Toàn bộ hoạt động của @${escapeHtml(u.username || "")}</b><button type="button" class="btn btn-sm" style="margin:0;" onclick="loadAdminUserActivity(${jsArg(u.id)})"><i class="fas fa-rotate"></i> Làm mới</button></div><div id="admin-user-activity" style="margin-top:10px;"><div class="loading-box" style="padding:14px;">Đang tải hoạt động...</div></div></div>
         </div>`;
     }
 
@@ -4252,14 +4321,23 @@
       const name = document.getElementById("edit-major-name").value.trim();
       const facultyId = document.getElementById("edit-major-faculty").value;
       if (!code || name.length < 3 || !FACULTY_BY_ID[facultyId]) { alert("Vui lòng nhập tên ngành và khoa hợp lệ."); return; }
-      const { data, error } = await supabaseClient.from("major_records").upsert({ id, code, name, faculty_id: facultyId, status: "approved" }).select("id,status").maybeSingle();
-      if (error) { alert("Lỗi lưu ngành học: " + supabaseErrorText(error)); return; }
-      if (!data) { alert("Supabase không xác nhận đã lưu ngành học (0 dòng bị tác động). Kiểm tra quyền SELECT/UPSERT."); return; }
-      MAJOR_FACULTY[code] = facultyId;
-      closeModal("editMajorModal");
-      await syncFromSupabase();
-      alert("Đã lưu thay đổi ngành học!");
-      route({ preserveScroll: true });
+      const btn = document.getElementById("edit-major-save-btn");
+      if (btn?.disabled) return;
+      if (btn) btn.disabled = true;
+      try {
+        const { data, error } = await supabaseClient.from("major_records").upsert({ id, code, name, faculty_id: facultyId, status: "approved" }).select("id,status").maybeSingle();
+        if (error) { alert("Lỗi lưu ngành học: " + supabaseErrorText(error)); return; }
+        if (!data) { alert("Supabase không xác nhận đã lưu ngành học (0 dòng bị tác động). Kiểm tra quyền SELECT/UPSERT."); return; }
+        MAJOR_FACULTY[code] = facultyId;
+        closeModal("editMajorModal");
+        await syncFromSupabase();
+        alert("Đã lưu thay đổi ngành học!");
+        route({ preserveScroll: true });
+      } catch (err) {
+        alert("Lỗi lưu ngành học: " + supabaseErrorText(err));
+      } finally {
+        if (btn) btn.disabled = false;
+      }
     };
 
     window.adminDeleteLecturer = async function(id) {
@@ -4277,17 +4355,13 @@
         status: "deleted",
         source_type: lecturer.sourceType || "admin"
       };
-      let recordChanged = false;
       if (isDefault) {
         const { data, error } = await supabaseClient.from("lecturer_records").upsert(payload).select("id,status").maybeSingle();
         if (error) { alert("Không thể ẩn giảng viên mặc định: " + supabaseErrorText(error)); return; }
         if (!data || data.status !== "deleted") { alert("Supabase không xác nhận đã ghi trạng thái deleted. Kiểm tra quyền SELECT/UPSERT và CHECK constraint cho lecturer_records."); return; }
-        recordChanged = true;
       } else {
         const { data: removedRows, error: deleteError } = await supabaseClient.from("lecturer_records").delete().eq("id", id).select("id");
-        if (!deleteError && removedRows?.length) {
-          recordChanged = true;
-        } else {
+        if (deleteError || !removedRows?.length) {
           // Nếu bản ghi mới không xóa trực tiếp được, fallback sang tombstone.
           const { data, error: upsertError } = await supabaseClient.from("lecturer_records").upsert(payload).select("id,status").maybeSingle();
           if (upsertError) {
@@ -4296,7 +4370,6 @@
             return;
           }
           if (!data || data.status !== "deleted") { alert("Supabase không xác nhận xóa/ẩn giảng viên (0 dòng bị tác động). Kiểm tra RLS và CHECK constraint."); return; }
-          recordChanged = true;
         }
       }
 
@@ -4317,7 +4390,8 @@
       }
       await syncFromSupabase();
       alert("Đã xóa giảng viên!");
-      if (window.location.hash.startsWith(`#/lecturer/${id}`)) window.location.hash = "#/lecturers";
+      const curHash = window.location.hash;
+      if (curHash.startsWith(`#/lecturer/${id}`) || curHash.startsWith(`#/lecturer/${encodeURIComponent(id)}`)) window.location.hash = "#/lecturers";
       else route({ preserveScroll: true });
     };
 
@@ -4352,7 +4426,8 @@
       }
       await syncFromSupabase();
       alert("Đã xóa ngành học!");
-      if (window.location.hash.startsWith(`#/major/${id}`)) window.location.hash = "#/majors";
+      const curHash = window.location.hash;
+      if (curHash.startsWith(`#/major/${id}`) || curHash.startsWith(`#/major/${encodeURIComponent(id)}`)) window.location.hash = "#/majors";
       else route({ preserveScroll: true });
     };
 
@@ -4387,28 +4462,19 @@
       await syncFromSupabase();
       route();
     };
-    window.removeForbiddenWord = async function(index) {
+    window.removeForbiddenWord = async function(word) {
       if (!supabaseClient || !isCurrentAdmin()) {
         alert("Bạn cần đăng nhập bằng tài khoản Admin để xóa từ cấm.");
         return;
       }
-      const word = DB.forbiddenWords[index];
       if (!word) return;
-      const { data, error } = await supabaseClient
-        .from("forbidden_words")
-        .delete()
-        .eq("word", word)
-        .select();
-      if (error) {
-        alert("Lỗi xóa từ cấm: " + error.message);
-        return;
-      }
-      if (!data || data.length === 0) {
-        alert("Supabase chưa cho phép xóa từ này (0 dòng bị xóa). Hãy chạy lại đoạn SQL mới.");
-        return;
-      }
+      const deleted = await checkedDelete(
+        supabaseClient.from("forbidden_words").delete().eq("word", word),
+        "Xóa từ cấm", false, "word"
+      );
+      if (!deleted.ok) return;
       await syncFromSupabase();
-      route();
+      route({ preserveScroll: true });
     };
     window.deleteReview = async function(reviewId, reportId) {
       if (!supabaseClient || !isCurrentAdmin() || !confirm("Xóa đánh giá vi phạm này?")) return;
@@ -4495,18 +4561,28 @@
       const author = document.getElementById("edit-review-author").value.trim();
       const content = document.getElementById("edit-review-content").value.trim();
       const isAdminReview = document.getElementById("edit-review-as-admin").checked;
-      if (content.length < 10) { alert("Nội dung phải dài ít nhất 10 ký tự!"); return; }
-      const { error } = await supabaseClient.from("reviews").update({
-        author: isAdminReview ? "Quản trị viên" : (author || "Thành viên"),
-        content,
-        rating: editReviewRating,
-        is_admin: isAdminReview,
-        edited_at: new Date().toISOString()
-      }).eq("id", id);
-      if (error) { alert("Lỗi cập nhật: " + error.message); return; }
-      closeModal("editReviewModal");
-      await syncFromSupabase();
-      rerender();
+      if (content.length < 10 || content.length > 3000) { alert("Nội dung phải dài từ 10 đến 3.000 ký tự!"); return; }
+      const btn = document.getElementById("edit-review-save-btn");
+      if (btn?.disabled) return;
+      if (btn) btn.disabled = true;
+      try {
+        const { data, error } = await supabaseClient.from("reviews").update({
+          author: isAdminReview ? "Quản trị viên" : (author || "Thành viên"),
+          content,
+          rating: editReviewRating,
+          is_admin: isAdminReview,
+          edited_at: new Date().toISOString()
+        }).eq("id", id).select("id");
+        if (error) { alert("Lỗi cập nhật: " + supabaseErrorText(error)); return; }
+        if (!data?.length) { alert("Không cập nhật được đánh giá: Supabase trả về 0 dòng bị tác động."); return; }
+        closeModal("editReviewModal");
+        await syncFromSupabase();
+        rerender();
+      } catch (err) {
+        alert("Lỗi cập nhật: " + supabaseErrorText(err));
+      } finally {
+        if (btn) btn.disabled = false;
+      }
     };
 
     window.openReportModal = function(reviewId, replyId = "") {
@@ -4532,14 +4608,20 @@
       const reason = document.getElementById("reportReason").value.trim();
       if (reason.length < 5 || reason.length > 1000) { alert("Lý do báo cáo cần từ 5 đến 1.000 ký tự."); return; }
       const btn = document.getElementById("reportSubmitBtn");
+      if (btn?.disabled) return;
       if (btn) btn.disabled = true;
-      const payload = { review_id: reviewId, reporter_id: currentUser.id, reason };
-      if (replyId) payload.reply_id = replyId;
-      const { error } = await supabaseClient.from("reports").insert(payload);
-      if (btn) btn.disabled = false;
-      if (error) { alert("Gửi báo cáo thất bại: " + error.message); return; }
-      closeModal("reportModal");
-      alert("Cảm ơn bạn! Báo cáo đã được gửi đến Admin.");
+      try {
+        const payload = { review_id: reviewId, reporter_id: currentUser.id, reason };
+        if (replyId) payload.reply_id = replyId;
+        const { error } = await supabaseClient.from("reports").insert(payload);
+        if (error) { alert("Gửi báo cáo thất bại: " + supabaseErrorText(error)); return; }
+        closeModal("reportModal");
+        alert("Cảm ơn bạn! Báo cáo đã được gửi đến Admin.");
+      } catch (err) {
+        alert("Gửi báo cáo thất bại: " + supabaseErrorText(err));
+      } finally {
+        if (btn) btn.disabled = false;
+      }
     };
 
     /* ================= ROUTER & FORMS ================= */
@@ -4548,7 +4630,9 @@
       const preservedScrollY = Number.isFinite(options.scrollY) ? options.scrollY : window.scrollY;
       const hash = window.location.hash.replace(/^#/, "") || "/";
       const [path, queryString] = hash.split("?");
-      const parts = path.split("/").filter(Boolean);
+      const parts = path.split("/").filter(Boolean).map(seg => {
+        try { return decodeURIComponent(seg); } catch { return seg; }
+      });
       const params = new URLSearchParams(queryString || "");
       const highlightReviewId = params.get("reviewId");
       const highlightReplyId = params.get("replyId");
@@ -4594,14 +4678,15 @@
       if (document.getElementById("suggestForm")) initSuggestForm();
       if (document.getElementById("supportForm")) initSupportForm();
       if (document.getElementById("adminAddNoticeForm")) initAdminAddNoticeForm();
-      if (document.getElementById("admin-activity-feed") && isCurrentAdmin()) loadAdminActivityFeed();
-      if (document.getElementById("admin-user-search") && !preserveScroll) {
-        ADMIN_USER_RESULTS = [];
-        ADMIN_SELECTED_USER = null;
+      if (parts[0] === "admin" && isCurrentAdmin()) {
+        if (activeAdminTab === "tab-admin-activity" && document.getElementById("admin-activity-feed")) loadAdminActivityFeed();
+        if (activeAdminTab === "tab-manage" && document.getElementById("admin-catalog-results")) renderAdminCatalogResults();
+        if (document.getElementById("admin-user-search") && !preserveScroll) {
+          ADMIN_USER_RESULTS = [];
+          ADMIN_SELECTED_USER = null;
+        }
       }
       if (document.getElementById("lecturerGrid")) filterAndSortLecturers(true);
-      if (document.getElementById("majorListContainer")) filterMajorCards(true);
-      if (document.getElementById("admin-catalog-results")) renderAdminCatalogResults();
 
       if (!preserveScroll) {
         const focusEl = highlightReplyId
@@ -4632,20 +4717,26 @@
         const badWord = containsForbiddenWord(content);
         if (badWord) { alert(`Nội dung chứa từ khóa không phù hợp ("${badWord}").`); return; }
 
-        btn.disabled = true;
-        const { error } = await supabaseClient.from("reviews").insert({
-          user_id: currentUser.id,
-          target_type: form.dataset.type,
-          target_id: form.dataset.id,
-          author: isAdminPost ? "Quản trị viên" : myDisplayName(),
-          is_admin: isAdminPost,
-          rating,
-          content
-        });
-        btn.disabled = false;
-        if (error) { alert("Gửi đánh giá thất bại: " + error.message); return; }
-        await syncFromSupabase();
-        rerender();
+        if (btn?.disabled) return;
+        if (btn) btn.disabled = true;
+        try {
+          const { error } = await supabaseClient.from("reviews").insert({
+            user_id: currentUser.id,
+            target_type: form.dataset.type,
+            target_id: form.dataset.id,
+            author: isAdminPost ? "Quản trị viên" : myDisplayName(),
+            is_admin: isAdminPost,
+            rating,
+            content
+          });
+          if (error) { alert("Gửi đánh giá thất bại: " + supabaseErrorText(error)); return; }
+          await syncFromSupabase();
+          rerender();
+        } catch (err) {
+          alert("Gửi đánh giá thất bại: " + supabaseErrorText(err));
+        } finally {
+          if (btn) btn.disabled = false;
+        }
       });
     }
 
@@ -4666,21 +4757,31 @@
         const bad = containsForbiddenWord(content);
         if (bad) { alert(`Nội dung chứa từ khóa không phù hợp ("${bad}").`); return; }
 
-        btn.disabled = true;
-        const newId = "gv_" + Date.now();
-        const { error: e1 } = await supabaseClient.from("lecturer_records").insert({
-          id: newId, name, degree, faculty_id: facultyId, status: "pending", source_type: "community", submitted_by: currentUser.id
-        });
-        if (e1) { btn.disabled = false; alert("Lỗi gửi đề xuất: " + e1.message); return; }
-        const { error: e2 } = await supabaseClient.from("reviews").insert({
-          user_id: currentUser.id, target_type: "lecturer", target_id: newId,
-          author: myDisplayName(), is_admin: false, rating, content
-        });
-        btn.disabled = false;
-        if (e2) console.error("Lỗi lưu đánh giá đầu tiên:", e2);
-        await syncFromSupabase();
-        alert("Đã gửi đề xuất giảng viên! Admin sẽ kiểm duyệt sớm nhất.");
-        window.location.hash = "#/lecturers";
+        if (btn?.disabled) return;
+        if (btn) btn.disabled = true;
+        try {
+          const newId = "gv_" + Date.now();
+          const { error: e1 } = await supabaseClient.from("lecturer_records").insert({
+            id: newId, name, degree, faculty_id: facultyId, status: "pending", source_type: "community", submitted_by: currentUser.id
+          });
+          if (e1) { alert("Lỗi gửi đề xuất: " + supabaseErrorText(e1)); return; }
+          const { error: e2 } = await supabaseClient.from("reviews").insert({
+            user_id: currentUser.id, target_type: "lecturer", target_id: newId,
+            author: myDisplayName(), is_admin: false, rating, content
+          });
+          await syncFromSupabase();
+          if (e2) {
+            console.error("Lỗi lưu đánh giá đầu tiên:", e2);
+            alert("Đã gửi đề xuất giảng viên, nhưng đánh giá kèm theo chưa lưu được (" + supabaseErrorText(e2) + ").");
+          } else {
+            alert("Đã gửi đề xuất giảng viên! Admin sẽ kiểm duyệt sớm nhất.");
+          }
+          window.location.hash = "#/lecturers";
+        } catch (err) {
+          alert("Lỗi gửi đề xuất: " + supabaseErrorText(err));
+        } finally {
+          if (btn) btn.disabled = false;
+        }
       });
     }
 
@@ -4693,15 +4794,21 @@
         const degree = document.getElementById("admin-lect-degree").value.trim();
         const facultyId = document.getElementById("admin-lect-faculty").value;
         if (name.length < 3) { alert("Tên giảng viên quá ngắn!"); return; }
-        btn.disabled = true;
-        const { error } = await supabaseClient.from("lecturer_records").insert({
-          id: "gv_" + Date.now(), name, degree, faculty_id: facultyId, status: "approved", source_type: "admin", submitted_by: currentUser.id
-        });
-        btn.disabled = false;
-        if (error) { alert("Lỗi thêm giảng viên: " + error.message); return; }
-        await syncFromSupabase();
-        alert(`Đã thêm thành công giảng viên: ${name}`);
-        route();
+        if (btn?.disabled) return;
+        if (btn) btn.disabled = true;
+        try {
+          const { error } = await supabaseClient.from("lecturer_records").insert({
+            id: "gv_" + Date.now(), name, degree, faculty_id: facultyId, status: "approved", source_type: "admin", submitted_by: currentUser.id
+          });
+          if (error) { alert("Lỗi thêm giảng viên: " + supabaseErrorText(error)); return; }
+          await syncFromSupabase();
+          alert(`Đã thêm thành công giảng viên: ${name}`);
+          route();
+        } catch (err) {
+          alert("Lỗi thêm giảng viên: " + supabaseErrorText(err));
+        } finally {
+          if (btn) btn.disabled = false;
+        }
       });
     }
 
@@ -4714,15 +4821,21 @@
         const name = document.getElementById("admin-major-name").value.trim();
         const facultyId = document.getElementById("admin-major-faculty").value;
         if (!code || name.length < 3) { alert("Vui lòng nhập Mã ngành hợp lệ (chữ/số) và Tên ngành!"); return; }
-        btn.disabled = true;
-        const { error } = await supabaseClient.from("major_records").upsert({
-          id: code, code, name, faculty_id: facultyId, status: "approved"
-        });
-        btn.disabled = false;
-        if (error) { alert("Lỗi thêm ngành: " + error.message); return; }
-        await syncFromSupabase();
-        alert(`Đã thêm thành công ngành: ${name}`);
-        route();
+        if (btn?.disabled) return;
+        if (btn) btn.disabled = true;
+        try {
+          const { error } = await supabaseClient.from("major_records").upsert({
+            id: code, code, name, faculty_id: facultyId, status: "approved"
+          });
+          if (error) { alert("Lỗi thêm ngành: " + supabaseErrorText(error)); return; }
+          await syncFromSupabase();
+          alert(`Đã thêm thành công ngành: ${name}`);
+          route();
+        } catch (err) {
+          alert("Lỗi thêm ngành: " + supabaseErrorText(err));
+        } finally {
+          if (btn) btn.disabled = false;
+        }
       });
     }
 
@@ -4860,13 +4973,19 @@
         const title = document.getElementById("notice-title").value.trim();
         const content = document.getElementById("notice-content").value.trim();
         if (!title || !content) return;
-        btn.disabled = true;
-        const { error } = await supabaseClient.from("notices").insert({ title, content });
-        btn.disabled = false;
-        if (error) { alert("Lỗi đăng thông báo: " + error.message); return; }
-        await syncFromSupabase();
-        alert("Đã đăng thông báo lên trang chủ!");
-        route();
+        if (btn?.disabled) return;
+        if (btn) btn.disabled = true;
+        try {
+          const { error } = await supabaseClient.from("notices").insert({ title, content });
+          if (error) { alert("Lỗi đăng thông báo: " + supabaseErrorText(error)); return; }
+          await syncFromSupabase();
+          alert("Đã đăng thông báo lên trang chủ!");
+          route();
+        } catch (err) {
+          alert("Lỗi đăng thông báo: " + supabaseErrorText(err));
+        } finally {
+          if (btn) btn.disabled = false;
+        }
       });
     }
 
@@ -4899,29 +5018,37 @@
 
     const globalSearchInput = document.getElementById("globalSearch");
     const searchResultsBox = document.getElementById("searchResults");
+    let globalSearchTimer = null;
     globalSearchInput?.addEventListener("input", (e) => {
-      const q = normalizeSearch(e.target.value);
-      if (q.length < 2) { searchResultsBox.classList.remove("active"); return; }
-      const lecRes = DB.lecturers
-        .filter(l => normalizeSearch(l.name).includes(q) || normalizeSearch(facultyForLecturer(l)?.name || "").includes(q))
-        .slice(0, 5)
-        .map(l => {
-          const avg = avgRating("lecturer", l.id);
-          const starTag = avg ? `<span class="search-star"><i class="fas fa-star"></i> ${avg.toFixed(1)}</span>` : "";
-          return `<a href="#/lecturer/${l.id}"><span class="search-result-label"><i class="fas fa-user-tie"></i> ${escapeHtml(l.name)}${facultyForLecturer(l) ? ` — ${escapeHtml(facultyForLecturer(l).name)}` : ""}</span>${starTag}</a>`;
-        }).join("");
-      const majRes = DB.majors
-        .filter(m => normalizeSearch(m.name).includes(q) || String(m.code).includes(q))
-        .slice(0, 4)
-        .map(m => {
-          const avg = avgRating("major", m.id);
-          const starTag = avg ? `<span class="search-star"><i class="fas fa-star"></i> ${avg.toFixed(1)}</span>` : "";
-          return `<a href="#/major/${m.id}"><span class="search-result-label"><i class="fas fa-book"></i> ${escapeHtml(m.name)}</span>${starTag}</a>`;
-        }).join("");
-      searchResultsBox.innerHTML = (lecRes || majRes) ? (majRes + lecRes) : "<a style='color:var(--muted)'><span class='search-result-label'><i class='fas fa-search'></i> Không tìm thấy kết quả</span></a>";
-      searchResultsBox.classList.add("active");
+      const rawValue = e.target.value;
+      clearTimeout(globalSearchTimer);
+      globalSearchTimer = setTimeout(() => {
+        const q = normalizeSearch(rawValue);
+        if (q.length < 2) { searchResultsBox.classList.remove("active"); return; }
+        const lecRes = DB.lecturers
+          .filter(l => normalizeSearch(l.name).includes(q) || normalizeSearch(facultyForLecturer(l)?.name || "").includes(q))
+          .slice(0, 5)
+          .map(l => {
+            const avg = avgRating("lecturer", l.id);
+            const starTag = avg ? `<span class="search-star"><i class="fas fa-star"></i> ${avg.toFixed(1)}</span>` : "";
+            return `<a href="#/lecturer/${encodeURIComponent(l.id)}"><span class="search-result-label"><i class="fas fa-user-tie"></i> ${escapeHtml(l.name)}${facultyForLecturer(l) ? ` — ${escapeHtml(facultyForLecturer(l).name)}` : ""}</span>${starTag}</a>`;
+          }).join("");
+        const majRes = DB.majors
+          .filter(m => normalizeSearch(m.name).includes(q) || String(m.code).includes(q))
+          .slice(0, 4)
+          .map(m => {
+            const avg = avgRating("major", m.id);
+            const starTag = avg ? `<span class="search-star"><i class="fas fa-star"></i> ${avg.toFixed(1)}</span>` : "";
+            return `<a href="#/major/${encodeURIComponent(m.id)}"><span class="search-result-label"><i class="fas fa-book"></i> ${escapeHtml(m.name)}</span>${starTag}</a>`;
+          }).join("");
+        searchResultsBox.innerHTML = (lecRes || majRes)
+          ? (majRes + lecRes)
+          : `<div style="padding:12px 16px;color:var(--muted);font-size:0.9rem;"><i class="fas fa-search"></i> Không tìm thấy kết quả</div>`;
+        searchResultsBox.classList.add("active");
+      }, 140);
     });
-    searchResultsBox?.addEventListener("click", () => {
+    searchResultsBox?.addEventListener("click", (e) => {
+      if (!e.target.closest("a")) return;
       searchResultsBox.classList.remove("active");
       if (globalSearchInput) globalSearchInput.value = "";
     });
@@ -4944,9 +5071,11 @@
       }
     });
 
-    window.addEventListener("hashchange", route);
+    window.addEventListener("hashchange", () => {
+      if (authReady) route();
+    });
     window.addEventListener("DOMContentLoaded", async () => {
-      if (!window.location.hash) window.location.hash = "#/";
+      if (!window.location.hash) history.replaceState(null, "", "#/");
       await initSupabaseAuth();
     });
   </script>
