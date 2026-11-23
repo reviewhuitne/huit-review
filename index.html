@@ -556,6 +556,19 @@
     .notification-detail-body{white-space:pre-wrap;line-height:1.8;color:#334155;background:#f8fafc;border:1px solid var(--border);padding:16px;border-radius:12px;overflow-wrap:anywhere;}
     .notification-detail-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:12px 0;color:var(--muted);font-size:.82rem;}
     @media(max-width:650px){.user-admin-search{grid-template-columns:1fr;padding:12px}.user-admin-search-btn{width:100%;}.user-admin-result{align-items:flex-start}.user-admin-result-main{min-width:0}.user-admin-detail{padding:15px}}
+    /* Toast góc trên bên phải, không chặn thao tác như alert() */
+    #toast-stack{position:fixed;top:18px;right:18px;z-index:3000;display:grid;gap:10px;width:min(390px,calc(100vw - 30px));pointer-events:none}
+    .app-toast{display:flex;align-items:flex-start;gap:11px;padding:13px 16px;border-radius:12px;background:#fff;border:1px solid #dbe5ef;box-shadow:0 12px 34px rgba(15,38,62,.18);color:#24364b;font-size:.88rem;line-height:1.5;pointer-events:auto;opacity:0;transform:translateY(-8px);transition:opacity .22s ease,transform .22s ease;overflow-wrap:anywhere}
+    .app-toast.show{opacity:1;transform:translateY(0)}
+    .app-toast.success{border-left:4px solid #22a06b}.app-toast.error{border-left:4px solid #dc4545}.app-toast.info{border-left:4px solid #2b7ac7}
+    .app-toast i{margin-top:2px;font-size:1rem}.app-toast.success i{color:#168653}.app-toast.error i{color:#c62828}.app-toast.info i{color:var(--primary)}
+    .admin-catalog-toolbar{display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:12px;margin:14px 0;align-items:center}
+    .admin-catalog-results{display:grid;gap:9px;margin-top:14px}
+    .admin-catalog-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:13px 15px;border:1px solid var(--border);border-radius:12px;background:#fff}
+    .admin-catalog-row-main{min-width:220px;flex:1}.admin-catalog-row-title{font-weight:800;color:var(--primary-dark)}
+    .admin-catalog-row-meta{font-size:.8rem;color:var(--muted);margin-top:3px}
+    .admin-catalog-row-actions{display:flex;gap:7px;flex-wrap:wrap}
+    @media(max-width:650px){.admin-catalog-toolbar{grid-template-columns:1fr}.admin-catalog-row-main{min-width:0}.admin-catalog-row-actions{width:100%}.admin-catalog-row-actions .btn{flex:1;justify-content:center}}
   </style>
 </head>
 <body>
@@ -633,6 +646,24 @@
       <div style="display:flex; gap:12px; margin-top:25px;">
         <button class="btn" onclick="saveEditedLecturer()" style="margin:0; flex:1; justify-content:center;">Lưu thay đổi</button>
         <button class="btn" style="background:#cbd5e1; color:#334155; margin:0; flex:1; justify-content:center; box-shadow:none;" onclick="closeModal('editLecturerModal')">Hủy</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Sửa Ngành học (Admin) -->
+  <div class="modal-overlay" id="editMajorModal">
+    <div class="modal-box">
+      <h3><i class="fas fa-book" style="color:var(--primary)"></i> Sửa thông tin Ngành học</h3>
+      <input type="hidden" id="edit-major-id">
+      <label for="edit-major-code">Mã ngành (mã định danh, không thể đổi)</label>
+      <input type="text" id="edit-major-code" readonly>
+      <label for="edit-major-name">Tên ngành</label>
+      <input type="text" id="edit-major-name" required maxlength="180">
+      <label for="edit-major-faculty">Thuộc khoa</label>
+      <select id="edit-major-faculty" required></select>
+      <div style="display:flex;gap:12px;margin-top:25px;">
+        <button class="btn" type="button" onclick="saveEditedMajor()" style="margin:0;flex:1;justify-content:center;">Lưu thay đổi</button>
+        <button class="btn" type="button" onclick="closeModal('editMajorModal')" style="background:#cbd5e1;color:#334155;margin:0;flex:1;justify-content:center;box-shadow:none;">Hủy</button>
       </div>
     </div>
   </div>
@@ -1377,6 +1408,16 @@
     let editReviewRating = 5;
     let myEditRating = 5;
     const replyTargetMap = {};
+    const pendingLikeKeys = new Set();
+    let lecturerFilterTimer = null;
+    let majorFilterTimer = null;
+    let adminCatalogFilterTimer = null;
+    let adminUserSearchInFlight = false;
+    const ADMIN_CATALOG_FILTER = { search: "", kind: "all" };
+    const CATALOG_FILTERS = {
+      lecturers: { search: "", faculty: "", sort: "default" },
+      majors: { search: "", faculty: "", sort: "default" }
+    };
 
     function getReviews() { return REVIEWS_CACHE; }
     function getReviewCount(type, targetId) {
@@ -1478,7 +1519,69 @@
       if (!str) return "";
       return str.toLowerCase().replace(/(^|\s)\S/g, l => l.toUpperCase());
     }
-    function rerender() { const y = window.scrollY; route(); window.scrollTo(0, y); }
+    function showToast(message, type = "info") {
+      const text = String(message ?? "").trim();
+      if (!text) return;
+      let host = document.getElementById("toast-stack");
+      if (!host) {
+        host = document.createElement("div");
+        host.id = "toast-stack";
+        host.setAttribute("aria-live", "polite");
+        host.setAttribute("aria-atomic", "false");
+        document.body.appendChild(host);
+      }
+      const node = document.createElement("div");
+      const safeType = ["success", "error", "info"].includes(type) ? type : "info";
+      const icon = safeType === "success" ? "fa-circle-check" : safeType === "error" ? "fa-circle-exclamation" : "fa-circle-info";
+      node.className = `app-toast ${safeType}`;
+      node.innerHTML = `<i class="fas ${icon}" aria-hidden="true"></i><div></div>`;
+      node.lastElementChild.textContent = text;
+      host.appendChild(node);
+      requestAnimationFrame(() => node.classList.add("show"));
+      const duration = text.length > 180 ? 6500 : 4200;
+      window.setTimeout(() => {
+        node.classList.remove("show");
+        window.setTimeout(() => node.remove(), 260);
+      }, duration);
+    }
+    // Các thông báo vốn dùng alert() được chuyển thành toast; confirm() vẫn giữ để xác nhận xóa.
+    window.alert = function(message) {
+      const text = String(message ?? "");
+      const type = /(đã (gửi|lưu|xóa|duyệt|thêm|đăng)|thành công|cảm ơn|đã ghi nhận)/i.test(text)
+        ? "success"
+        : /(lỗi|không |thất bại|chưa |bị chặn|không tìm|không được)/i.test(text) ? "error" : "info";
+      showToast(text, type);
+    };
+
+    function supabaseErrorText(error) {
+      if (!error) return "Lỗi không xác định.";
+      const code = String(error.code || "");
+      const message = String(error.message || error.details || "Lỗi không xác định.");
+      if (code === "42501" || /row-level security|permission denied|not authorized/i.test(message)) {
+        return `Supabase từ chối quyền (RLS/GRANT): ${message}. Hãy kiểm tra policy cho tài khoản Admin.`;
+      }
+      if (code === "23514" || /check constraint/i.test(message)) {
+        return `Ràng buộc CHECK của bảng chưa chấp nhận giá trị trạng thái. Cần bổ sung 'deleted' vào CHECK constraint: ${message}`;
+      }
+      if (code === "23502" || /not-null constraint/i.test(message)) {
+        return `Thiếu trường bắt buộc khi ghi dữ liệu: ${message}`;
+      }
+      return message;
+    }
+    async function checkedDelete(query, label, allowZero = false, selectColumn = "id", quiet = false) {
+      const { data, error } = await query.select(selectColumn);
+      if (error) {
+        if (!quiet) alert(`${label} thất bại: ${supabaseErrorText(error)}`);
+        return { ok: false, count: 0, error };
+      }
+      const count = Array.isArray(data) ? data.length : 0;
+      if (!allowZero && count === 0) {
+        if (!quiet) alert(`${label} không thực hiện được: Supabase trả về 0 dòng bị tác động. Hãy kiểm tra RLS, quyền DELETE và điều kiện ID.`);
+        return { ok: false, count: 0, error: null };
+      }
+      return { ok: true, count, error: null };
+    }
+    function rerender() { const y = window.scrollY; route({ preserveScroll: true, scrollY: y }); }
 
     // Tự động nhận diện đường dẫn đích (Giảng viên / Ngành học) từ báo cáo hoặc tên đối tượng
     function resolveTargetLink(targetType, targetId, targetName, fallbackTypeLabel = "") {
@@ -2216,6 +2319,7 @@
       return { rev, item, ok: isMine(item) };
     }
     window.openMyEdit = function(kind, reviewId, replyId) {
+      if (!ensureAccountActive()) return;
       const { item, ok } = findMine(kind, reviewId, replyId);
       if (!ok) { alert("Bạn chỉ có thể sửa bình luận của chính mình."); return; }
       document.getElementById("myEditKind").value = kind;
@@ -2228,7 +2332,7 @@
       document.getElementById("myEditModal").classList.add("active");
     };
     window.saveMyEdit = async function() {
-      if (!supabaseClient) return;
+      if (!ensureAccountActive() || !supabaseClient) return;
       const kind = document.getElementById("myEditKind").value;
       const reviewId = document.getElementById("myEditReviewId").value;
       const replyId = document.getElementById("myEditReplyId").value;
@@ -2244,32 +2348,33 @@
       const btn = document.getElementById("myEditSaveBtn");
       if (btn) btn.disabled = true;
       const editedAt = new Date().toISOString();
-      const { error } = kind === "review"
-        ? await supabaseClient.from("reviews").update({ content, rating: myEditRating, edited_at: editedAt }).eq("id", reviewId)
-        : await supabaseClient.from("review_replies").update({ content, edited_at: editedAt }).eq("id", replyId);
+      const { data, error } = kind === "review"
+        ? await supabaseClient.from("reviews").update({ content, rating: myEditRating, edited_at: editedAt }).eq("id", reviewId).select("id")
+        : await supabaseClient.from("review_replies").update({ content, edited_at: editedAt }).eq("id", replyId).select("id");
       if (btn) btn.disabled = false;
-      if (error) { alert("Không lưu được chỉnh sửa: " + error.message); return; }
+      if (error) { alert("Không lưu được chỉnh sửa: " + supabaseErrorText(error)); return; }
+      if (!data?.length) { alert("Không lưu được chỉnh sửa: Supabase trả về 0 dòng được cập nhật. Kiểm tra quyền hoặc nội dung đã thay đổi."); return; }
       closeModal("myEditModal");
       await syncFromSupabase();
       rerender();
     };
     window.deleteMyReview = async function(id) {
-      if (!supabaseClient) return;
+      if (!ensureAccountActive() || !supabaseClient) return;
       const { ok } = findMine("review", id);
       if (!ok) { alert("Bạn chỉ có thể xóa bình luận của chính mình."); return; }
       if (!confirm("Xóa bình luận này? Các phản hồi bên dưới cũng sẽ bị xóa.")) return;
-      const { error } = await supabaseClient.from("reviews").delete().eq("id", id);
-      if (error) { alert("Lỗi khi xóa: " + error.message); return; }
+      const deleted = await checkedDelete(supabaseClient.from("reviews").delete().eq("id", id), "Xóa bình luận của bạn");
+      if (!deleted.ok) return;
       await syncFromSupabase();
       rerender();
     };
     window.deleteMyReply = async function(reviewId, replyId) {
-      if (!supabaseClient) return;
+      if (!ensureAccountActive() || !supabaseClient) return;
       const { ok } = findMine("reply", reviewId, replyId);
       if (!ok) { alert("Bạn chỉ có thể xóa phản hồi của chính mình."); return; }
       if (!confirm("Xóa phản hồi này?")) return;
-      const { error } = await supabaseClient.from("review_replies").delete().eq("id", replyId);
-      if (error) { alert("Lỗi khi xóa: " + error.message); return; }
+      const deleted = await checkedDelete(supabaseClient.from("review_replies").delete().eq("id", replyId), "Xóa phản hồi của bạn");
+      if (!deleted.ok) return;
       await syncFromSupabase();
       rerender();
     };
@@ -2476,22 +2581,22 @@
         <div class="catalog-toolbar fade-up" role="search">
           <div class="catalog-search-field">
             <i class="fas fa-search" aria-hidden="true"></i>
-            <input id="majorSearch" type="search" aria-label="Tìm ngành học" placeholder="Tìm theo tên ngành hoặc mã ngành..." oninput="filterMajorCards()" />
+            <input id="majorSearch" type="search" aria-label="Tìm ngành học" placeholder="Tìm theo tên ngành hoặc mã ngành..." value="${escapeHtml(CATALOG_FILTERS.majors.search)}" oninput="filterMajorCards()" />
           </div>
           <div class="catalog-inline-field">
             <label for="filterMajorFaculty"><i class="fas fa-filter" aria-hidden="true"></i> Khoa</label>
             <select id="filterMajorFaculty" onchange="filterMajorCards()">
-              <option value="">Tất cả khoa</option>
-              ${facultiesWithMajors.map(f => `<option value="${f.id}">${escapeHtml(f.name)}</option>`).join("")}
+              <option value="" ${!CATALOG_FILTERS.majors.faculty ? "selected" : ""}>Tất cả khoa</option>
+              ${facultiesWithMajors.map(f => `<option value="${f.id}" ${CATALOG_FILTERS.majors.faculty === f.id ? "selected" : ""}>${escapeHtml(f.name)}</option>`).join("")}
             </select>
           </div>
           <div class="catalog-inline-field">
             <label for="sortMajor"><i class="fas fa-arrow-down-wide-short" aria-hidden="true"></i> Sắp xếp</label>
             <select id="sortMajor" onchange="filterMajorCards()">
-              <option value="default">Theo khoa (mặc định)</option>
-              <option value="rating_desc">Điểm sao cao nhất</option>
-              <option value="reviews_desc">Nhiều đánh giá nhất</option>
-              <option value="name_asc">Tên ngành (A - Z)</option>
+              <option value="default" ${CATALOG_FILTERS.majors.sort === "default" ? "selected" : ""}>Theo khoa (mặc định)</option>
+              <option value="rating_desc" ${CATALOG_FILTERS.majors.sort === "rating_desc" ? "selected" : ""}>Điểm sao cao nhất</option>
+              <option value="reviews_desc" ${CATALOG_FILTERS.majors.sort === "reviews_desc" ? "selected" : ""}>Nhiều đánh giá nhất</option>
+              <option value="name_asc" ${CATALOG_FILTERS.majors.sort === "name_asc" ? "selected" : ""}>Tên ngành (A - Z)</option>
             </select>
           </div>
           <span id="majorResultCount" class="catalog-result-count" aria-live="polite"><i class="fas fa-list-ol" aria-hidden="true"></i> ${total} ngành</span>
@@ -2500,15 +2605,30 @@
       `;
     }
 
-    window.filterMajorCards = function() {
+    function applyMajorFilters() {
       const q = normalizeSearch(document.getElementById("majorSearch")?.value || "");
       const facultyId = document.getElementById("filterMajorFaculty")?.value || "";
       const sort = document.getElementById("sortMajor")?.value || "default";
+      CATALOG_FILTERS.majors = { search: document.getElementById("majorSearch")?.value || "", faculty: facultyId, sort };
       const res = renderMajorGroupsHTML(q, facultyId, sort);
       const container = document.getElementById("majorListContainer");
-      if (container) container.innerHTML = res.html;
+      if (container) {
+        const template = document.createElement("template");
+        template.innerHTML = res.html;
+        container.replaceChildren(template.content);
+      }
       const label = document.getElementById("majorResultCount");
       if (label) label.innerHTML = `<i class="fas fa-list-ol" aria-hidden="true"></i> ${res.count} / ${DB.majors.length} ngành`;
+    }
+    window.filterMajorCards = function(immediate = false) {
+      CATALOG_FILTERS.majors = {
+        search: document.getElementById("majorSearch")?.value || "",
+        faculty: document.getElementById("filterMajorFaculty")?.value || "",
+        sort: document.getElementById("sortMajor")?.value || "default"
+      };
+      clearTimeout(majorFilterTimer);
+      if (immediate) { applyMajorFilters(); return; }
+      majorFilterTimer = setTimeout(applyMajorFilters, 140);
     };
 
     function viewFacultyMajors(id) {
@@ -2582,18 +2702,18 @@
         <div class="catalog-toolbar fade-up" role="search">
           <div class="catalog-search-field">
             <i class="fas fa-search" aria-hidden="true"></i>
-            <input type="search" id="lecturerSearch" aria-label="Tìm giảng viên" placeholder="Tìm theo tên giảng viên (có dấu hoặc không dấu)..." oninput="filterAndSortLecturers()" />
+            <input type="search" id="lecturerSearch" aria-label="Tìm giảng viên" placeholder="Tìm theo tên giảng viên (có dấu hoặc không dấu)..." value="${escapeHtml(CATALOG_FILTERS.lecturers.search)}" oninput="filterAndSortLecturers()" />
           </div>
           <div class="catalog-inline-field">
             <label for="filterFaculty"><i class="fas fa-filter" aria-hidden="true"></i> Khoa</label>
             <select id="filterFaculty" onchange="filterAndSortLecturers()">
-              <option value="">Tất cả 17 khoa</option>
-              ${FACULTIES.map(f => `<option value="${f.id}">${escapeHtml(f.name)}</option>`).join("")}
+              <option value="" ${!CATALOG_FILTERS.lecturers.faculty ? "selected" : ""}>Tất cả 17 khoa</option>
+              ${FACULTIES.map(f => `<option value="${f.id}" ${CATALOG_FILTERS.lecturers.faculty === f.id ? "selected" : ""}>${escapeHtml(f.name)}</option>`).join("")}
             </select>
           </div>
           <div class="catalog-inline-field">
             <label for="sortLecturer"><i class="fas fa-arrow-down-wide-short" aria-hidden="true"></i> Sắp xếp</label>
-            <select id="sortLecturer" onchange="filterAndSortLecturers()"><option value="default">Theo khoa (A–Z)</option><option value="rating_desc">Điểm sao cao nhất</option><option value="reviews_desc">Nhiều đánh giá nhất</option><option value="name_asc">Tên (A - Z)</option></select>
+            <select id="sortLecturer" onchange="filterAndSortLecturers()"><option value="default" ${CATALOG_FILTERS.lecturers.sort === "default" ? "selected" : ""}>Theo khoa (A–Z)</option><option value="rating_desc" ${CATALOG_FILTERS.lecturers.sort === "rating_desc" ? "selected" : ""}>Điểm sao cao nhất</option><option value="reviews_desc" ${CATALOG_FILTERS.lecturers.sort === "reviews_desc" ? "selected" : ""}>Nhiều đánh giá nhất</option><option value="name_asc" ${CATALOG_FILTERS.lecturers.sort === "name_asc" ? "selected" : ""}>Tên (A - Z)</option></select>
           </div>
           <span id="resultCount" class="catalog-result-count" aria-live="polite"><i class="fas fa-users" aria-hidden="true"></i> ${orderedLecturers.length} giảng viên</span>
         </div>
@@ -2635,6 +2755,10 @@
           </div>
           <div style="margin-top:20px; display:flex; gap:10px; flex-wrap:wrap;">
             <a href="${reportHref}" class="btn btn-report" style="margin:0;"><i class="fas fa-flag"></i> Báo cáo thông tin sai</a>
+            ${isAdmin && isPending ? `
+            <button onclick="approveLecturer('${l.id}')" class="btn btn-approve" style="margin:0;padding:10px 20px;font-size:.9rem;"><i class="fas fa-check"></i> Duyệt giảng viên</button>
+            <button onclick="rejectLecturer('${l.id}')" class="btn btn-del" style="margin:0;padding:10px 20px;font-size:.9rem;"><i class="fas fa-times"></i> Từ chối</button>
+            ` : ""}
             ${isAdmin && !isPending ? `
             <button onclick="openEditLecturerModal('${l.id}')" class="btn" style="background:var(--primary); margin:0; padding:10px 20px; font-size:0.9rem;"><i class="fas fa-edit"></i> Sửa (Admin)</button>
             <button onclick="adminDeleteLecturer('${l.id}')" class="btn" style="background:var(--danger); margin:0; padding:10px 20px; font-size:0.9rem;"><i class="fas fa-trash"></i> Xóa (Admin)</button>
@@ -2743,6 +2867,10 @@
             <p style="color:var(--muted);font-size:.92rem;margin:0 0 16px;">Quên mật khẩu, không đăng nhập được hoặc gặp sự cố tài khoản? Biểu mẫu này <b>có thể gửi ngay cả khi bạn chưa đăng nhập</b>.</p>
             <div class="notice-banner" style="margin:0 0 18px;">
               <i class="fas fa-shield-halved"></i>
+              <div class="notice-content">
+                <h4>Bảo mật tài khoản của bạn</h4>
+                <p>Không cung cấp mật khẩu, mã OTP hoặc mã khôi phục cho bất kỳ ai. Admin chỉ xác minh quyền sở hữu qua thông tin liên hệ độc lập; HUIT Review không yêu cầu bạn gửi mật khẩu hay OTP trong biểu mẫu hỗ trợ.</p>
+              </div>
             </div>
             ${currentUser
               ? `<div class="comment-as-bar"><span><i class="fas fa-user-check" style="color:var(--primary)"></i> Đã liên kết tài khoản: <strong>${escapeHtml(currentProfile?.username || "tài khoản của bạn")}</strong>. Khi Admin phản hồi, bạn sẽ nhận thông báo tại quả chuông.</span></div>`
@@ -2861,6 +2989,7 @@
             <div class="admin-tab ${isTab("tab-notices")}" onclick="switchTab('tab-notices', this)">Thông báo (${DB.notices.length})</div>
             <div class="admin-tab ${isTab("tab-users")}" onclick="switchTab('tab-users', this)">Người dùng &amp; Cảnh báo</div>
             <div class="admin-tab ${isTab("tab-words")}" onclick="switchTab('tab-words', this)">Từ cấm (${DB.forbiddenWords.length})</div>
+            <div class="admin-tab ${isTab("tab-manage")}" onclick="switchTab('tab-manage', this)"><i class="fas fa-list-check"></i> Quản lý GV / Ngành</div>
             <div class="admin-tab ${isTab("tab-add")}" onclick="switchTab('tab-add', this)">Thêm GV / Ngành</div>
           </div>
 
@@ -3064,6 +3193,22 @@
             </div>
           </div>
 
+          <div id="tab-manage" class="admin-content ${isTab("tab-manage")}">
+            <div class="admin-box" style="margin-top:0;">
+              <h3><i class="fas fa-sliders" style="color:var(--primary)"></i> Quản lý trực tiếp Giảng viên &amp; Ngành học</h3>
+              <p style="margin:0;color:var(--muted);font-size:.88rem;">Tìm nhanh theo tên, mã, học vị hoặc khoa. Admin có thể mở trang chi tiết, sửa hoặc xóa ngay tại đây.</p>
+              <div class="admin-catalog-toolbar">
+                <input type="search" id="admin-catalog-search" value="${escapeHtml(ADMIN_CATALOG_FILTER.search)}" placeholder="Nhập tên giảng viên / tên ngành / mã ngành..." oninput="adminFilterCatalog()" autocomplete="off" />
+                <select id="admin-catalog-kind" onchange="adminFilterCatalog(true)" aria-label="Loại dữ liệu cần quản lý">
+                  <option value="all" ${ADMIN_CATALOG_FILTER.kind === "all" ? "selected" : ""}>Giảng viên &amp; Ngành học</option>
+                  <option value="lecturers" ${ADMIN_CATALOG_FILTER.kind === "lecturers" ? "selected" : ""}>Chỉ giảng viên</option>
+                  <option value="majors" ${ADMIN_CATALOG_FILTER.kind === "majors" ? "selected" : ""}>Chỉ ngành học</option>
+                </select>
+              </div>
+              <div id="admin-catalog-results" class="admin-catalog-results" aria-live="polite"></div>
+            </div>
+          </div>
+
           <div id="tab-add" class="admin-content ${isTab("tab-add")}">
             <div class="grid">
               <div class="admin-box" style="margin:0;">
@@ -3095,6 +3240,68 @@
         </div>
       `;
     }
+
+    function renderAdminCatalogResults() {
+      const box = document.getElementById("admin-catalog-results");
+      if (!box || !isCurrentAdmin()) return;
+      const searchField = document.getElementById("admin-catalog-search");
+      const kindField = document.getElementById("admin-catalog-kind");
+      const rawQuery = searchField ? searchField.value : ADMIN_CATALOG_FILTER.search;
+      const kind = kindField ? kindField.value : ADMIN_CATALOG_FILTER.kind;
+      ADMIN_CATALOG_FILTER.search = rawQuery;
+      ADMIN_CATALOG_FILTER.kind = kind;
+      const query = normalizeSearch(rawQuery);
+      const lecturers = [...DB.lecturers, ...DB.pendingLecturers].map(l => ({
+        ...l, _kind: "lecturer", _pending: DB.pendingLecturers.some(p => p.id === l.id),
+        _search: normalizeSearch([l.name, l.degree, l.id, FACULTY_BY_ID[l.facultyId]?.name || ""].join(" "))
+      })).filter(l => !query || l._search.includes(query));
+      const majors = DB.majors.map(m => ({
+        ...m, _kind: "major", _search: normalizeSearch([m.name, m.code, m.id, FACULTY_BY_ID[MAJOR_FACULTY[m.code || m.id]]?.name || ""].join(" "))
+      })).filter(m => !query || m._search.includes(query));
+      let html = "";
+      if (kind !== "majors") {
+        const list = lecturers.slice(0, query ? 100 : 25);
+        html += list.map(l => `
+          <div class="admin-catalog-row">
+            <div class="admin-catalog-row-main">
+              <div class="admin-catalog-row-title"><i class="fas fa-user-tie" style="color:var(--primary)"></i> ${escapeHtml(l.name)}</div>
+              <div class="admin-catalog-row-meta">${escapeHtml(l.degree || "Chưa có học vị")} · ${escapeHtml(FACULTY_BY_ID[l.facultyId]?.name || l.facultyId || "Chưa rõ khoa")} · ${l._pending ? "Chờ duyệt" : (l.sourceType === "community" ? "Cộng đồng đề xuất" : "Đã duyệt")}</div>
+            </div>
+            <div class="admin-catalog-row-actions">
+              <a class="btn btn-sm" href="#/lecturer/${encodeURIComponent(l.id)}"><i class="fas fa-arrow-up-right-from-square"></i> Chi tiết</a>
+              <button type="button" class="btn btn-sm" onclick="openEditLecturerModal(${jsArg(l.id)})"><i class="fas fa-edit"></i> Sửa</button>
+              ${l._pending ? `<button type="button" class="btn btn-sm btn-approve" onclick="approveLecturer(${jsArg(l.id)})"><i class="fas fa-check"></i> Duyệt</button><button type="button" class="btn btn-sm btn-del" onclick="rejectLecturer(${jsArg(l.id)})"><i class="fas fa-times"></i> Từ chối</button>` : ""}
+              <button type="button" class="btn btn-sm btn-del" onclick="adminDeleteLecturer(${jsArg(l.id)})"><i class="fas fa-trash"></i> Xóa</button>
+            </div>
+          </div>`).join("") || (kind === "lecturers" ? `<div class="empty-state" style="padding:22px;"><p>Không tìm thấy giảng viên phù hợp.</p></div>` : "");
+      }
+      if (kind !== "lecturers") {
+        const list = majors.slice(0, query ? 100 : 25);
+        html += list.map(m => `
+          <div class="admin-catalog-row">
+            <div class="admin-catalog-row-main">
+              <div class="admin-catalog-row-title"><i class="fas fa-book" style="color:var(--primary)"></i> ${escapeHtml(m.name)}</div>
+              <div class="admin-catalog-row-meta">Mã ngành: ${escapeHtml(m.code || m.id)} · ${escapeHtml(FACULTY_BY_ID[MAJOR_FACULTY[m.code || m.id]]?.name || "Chưa gán khoa")}</div>
+            </div>
+            <div class="admin-catalog-row-actions">
+              <a class="btn btn-sm" href="#/major/${encodeURIComponent(m.id)}"><i class="fas fa-arrow-up-right-from-square"></i> Chi tiết</a>
+              <button type="button" class="btn btn-sm" onclick="openEditMajorModal(${jsArg(m.id)})"><i class="fas fa-edit"></i> Sửa</button>
+              <button type="button" class="btn btn-sm btn-del" onclick="adminDeleteMajor(${jsArg(m.id)})"><i class="fas fa-trash"></i> Xóa</button>
+            </div>
+          </div>`).join("") || (kind === "majors" ? `<div class="empty-state" style="padding:22px;"><p>Không tìm thấy ngành học phù hợp.</p></div>` : "");
+      }
+      const total = kind === "lecturers" ? lecturers.length : kind === "majors" ? majors.length : lecturers.length + majors.length;
+      if (!html) html = `<div class="empty-state" style="padding:22px;"><p>${query ? "Không tìm thấy kết quả phù hợp." : "Chưa có dữ liệu để hiển thị."}</p></div>`;
+      else if (!query && total > 50) html += `<p class="auth-help">Đang hiển thị tối đa 25 giảng viên và 25 ngành. Nhập từ khóa để tìm toàn bộ ${total} mục.</p>`;
+      box.innerHTML = html;
+    }
+    window.adminFilterCatalog = function(immediate = false) {
+      ADMIN_CATALOG_FILTER.search = document.getElementById("admin-catalog-search")?.value || "";
+      ADMIN_CATALOG_FILTER.kind = document.getElementById("admin-catalog-kind")?.value || "all";
+      clearTimeout(adminCatalogFilterTimer);
+      if (immediate) { renderAdminCatalogResults(); return; }
+      adminCatalogFilterTimer = setTimeout(renderAdminCatalogResults, 160);
+    };
 
     window.setFeedbackFilter = function(val) {
       activeFeedbackFilter = val;
@@ -3158,7 +3365,7 @@
                   </div>
                   <div style="color:#334155;">${reply.replyToAuthor ? `<span class="reply-mention">@${escapeHtml(reply.replyToAuthor)}</span>` : ""}${escapeHtml(reply.content)}${reply.editedAt ? '<span class="edited-tag">(đã chỉnh sửa)</span>' : ""}</div>
                   <div class="reply-actions">
-                    <button type="button" class="helpful ${replyLiked ? "active" : ""}" onclick="likeReply('${r.id}','${reply.id}')"><i class="fas fa-thumbs-up"></i> Hữu ích (${reply.likes || 0})</button>
+                    <button type="button" class="helpful ${replyLiked ? "active" : ""}" data-like-reply="${escapeHtml(reply.id)}" aria-pressed="${replyLiked ? "true" : "false"}" onclick="likeReply('${r.id}','${reply.id}')"><i class="fas fa-thumbs-up"></i> Hữu ích (${reply.likes || 0})</button>
                     <button type="button" onclick="replyToReply('${r.id}','${reply.id}')" style="color:var(--primary);"><i class="fas fa-reply"></i> Phản hồi</button>
                     ${replyMine
                       ? `<button type="button" onclick="openMyEdit('reply','${r.id}','${reply.id}')"><i class="fas fa-edit"></i> Sửa</button><button type="button" class="del" onclick="deleteMyReply('${r.id}','${reply.id}')"><i class="fas fa-trash"></i> Xóa</button>`
@@ -3170,7 +3377,7 @@
               }).join("")}
             </div>` : ""}
           <div class="review-actions">
-            <button class="helpful ${hasLiked ? "active" : ""}" onclick="likeReview('${r.id}')"><i class="fas fa-thumbs-up"></i> Hữu ích (${r.likes || 0})</button>
+            <button type="button" class="helpful ${hasLiked ? "active" : ""}" data-like-review="${escapeHtml(r.id)}" aria-pressed="${hasLiked ? "true" : "false"}" onclick="likeReview('${r.id}')"><i class="fas fa-thumbs-up"></i> Hữu ích (${r.likes || 0})</button>
             <button onclick="toggleReplyForm('${r.id}')" style="color:var(--primary);"><i class="fas fa-reply"></i> Phản hồi (${r.replies.length})</button>
             ${mine ? `<button class="own-edit" onclick="openMyEdit('review','${r.id}')"><i class="fas fa-pen"></i> Sửa bình luận</button>
             <button onclick="deleteMyReview('${r.id}')"><i class="fas fa-trash"></i> Xóa bình luận</button>` : `<button onclick="openReportModal('${r.id}')"><i class="fas fa-flag"></i> Báo cáo vi phạm</button>`}
@@ -3253,7 +3460,7 @@
     };
 
     window.submitReply = async function(reviewId) {
-      if (!supabaseClient) return;
+      if (!ensureAccountActive() || !supabaseClient) return;
       if (!currentUser) { openAuthModal("login"); setAuthMessage("Bạn cần đăng nhập để phản hồi.", "info"); return; }
       const content = document.getElementById(`reply-content-${reviewId}`).value.trim();
       const isAdminReply = isCurrentAdmin() && Boolean(document.getElementById(`reply-as-admin-${reviewId}`)?.checked);
@@ -3292,52 +3499,107 @@
       rerender();
     };
 
+    function paintLikeButton(kind, id, item, isLiked, disabled = false) {
+      const attr = kind === "review" ? "data-like-review" : "data-like-reply";
+      document.querySelectorAll(`[${attr}]`).forEach(button => {
+        if (button.getAttribute(attr) !== String(id)) return;
+        button.disabled = disabled;
+        button.classList.toggle("active", isLiked);
+        button.setAttribute("aria-pressed", isLiked ? "true" : "false");
+        button.innerHTML = `<i class="fas fa-thumbs-up"></i> Hữu ích (${Number(item.likes || 0)})`;
+      });
+    }
+    function setOptimisticLike(item, userId, liked) {
+      const next = new Set(item.likedBy || []);
+      if (liked) next.add(userId); else next.delete(userId);
+      item.likedBy = [...next];
+      item.likes = item.likedBy.length;
+    }
     window.likeReview = async function(id) {
-      if (!supabaseClient) return;
+      if (!ensureAccountActive() || !supabaseClient) return;
       if (!currentUser) { openAuthModal("login"); setAuthMessage("Bạn cần đăng nhập để đánh dấu hữu ích.", "info"); return; }
       const rev = REVIEWS_CACHE.find(r => r.id === id);
       if (!rev) return;
+      const key = `review:${id}`;
+      if (pendingLikeKeys.has(key)) return;
+      pendingLikeKeys.add(key);
       const already = (rev.likedBy || []).includes(currentUser.id);
-      if (already) {
-        await supabaseClient.from("review_likes").delete().eq("review_id", id).eq("user_id", currentUser.id);
-        await supabaseClient.from("notifications").delete()
-          .eq("type", "like").eq("review_id", id).eq("actor_id", currentUser.id).eq("to_user_id", rev.userId);
-      } else {
-        const { error } = await supabaseClient.from("review_likes").insert({ review_id: id, user_id: currentUser.id });
-        if (error) { alert("Lỗi đánh dấu hữu ích: " + error.message); return; }
-        await pushNotif(rev.userId, "like", rev, myDisplayName(), rev.content);
+      setOptimisticLike(rev, currentUser.id, !already);
+      paintLikeButton("review", id, rev, !already, true);
+      try {
+        if (already) {
+          const { ok, error: deleteError } = await checkedDelete(
+            supabaseClient.from("review_likes").delete().eq("review_id", id).eq("user_id", currentUser.id),
+            "Bỏ đánh dấu hữu ích", false, "review_id", true
+          );
+          if (!ok) throw (deleteError || new Error("Không thể bỏ đánh dấu hữu ích."));
+          try {
+            const { error: notifError } = await supabaseClient.from("notifications").delete()
+              .eq("type", "like").eq("review_id", id).eq("actor_id", currentUser.id).eq("to_user_id", rev.userId);
+            if (notifError) console.warn("Không xóa được thông báo Like:", notifError);
+          } catch (notificationError) { console.warn(notificationError); }
+        } else {
+          const { error } = await supabaseClient.from("review_likes").insert({ review_id: id, user_id: currentUser.id });
+          if (error) throw error;
+          pushNotif(rev.userId, "like", rev, myDisplayName(), rev.content).catch(err => console.warn("Không gửi được thông báo Like:", err));
+        }
+      } catch (error) {
+        setOptimisticLike(rev, currentUser.id, already);
+        paintLikeButton("review", id, rev, already, false);
+        alert("Không cập nhật được lượt Hữu ích: " + supabaseErrorText(error));
+      } finally {
+        pendingLikeKeys.delete(key);
+        paintLikeButton("review", id, rev, (rev.likedBy || []).includes(currentUser.id), false);
       }
-      await syncFromSupabase();
-      rerender();
     };
 
     window.likeReply = async function(reviewId, replyId) {
-      if (!supabaseClient) return;
+      if (!ensureAccountActive() || !supabaseClient) return;
       if (!currentUser) { openAuthModal("login"); setAuthMessage("Bạn cần đăng nhập để đánh dấu hữu ích.", "info"); return; }
       const rev = REVIEWS_CACHE.find(r => r.id === reviewId);
       const rep = rev?.replies.find(x => x.id === replyId);
       if (!rev || !rep) return;
+      const key = `reply:${replyId}`;
+      if (pendingLikeKeys.has(key)) return;
+      pendingLikeKeys.add(key);
       const already = (rep.likedBy || []).includes(currentUser.id);
-      if (already) {
-        await supabaseClient.from("reply_likes").delete().eq("reply_id", replyId).eq("user_id", currentUser.id);
-        await supabaseClient.from("notifications").delete()
-          .eq("type", "like").eq("review_id", reviewId).eq("reply_id", replyId).eq("actor_id", currentUser.id).eq("to_user_id", rep.userId);
-      } else {
-        const { error } = await supabaseClient.from("reply_likes").insert({ reply_id: replyId, user_id: currentUser.id });
-        if (error) { alert("Lỗi đánh dấu hữu ích: " + error.message); return; }
-        await pushNotif(rep.userId, "like", rev, myDisplayName(), rep.content, replyId);
+      setOptimisticLike(rep, currentUser.id, !already);
+      paintLikeButton("reply", replyId, rep, !already, true);
+      try {
+        if (already) {
+          const { ok, error: deleteError } = await checkedDelete(
+            supabaseClient.from("reply_likes").delete().eq("reply_id", replyId).eq("user_id", currentUser.id),
+            "Bỏ đánh dấu phản hồi hữu ích", false, "reply_id", true
+          );
+          if (!ok) throw (deleteError || new Error("Không thể bỏ đánh dấu phản hồi hữu ích."));
+          try {
+            const { error: notifError } = await supabaseClient.from("notifications").delete()
+              .eq("type", "like").eq("review_id", reviewId).eq("reply_id", replyId).eq("actor_id", currentUser.id).eq("to_user_id", rep.userId);
+            if (notifError) console.warn("Không xóa được thông báo Like phản hồi:", notifError);
+          } catch (notificationError) { console.warn(notificationError); }
+        } else {
+          const { error } = await supabaseClient.from("reply_likes").insert({ reply_id: replyId, user_id: currentUser.id });
+          if (error) throw error;
+          pushNotif(rep.userId, "like", rev, myDisplayName(), rep.content, replyId).catch(err => console.warn("Không gửi được thông báo Like phản hồi:", err));
+        }
+      } catch (error) {
+        setOptimisticLike(rep, currentUser.id, already);
+        paintLikeButton("reply", replyId, rep, already, false);
+        alert("Không cập nhật được lượt Hữu ích: " + supabaseErrorText(error));
+      } finally {
+        pendingLikeKeys.delete(key);
+        paintLikeButton("reply", replyId, rep, (rep.likedBy || []).includes(currentUser.id), false);
       }
-      await syncFromSupabase();
-      rerender();
     };
 
-    window.filterAndSortLecturers = function() {
+    function applyLecturerFilters() {
       const facultyId = document.getElementById("filterFaculty")?.value || "";
       const sort = document.getElementById("sortLecturer")?.value || "default";
       const query = normalizeSearch(document.getElementById("lecturerSearch")?.value || "");
       const grid = document.getElementById("lecturerGrid");
       if (!grid) return;
-      let cards = [...grid.querySelectorAll(".lecturer-card")];
+      CATALOG_FILTERS.lecturers = { search: document.getElementById("lecturerSearch")?.value || "", faculty: facultyId, sort };
+      const cards = [...grid.querySelectorAll(".lecturer-card")];
       let count = 0;
       cards.forEach(card => {
         const show = (!facultyId || card.dataset.faculty === facultyId) && (!query || (card.dataset.search || "").includes(query));
@@ -3348,9 +3610,22 @@
       else if (sort === "reviews_desc") cards.sort((a, b) => parseInt(b.dataset.reviews || "0") - parseInt(a.dataset.reviews || "0"));
       else if (sort === "name_asc") cards.sort((a, b) => (a.dataset.name || "").localeCompare(b.dataset.name || "", "vi"));
       else cards.sort((a, b) => parseInt(a.dataset.sourceOrder || "0") - parseInt(b.dataset.sourceOrder || "0"));
-      cards.forEach(card => grid.appendChild(card));
+      const fragment = document.createDocumentFragment();
+      cards.forEach(card => fragment.appendChild(card));
+      grid.replaceChildren(fragment);
       const label = document.getElementById("resultCount");
       if (label) label.innerHTML = `<i class="fas fa-users" aria-hidden="true"></i> ${count} / ${cards.length} giảng viên`;
+    }
+    window.filterAndSortLecturers = function(immediate = false) {
+      // Lưu trạng thái ngay để thao tác mở trang chi tiết không làm mất bộ lọc.
+      CATALOG_FILTERS.lecturers = {
+        search: document.getElementById("lecturerSearch")?.value || "",
+        faculty: document.getElementById("filterFaculty")?.value || "",
+        sort: document.getElementById("sortLecturer")?.value || "default"
+      };
+      clearTimeout(lecturerFilterTimer);
+      if (immediate) { applyLecturerFilters(); return; }
+      lecturerFilterTimer = setTimeout(applyLecturerFilters, 140);
     };
 
     window.switchTab = function(tabId, el) {
@@ -3360,6 +3635,7 @@
       document.querySelectorAll(".admin-tab").forEach(t => t.classList.toggle("active", el ? t === el : t.getAttribute("onclick")?.includes(`'${tabId}'`)));
       document.querySelectorAll(".admin-content").forEach(c => c.classList.toggle("active", c.id === tabId));
       if (tabId === "tab-admin-activity") loadAdminActivityFeed();
+      if (tabId === "tab-manage") renderAdminCatalogResults();
     };
 
     /* ================= ADMIN ACTIVITY CENTER ================= */
@@ -3575,11 +3851,19 @@
     }
 
     window.adminSearchUsers = async function() {
-      if (!supabaseClient || !isCurrentAdmin()) return;
+      if (!supabaseClient || !isCurrentAdmin() || adminUserSearchInFlight) return;
+      const button = document.getElementById("admin-user-search-button");
+      adminUserSearchInFlight = true;
+      if (button) { button.disabled = true; button.dataset.originalHtml = button.innerHTML; button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang tìm...'; }
       const field = document.getElementById("admin-user-search");
       const resultsBox = document.getElementById("admin-user-results");
       const query = String(field?.value || "").trim().toLowerCase();
-      if (query.length < 2) { setAdminUserSearchMessage("Nhập ít nhất 2 ký tự tên đăng nhập.", "error"); return; }
+      if (query.length < 2) {
+        setAdminUserSearchMessage("Nhập ít nhất 2 ký tự tên đăng nhập.", "error");
+        adminUserSearchInFlight = false;
+        if (button) { button.disabled = false; button.innerHTML = button.dataset.originalHtml || '<i class="fas fa-magnifying-glass"></i> Tìm kiếm'; }
+        return;
+      }
       setAdminUserSearchMessage("Đang tìm tài khoản...", "info");
       if (resultsBox) resultsBox.innerHTML = `<div class="loading-box" style="padding:20px;"><i class="fas fa-spinner fa-spin"></i> Đang tìm...</div>`;
       try {
@@ -3612,6 +3896,9 @@
         ADMIN_USER_RESULTS = [];
         setAdminUserSearchMessage("Không tìm được người dùng: " + (error?.message || "Lỗi không xác định") + ". Hãy chạy file SQL thiết lập Supabase đi kèm.", "error");
         if (resultsBox) resultsBox.innerHTML = "";
+      } finally {
+        adminUserSearchInFlight = false;
+        if (button) { button.disabled = false; button.innerHTML = button.dataset.originalHtml || '<i class="fas fa-magnifying-glass"></i> Tìm kiếm'; }
       }
     };
 
@@ -3833,10 +4120,10 @@
 
     window.adminDeleteSupportTicket = async function(id) {
       if (!supabaseClient || !isCurrentAdmin() || !confirm("Xóa yêu cầu hỗ trợ này khỏi danh sách?")) return;
-      const { error } = await supabaseClient.from("support_tickets").delete().eq("id", id);
-      if (error) { alert("Không xóa được yêu cầu: " + error.message); return; }
+      const result = await checkedDelete(supabaseClient.from("support_tickets").delete().eq("id", id), "Xóa yêu cầu hỗ trợ");
+      if (!result.ok) return;
       await syncFromSupabase();
-      route();
+      route({ preserveScroll: true });
     };
 
     window.openEditLecturerModal = function(id) {
@@ -3846,8 +4133,8 @@
       const sel = document.getElementById("edit-lect-faculty");
       sel.innerHTML = FACULTIES.map(f => `<option value="${f.id}">${escapeHtml(f.name)}</option>`).join("");
       document.getElementById("edit-lect-id").value = id;
-      document.getElementById("edit-lect-name").value = l.name;
-      document.getElementById("edit-lect-degree").value = l.degree;
+      document.getElementById("edit-lect-name").value = l.name || "";
+      document.getElementById("edit-lect-degree").value = l.degree || "";
       sel.value = facultyForLecturer(l)?.id || FACULTIES[0].id;
       const verBox = document.getElementById("edit-lect-verified");
       if (verBox) verBox.checked = l.sourceType !== "community";
@@ -3860,50 +4147,164 @@
       const degree = document.getElementById("edit-lect-degree").value.trim();
       const facultyId = document.getElementById("edit-lect-faculty").value;
       const verified = document.getElementById("edit-lect-verified")?.checked;
-      const { error } = await supabaseClient.from("lecturer_records").upsert({
-        id, name, degree, faculty_id: facultyId, status: "approved",
+      if (name.length < 3 || !degree || !FACULTY_BY_ID[facultyId]) { alert("Vui lòng nhập tên, học vị và khoa hợp lệ."); return; }
+      const keepPending = DB.pendingLecturers.some(item => item.id === id);
+      const { data, error } = await supabaseClient.from("lecturer_records").upsert({
+        id, name, degree, faculty_id: facultyId, status: keepPending ? "pending" : "approved",
         source_type: verified ? "admin" : "community"
-      });
-      if (error) { alert("Lỗi lưu giảng viên: " + error.message); return; }
+      }).select("id,status").maybeSingle();
+      if (error) { alert("Lỗi lưu giảng viên: " + supabaseErrorText(error)); return; }
+      if (!data) { alert("Supabase không xác nhận đã lưu giảng viên (0 dòng bị tác động). Kiểm tra quyền SELECT/UPSERT."); return; }
       closeModal("editLecturerModal");
       await syncFromSupabase();
-      alert("Đã lưu thay đổi!");
-      route();
+      alert("Đã lưu thay đổi giảng viên!");
+      route({ preserveScroll: true });
     };
+
+    window.openEditMajorModal = function(id) {
+      if (!isCurrentAdmin()) return;
+      const major = getMajor(id);
+      if (!major) return;
+      const facultySelect = document.getElementById("edit-major-faculty");
+      facultySelect.innerHTML = FACULTIES.map(f => `<option value="${f.id}">${escapeHtml(f.name)}</option>`).join("");
+      document.getElementById("edit-major-id").value = id;
+      document.getElementById("edit-major-code").value = major.code || major.id;
+      document.getElementById("edit-major-name").value = major.name || "";
+      facultySelect.value = MAJOR_FACULTY[major.code || major.id] || FACULTIES[0].id;
+      document.getElementById("editMajorModal").classList.add("active");
+    };
+    window.saveEditedMajor = async function() {
+      if (!supabaseClient || !isCurrentAdmin()) return;
+      const id = document.getElementById("edit-major-id").value;
+      const code = document.getElementById("edit-major-code").value.trim();
+      const name = document.getElementById("edit-major-name").value.trim();
+      const facultyId = document.getElementById("edit-major-faculty").value;
+      if (!code || name.length < 3 || !FACULTY_BY_ID[facultyId]) { alert("Vui lòng nhập tên ngành và khoa hợp lệ."); return; }
+      const { data, error } = await supabaseClient.from("major_records").upsert({ id, code, name, faculty_id: facultyId, status: "approved" }).select("id,status").maybeSingle();
+      if (error) { alert("Lỗi lưu ngành học: " + supabaseErrorText(error)); return; }
+      if (!data) { alert("Supabase không xác nhận đã lưu ngành học (0 dòng bị tác động). Kiểm tra quyền SELECT/UPSERT."); return; }
+      MAJOR_FACULTY[code] = facultyId;
+      closeModal("editMajorModal");
+      await syncFromSupabase();
+      alert("Đã lưu thay đổi ngành học!");
+      route({ preserveScroll: true });
+    };
+
     window.adminDeleteLecturer = async function(id) {
       if (!supabaseClient || !isCurrentAdmin() || !confirm("Xóa giảng viên này cùng toàn bộ đánh giá của họ?")) return;
-      const l = getLecturer(id);
-      await supabaseClient.from("reviews").delete().eq("target_type", "lecturer").eq("target_id", id);
-      await supabaseClient.from("lecturer_records").upsert({
-        id, name: l?.name || id, degree: l?.degree || "", faculty_id: l?.facultyId || "",
-        status: "deleted", source_type: l?.sourceType || "admin"
-      });
+      const lecturer = getLecturer(id);
+      if (!lecturer) { alert("Không tìm thấy giảng viên cần xóa."); return; }
+      const isDefault = DEFAULT_LECTURERS.some(item => item.id === id);
+      const wasPending = DB.pendingLecturers.some(item => item.id === id);
+      const expectedReviews = getReviewCount("lecturer", id);
+      const payload = {
+        id,
+        name: String(lecturer.name || id).trim() || id,
+        degree: String(lecturer.degree || "Chưa cập nhật").trim() || "Chưa cập nhật",
+        faculty_id: String(lecturer.facultyId || FACULTIES[0].id).trim() || FACULTIES[0].id,
+        status: "deleted",
+        source_type: lecturer.sourceType || "admin"
+      };
+      let recordChanged = false;
+      if (isDefault) {
+        const { data, error } = await supabaseClient.from("lecturer_records").upsert(payload).select("id,status").maybeSingle();
+        if (error) { alert("Không thể ẩn giảng viên mặc định: " + supabaseErrorText(error)); return; }
+        if (!data || data.status !== "deleted") { alert("Supabase không xác nhận đã ghi trạng thái deleted. Kiểm tra quyền SELECT/UPSERT và CHECK constraint cho lecturer_records."); return; }
+        recordChanged = true;
+      } else {
+        const { data: removedRows, error: deleteError } = await supabaseClient.from("lecturer_records").delete().eq("id", id).select("id");
+        if (!deleteError && removedRows?.length) {
+          recordChanged = true;
+        } else {
+          // Nếu bản ghi mới không xóa trực tiếp được, fallback sang tombstone.
+          const { data, error: upsertError } = await supabaseClient.from("lecturer_records").upsert(payload).select("id,status").maybeSingle();
+          if (upsertError) {
+            const firstError = deleteError ? supabaseErrorText(deleteError) : "Supabase trả về 0 dòng bị xóa.";
+            alert(`Không thể xóa hoặc ẩn giảng viên. Xóa trực tiếp: ${firstError}. Ghi trạng thái deleted: ${supabaseErrorText(upsertError)}`);
+            return;
+          }
+          if (!data || data.status !== "deleted") { alert("Supabase không xác nhận xóa/ẩn giảng viên (0 dòng bị tác động). Kiểm tra RLS và CHECK constraint."); return; }
+          recordChanged = true;
+        }
+      }
+
+      // Xóa đánh giá sau khi đã ẩn/loại bản ghi; nếu thất bại, khôi phục giảng viên.
+      const { data: removedReviews, error: reviewError } = await supabaseClient.from("reviews")
+        .delete().eq("target_type", "lecturer").eq("target_id", id).select("id");
+      const removedCount = Array.isArray(removedReviews) ? removedReviews.length : 0;
+      if (reviewError || removedCount < expectedReviews) {
+        const restorePayload = { ...payload, status: wasPending ? "pending" : "approved" };
+        const { data: restored, error: restoreError } = await supabaseClient.from("lecturer_records")
+          .upsert(restorePayload).select("id,status").maybeSingle();
+        const restoreMessage = restoreError || !restored
+          ? ` Không thể khôi phục tự động: ${supabaseErrorText(restoreError || new Error("Supabase không trả lại bản ghi."))}.`
+          : " Giảng viên đã được khôi phục về trạng thái trước đó.";
+        const cause = reviewError ? supabaseErrorText(reviewError) : `Chỉ xóa được ${removedCount}/${expectedReviews} đánh giá (0 hoặc thiếu dòng bị tác động).`;
+        alert(`Không thể hoàn tất xóa giảng viên vì xóa đánh giá thất bại: ${cause}.${restoreMessage}`);
+        return;
+      }
       await syncFromSupabase();
       alert("Đã xóa giảng viên!");
-      window.location.hash = "#/lecturers";
+      if (window.location.hash.startsWith(`#/lecturer/${id}`)) window.location.hash = "#/lecturers";
+      else route({ preserveScroll: true });
     };
+
     window.adminDeleteMajor = async function(id) {
       if (!supabaseClient || !isCurrentAdmin() || !confirm("Bạn có chắc muốn xóa ngành này?")) return;
-      const m = getMajor(id);
-      await supabaseClient.from("major_records").upsert({ id, code: m?.code || id, name: m?.name || id, status: "deleted" });
+      const major = getMajor(id);
+      if (!major) { alert("Không tìm thấy ngành cần xóa."); return; }
+      const isDefault = DEFAULT_MAJORS.some(item => item.id === id);
+      const facultyId = MAJOR_FACULTY[major.code || major.id] || FACULTIES[0].id;
+      const payload = {
+        id,
+        code: String(major.code || id).trim() || id,
+        name: String(major.name || id).trim() || id,
+        faculty_id: facultyId,
+        status: "deleted"
+      };
+      if (isDefault) {
+        const { data, error } = await supabaseClient.from("major_records").upsert(payload).select("id,status").maybeSingle();
+        if (error) { alert("Không thể ẩn ngành mặc định: " + supabaseErrorText(error)); return; }
+        if (!data || data.status !== "deleted") { alert("Supabase không xác nhận đã ghi trạng thái deleted. Kiểm tra quyền SELECT/UPSERT và CHECK constraint cho major_records."); return; }
+      } else {
+        const { data: removedRows, error: deleteError } = await supabaseClient.from("major_records").delete().eq("id", id).select("id");
+        if (deleteError || !removedRows?.length) {
+          const { data, error: upsertError } = await supabaseClient.from("major_records").upsert(payload).select("id,status").maybeSingle();
+          if (upsertError) {
+            const firstError = deleteError ? supabaseErrorText(deleteError) : "Supabase trả về 0 dòng bị xóa.";
+            alert(`Không thể xóa hoặc ẩn ngành học. Xóa trực tiếp: ${firstError}. Ghi trạng thái deleted: ${supabaseErrorText(upsertError)}`);
+            return;
+          }
+          if (!data || data.status !== "deleted") { alert("Supabase không xác nhận xóa/ẩn ngành (0 dòng bị tác động). Kiểm tra RLS và CHECK constraint."); return; }
+        }
+      }
       await syncFromSupabase();
-      window.location.hash = "#/majors";
+      alert("Đã xóa ngành học!");
+      if (window.location.hash.startsWith(`#/major/${id}`)) window.location.hash = "#/majors";
+      else route({ preserveScroll: true });
     };
+
     window.approveLecturer = async function(id) {
       if (!supabaseClient || !isCurrentAdmin()) return;
-      const { error } = await supabaseClient.from("lecturer_records").update({ status: "approved" }).eq("id", id);
-      if (error) { alert("Lỗi duyệt: " + error.message); return; }
+      const { data, error } = await supabaseClient.from("lecturer_records").update({ status: "approved" }).eq("id", id).select("id");
+      if (error) { alert("Lỗi duyệt: " + supabaseErrorText(error)); return; }
+      if (!data?.length) { alert("Không duyệt được giảng viên: Supabase trả về 0 dòng bị cập nhật. Kiểm tra RLS hoặc bản ghi đã thay đổi."); return; }
       await syncFromSupabase();
       alert("Đã duyệt giảng viên!");
-      route();
+      route({ preserveScroll: true });
     };
     window.rejectLecturer = async function(id) {
       if (!supabaseClient || !isCurrentAdmin() || !confirm("Từ chối và xóa vĩnh viễn đề xuất này?")) return;
-      await supabaseClient.from("reviews").delete().eq("target_type", "lecturer").eq("target_id", id);
-      const { error } = await supabaseClient.from("lecturer_records").delete().eq("id", id);
-      if (error) { alert("Lỗi từ chối: " + error.message); return; }
+      const expectedReviews = getReviewCount("lecturer", id);
+      const reviewDelete = await checkedDelete(
+        supabaseClient.from("reviews").delete().eq("target_type", "lecturer").eq("target_id", id),
+        "Xóa đánh giá kèm đề xuất", expectedReviews === 0
+      );
+      if (!reviewDelete.ok || reviewDelete.count < expectedReviews) return;
+      const deletion = await checkedDelete(supabaseClient.from("lecturer_records").delete().eq("id", id), "Từ chối đề xuất giảng viên");
+      if (!deletion.ok) return;
       await syncFromSupabase();
-      route();
+      route({ preserveScroll: true });
     };
     window.addForbiddenWord = async function() {
       if (!supabaseClient || !isCurrentAdmin()) return;
@@ -3939,47 +4340,60 @@
     };
     window.deleteReview = async function(reviewId, reportId) {
       if (!supabaseClient || !isCurrentAdmin() || !confirm("Xóa đánh giá vi phạm này?")) return;
-      await supabaseClient.from("reviews").delete().eq("id", reviewId);
-      if (reportId) await supabaseClient.from("reports").delete().eq("id", reportId);
+      const deleted = await checkedDelete(supabaseClient.from("reviews").delete().eq("id", reviewId), "Xóa đánh giá vi phạm");
+      if (!deleted.ok) return;
+      if (reportId) {
+        const reportDelete = await checkedDelete(supabaseClient.from("reports").delete().eq("id", reportId), "Đóng báo cáo");
+        if (!reportDelete.ok) { await syncFromSupabase(); route({ preserveScroll: true }); return; }
+      }
       await syncFromSupabase();
-      route();
+      route({ preserveScroll: true });
     };
     window.deleteReportedReply = async function(reviewId, replyId, reportId) {
       if (!supabaseClient || !isCurrentAdmin() || !confirm("Xóa phản hồi vi phạm này?")) return;
-      await supabaseClient.from("review_replies").delete().eq("id", replyId);
-      if (reportId) await supabaseClient.from("reports").delete().eq("id", reportId);
+      const deleted = await checkedDelete(supabaseClient.from("review_replies").delete().eq("id", replyId), "Xóa phản hồi vi phạm");
+      if (!deleted.ok) return;
+      if (reportId) {
+        const reportDelete = await checkedDelete(supabaseClient.from("reports").delete().eq("id", reportId), "Đóng báo cáo");
+        if (!reportDelete.ok) { await syncFromSupabase(); route({ preserveScroll: true }); return; }
+      }
       await syncFromSupabase();
-      route();
+      route({ preserveScroll: true });
     };
     window.dismissReport = async function(reportId) {
       if (!supabaseClient || !isCurrentAdmin()) return;
-      await supabaseClient.from("reports").delete().eq("id", reportId);
+      const deleted = await checkedDelete(supabaseClient.from("reports").delete().eq("id", reportId), "Đóng báo cáo");
+      if (!deleted.ok) return;
       await syncFromSupabase();
-      route();
+      route({ preserveScroll: true });
     };
     window.adminDeleteReview = async function(reviewId) {
       if (!supabaseClient || !isCurrentAdmin() || !confirm("Xóa đánh giá này?")) return;
-      await supabaseClient.from("reviews").delete().eq("id", reviewId);
+      const deleted = await checkedDelete(supabaseClient.from("reviews").delete().eq("id", reviewId), "Xóa đánh giá");
+      if (!deleted.ok) return;
       await syncFromSupabase();
       rerender();
     };
     window.adminDeleteReply = async function(reviewId, replyId) {
       if (!supabaseClient || !isCurrentAdmin() || !confirm("Bạn có chắc muốn xóa phản hồi này?")) return;
-      await supabaseClient.from("review_replies").delete().eq("id", replyId);
+      const deleted = await checkedDelete(supabaseClient.from("review_replies").delete().eq("id", replyId), "Xóa phản hồi");
+      if (!deleted.ok) return;
       await syncFromSupabase();
       rerender();
     };
     window.adminDeleteNotice = async function(id) {
       if (!supabaseClient || !isCurrentAdmin() || !confirm("Xóa thông báo này?")) return;
-      await supabaseClient.from("notices").delete().eq("id", id);
+      const deleted = await checkedDelete(supabaseClient.from("notices").delete().eq("id", id), "Xóa thông báo");
+      if (!deleted.ok) return;
       await syncFromSupabase();
-      route();
+      route({ preserveScroll: true });
     };
     window.adminDeleteFeedback = async function(id) {
       if (!supabaseClient || !isCurrentAdmin() || !confirm("Đánh dấu đã xử lý và xóa mục này khỏi danh sách?")) return;
-      await supabaseClient.from("feedbacks").delete().eq("id", id);
+      const deleted = await checkedDelete(supabaseClient.from("feedbacks").delete().eq("id", id), "Xóa phản ánh / góp ý");
+      if (!deleted.ok) return;
       await syncFromSupabase();
-      route();
+      route({ preserveScroll: true });
     };
 
     window.setEditRating = function(n) {
@@ -4024,6 +4438,7 @@
     };
 
     window.openReportModal = function(reviewId, replyId = "") {
+      if (!ensureAccountActive()) return;
       if (!currentUser) {
         openAuthModal("login");
         setAuthMessage("Bạn cần đăng nhập trước khi gửi báo cáo vi phạm.", "info");
@@ -4037,6 +4452,7 @@
     };
     window.closeModal = function(id) { document.getElementById(id)?.classList.remove("active"); };
     window.submitReport = async function() {
+      if (!ensureAccountActive()) return;
       if (!supabaseClient) { alert("Chưa kết nối Supabase."); return; }
       if (!currentUser) { closeModal("reportModal"); openAuthModal("login"); setAuthMessage("Bạn cần đăng nhập để gửi báo cáo.", "info"); return; }
       const reviewId = document.getElementById("reportReviewId").value;
@@ -4055,7 +4471,9 @@
     };
 
     /* ================= ROUTER & FORMS ================= */
-    function route() {
+    function route(options = {}) {
+      const preserveScroll = Boolean(options.preserveScroll);
+      const preservedScrollY = Number.isFinite(options.scrollY) ? options.scrollY : window.scrollY;
       const hash = window.location.hash.replace(/^#/, "") || "/";
       const [path, queryString] = hash.split("?");
       const parts = path.split("/").filter(Boolean);
@@ -4105,18 +4523,25 @@
       if (document.getElementById("supportForm")) initSupportForm();
       if (document.getElementById("adminAddNoticeForm")) initAdminAddNoticeForm();
       if (document.getElementById("admin-activity-feed") && isCurrentAdmin()) loadAdminActivityFeed();
-      if (document.getElementById("admin-user-search")) {
+      if (document.getElementById("admin-user-search") && !preserveScroll) {
         ADMIN_USER_RESULTS = [];
         ADMIN_SELECTED_USER = null;
       }
+      if (document.getElementById("lecturerGrid")) filterAndSortLecturers(true);
+      if (document.getElementById("majorListContainer")) filterMajorCards(true);
+      if (document.getElementById("admin-catalog-results")) renderAdminCatalogResults();
 
-      const focusEl = highlightReplyId
-        ? document.getElementById(`reply-${highlightReplyId}`)
-        : (highlightReviewId ? document.getElementById(`review-${highlightReviewId}`) : null);
-      if (focusEl) {
-        setTimeout(() => focusEl.scrollIntoView({ behavior: "smooth", block: "center" }), 120);
+      if (!preserveScroll) {
+        const focusEl = highlightReplyId
+          ? document.getElementById(`reply-${highlightReplyId}`)
+          : (highlightReviewId ? document.getElementById(`review-${highlightReviewId}`) : null);
+        if (focusEl) {
+          setTimeout(() => focusEl.scrollIntoView({ behavior: "smooth", block: "center" }), 120);
+        } else {
+          window.scrollTo(0, 0);
+        }
       } else {
-        window.scrollTo(0, 0);
+        window.scrollTo(0, preservedScrollY);
       }
     }
 
