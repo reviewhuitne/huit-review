@@ -3504,8 +3504,8 @@
             <form id="supportForm" novalidate>
               <label for="support-username">Tên đăng nhập HUIT Review (*)</label>
               <input id="support-username" type="text" minlength="4" maxlength="20" pattern="[A-Za-z0-9_]{4,20}" required autocomplete="username" value="${escapeHtml(currentProfile?.username || currentUser?.user_metadata?.username || "")}" ${currentUser ? "readonly" : ""} placeholder="VD: sinhvien_huit26" />
-              <label for="support-contact">Kênh để Admin liên hệ lại (*)</label>
-              <input id="support-contact" type="text" minlength="5" maxlength="160" required placeholder="Email, Zalo hoặc link Facebook để Admin xác minh" />
+              <label for="support-contact">Phương thức để Admin liên hệ lại nếu cần thiết</label>
+              <input id="support-contact" type="text" minlength="5" maxlength="160" required placeholder="Email, Zalo, Facebook..." />
               <label for="support-category">Vấn đề cần hỗ trợ (*)</label>
               <select id="support-category" required>
                 <option value="Quên mật khẩu">Quên mật khẩu</option>
