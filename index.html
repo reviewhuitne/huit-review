@@ -395,6 +395,7 @@
     .support-status.processing { color:#1d4ed8; background:#dbeafe; }
     .support-status.resolved { color:#166534; background:#dcfce7; }
     .notif-icon.admin-response { background:#f3e8ff; color:#7e22ce; }
+    .notif-icon.warning { background:#fee2e2; color:#b91c1c; }
     .admin-public-reply { width:100%; margin-top:14px; padding:14px; border:1px solid #dbeafe; border-radius:12px; background:#f8fbff; }
     .admin-public-reply label { margin-top:0 !important; }
     .admin-sent-list { margin-top:10px; padding:10px 12px; border-radius:10px; background:#f0fdf4; border:1px solid #bbf7d0; font-size:.84rem; color:#166534; }
@@ -482,6 +483,29 @@
       .rating-score-box { border-right:0; border-bottom:1px solid var(--border); padding-right:0; padding-bottom:16px; }
       .reply-item.is-sub-reply { margin-left: 10px; }
     }
+    /* ===== Quản lý tài khoản, cảnh báo và thông báo cá nhân ===== */
+    .account-status-banner{display:flex;gap:12px;align-items:flex-start;padding:15px 18px;margin:0 0 20px;border-radius:12px;border:1px solid #fecaca;background:#fff1f2;color:#9f1239;}
+    .account-status-banner.warning{border-color:#fcd34d;background:#fffbeb;color:#92400e;}
+    .account-status-banner i{font-size:1.2rem;margin-top:2px;}
+    .user-admin-search{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:end;}
+    .user-admin-results{display:grid;gap:10px;margin-top:16px;}
+    .user-admin-result{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border:1px solid var(--border);border-radius:12px;padding:14px;background:#fff;}
+    .user-admin-result.selected{border-color:var(--primary);background:#f0f7ff;}
+    .user-admin-result-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:6px;font-size:.82rem;color:var(--muted);}
+    .user-state-pill{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:4px 9px;font-size:.74rem;font-weight:800;}
+    .user-state-pill.active{background:#dcfce7;color:#166534;}
+    .user-state-pill.locked{background:#fee2e2;color:#991b1b;}
+    .user-admin-detail{margin-top:18px;padding:20px;border:1px solid #cbdcf0;border-radius:14px;background:#f8fbff;}
+    .user-admin-detail h3{margin-bottom:8px;}
+    .user-admin-detail label{display:block;margin:12px 0 6px;font-weight:700;color:var(--primary-dark);font-size:.88rem;}
+    .user-admin-detail textarea,.user-admin-detail input{background:#fff;}
+    .user-admin-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+    .user-admin-history{margin-top:16px;padding-top:14px;border-top:1px dashed #cbd5e1;}
+    .user-admin-history-item{padding:9px 0;border-bottom:1px solid #e8eef5;font-size:.83rem;}
+    .user-admin-history-item:last-child{border-bottom:0;}
+    .notification-detail-body{white-space:pre-wrap;line-height:1.8;color:#334155;background:#f8fafc;border:1px solid var(--border);padding:16px;border-radius:12px;overflow-wrap:anywhere;}
+    .notification-detail-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:12px 0;color:var(--muted);font-size:.82rem;}
+    @media(max-width:650px){.user-admin-search{grid-template-columns:1fr}.user-admin-result{align-items:flex-start}.user-admin-detail{padding:15px}}
   </style>
 </head>
 <body>
@@ -650,6 +674,21 @@
       <div style="display:flex; gap:12px; margin-top:25px;">
         <button id="myEditSaveBtn" class="btn" onclick="saveMyEdit()" style="margin:0; flex:1; justify-content:center;">Lưu thay đổi</button>
         <button class="btn" style="background:#cbd5e1; color:#334155; margin:0; flex:1; justify-content:center; box-shadow:none;" onclick="closeModal('myEditModal')">Hủy</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal đọc thông báo riêng từ Admin -->
+  <div class="modal-overlay" id="userNotificationModal" role="dialog" aria-modal="true" aria-labelledby="userNotificationTitle">
+    <div class="modal-box" style="max-width:620px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+        <h3 id="userNotificationTitle" style="margin:0;"><i class="fas fa-bell" style="color:var(--primary)"></i> Thông báo</h3>
+        <button class="auth-close" type="button" onclick="closeModal('userNotificationModal')" aria-label="Đóng">&times;</button>
+      </div>
+      <div class="notification-detail-meta"><span id="userNotificationType"></span><span id="userNotificationTime"></span></div>
+      <div id="userNotificationMessage" class="notification-detail-body"></div>
+      <div style="display:flex;justify-content:flex-end;margin-top:18px;">
+        <button class="btn btn-sm" type="button" onclick="closeModal('userNotificationModal')">Đã đọc / Đóng</button>
       </div>
     </div>
   </div>
@@ -1254,6 +1293,10 @@
     };
     let REVIEWS_CACHE = [];
     let NOTIFS_CACHE = [];
+    let USER_NOTIFS_CACHE = [];
+    let ADMIN_USER_RESULTS = [];
+    let ADMIN_SELECTED_USER = null;
+    let USER_NOTIFS_CHANNEL = null;
     let supabaseClient = null;
     let currentUser = null;
     let currentProfile = null;
@@ -1432,6 +1475,14 @@
     function isValidUsername(username) { return /^[a-z0-9_]{4,20}$/.test(username); }
     function usernameToAuthEmail(username) { return `${username}@${SUPABASE_INTERNAL_EMAIL_DOMAIN}`; }
     function isCurrentAdmin() { return currentProfile?.role === "admin"; }
+    function isAccountLocked() { return currentProfile?.account_status === "locked"; }
+    function ensureAccountActive() {
+      if (isAccountLocked() && !isCurrentAdmin()) {
+        alert(`Tài khoản của bạn đang bị khóa sau ${Number(currentProfile?.warning_count || 0)} cảnh cáo. Bạn vẫn có thể đọc thông báo và gửi yêu cầu hỗ trợ tài khoản.`);
+        return false;
+      }
+      return true;
+    }
     function isMine(item) { return Boolean(currentUser && item && item.userId && item.userId === currentUser.id); }
     function myDisplayName() {
       const fromProfile = currentProfile?.display_name?.trim();
@@ -1460,6 +1511,9 @@
           );
           queries.push(
             supabaseClient.from("admin_responses").select("*").order("created_at", { ascending: false }).limit(100)
+          );
+          queries.push(
+            supabaseClient.from("user_notifications").select("*").eq("user_id", currentUser.id).order("created_at", { ascending: false }).limit(100)
           );
         }
         if (isCurrentAdmin()) {
@@ -1562,6 +1616,7 @@
         if (currentUser) {
           const notifRes = results[idx++];
           const respRes = results[idx++];
+          const userNotifRes = results[idx++];
           NOTIFS_CACHE = (notifRes?.data || []).map(n => ({
             id: n.id, toUserId: n.to_user_id, actorId: n.actor_id,
             type: n.type, actor: n.actor, reviewId: n.review_id || null,
@@ -1575,8 +1630,14 @@
             toUserId: x.to_user_id, title: x.title, message: x.message,
             createdAt: x.created_at
           }));
+          USER_NOTIFS_CACHE = (userNotifRes?.data || []).map(n => ({
+            id: n.id, userId: n.user_id, senderId: n.sender_id,
+            type: n.type, title: n.title, message: n.message,
+            read: Boolean(n.is_read), createdAt: n.created_at
+          }));
         } else {
           NOTIFS_CACHE = [];
+          USER_NOTIFS_CACHE = [];
           DB.adminResponses = [];
         }
 
@@ -1654,7 +1715,7 @@
       if (!supabaseClient || !currentUser) return;
       const { data, error } = await supabaseClient
         .from("profiles")
-        .select("id, username, display_name, role")
+        .select("*")
         .eq("id", currentUser.id)
         .maybeSingle();
       if (error) console.error("Không tải được hồ sơ:", error);
@@ -1781,6 +1842,7 @@
           currentUser = data.user;
           await loadCurrentProfile();
           await syncFromSupabase();
+          subscribeUserNotifications();
           updateAuthActions();
           closeAuthModal();
           route();
@@ -1791,6 +1853,7 @@
           currentUser = data.user;
           await loadCurrentProfile();
           await syncFromSupabase();
+          subscribeUserNotifications();
           updateAuthActions();
           closeAuthModal();
           route();
@@ -1810,12 +1873,58 @@
       if (!supabaseClient) return;
       const { error } = await supabaseClient.auth.signOut();
       if (error) { alert("Chưa đăng xuất được. Vui lòng thử lại."); return; }
+      unsubscribeUserNotifications();
       currentUser = null;
       currentProfile = null;
       await syncFromSupabase();
       updateAuthActions();
       route();
     };
+
+    function subscribeUserNotifications() {
+      if (!supabaseClient || !currentUser) return;
+      if (USER_NOTIFS_CHANNEL) {
+        supabaseClient.removeChannel(USER_NOTIFS_CHANNEL).catch(err => console.warn("Remove notification channel:", err));
+        USER_NOTIFS_CHANNEL = null;
+      }
+      USER_NOTIFS_CHANNEL = supabaseClient
+        .channel(`huit-user-notifications-${currentUser.id}`)
+        .on("postgres_changes", {
+          event: "INSERT", schema: "public", table: "user_notifications",
+          filter: `user_id=eq.${currentUser.id}`
+        }, payload => {
+          const n = payload?.new;
+          if (!n?.id || USER_NOTIFS_CACHE.some(x => x.id === n.id)) return;
+          USER_NOTIFS_CACHE.unshift({
+            id: n.id, userId: n.user_id, senderId: n.sender_id,
+            type: n.type, title: n.title, message: n.message,
+            read: Boolean(n.is_read), createdAt: n.created_at
+          });
+          USER_NOTIFS_CACHE = USER_NOTIFS_CACHE.slice(0, 100);
+          updateAuthActions();
+        })
+        .on("postgres_changes", {
+          event: "UPDATE", schema: "public", table: "user_notifications",
+          filter: `user_id=eq.${currentUser.id}`
+        }, payload => {
+          const n = payload?.new;
+          const existing = USER_NOTIFS_CACHE.find(x => x.id === n?.id);
+          if (existing) existing.read = Boolean(n.is_read);
+          updateAuthActions();
+        })
+        .subscribe(status => {
+          if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+            console.warn("Không kết nối được realtime thông báo; thông báo vẫn sẽ xuất hiện sau khi tải lại trang.");
+          }
+        });
+    }
+
+    function unsubscribeUserNotifications() {
+      if (supabaseClient && USER_NOTIFS_CHANNEL) {
+        supabaseClient.removeChannel(USER_NOTIFS_CHANNEL).catch(err => console.warn("Remove notification channel:", err));
+      }
+      USER_NOTIFS_CHANNEL = null;
+    }
 
     async function initSupabaseAuth() {
       updateAuthActions();
@@ -1832,6 +1941,7 @@
       currentUser = data?.session?.user || null;
       if (currentUser) await loadCurrentProfile();
       await syncFromSupabase();
+      if (currentUser) subscribeUserNotifications();
       updateAuthActions();
       authReady = true;
       route();
@@ -1840,6 +1950,7 @@
         if (event === "INITIAL_SESSION") return;
         const prevUserId = currentUser?.id || null;
         const nextUserId = session?.user?.id || null;
+        if (prevUserId !== nextUserId) unsubscribeUserNotifications();
         currentUser = session?.user || null;
         // Không vẽ lại trang khi chuyển qua lại giữa các tab cùng 1 tài khoản
         if (event === "TOKEN_REFRESHED" || nextUserId === prevUserId) return;
@@ -1847,6 +1958,7 @@
         Promise.resolve().then(async () => {
           if (currentUser) await loadCurrentProfile();
           await syncFromSupabase();
+          if (currentUser) subscribeUserNotifications();
           updateAuthActions();
           if (authReady) route();
         });
@@ -1877,9 +1989,22 @@
     }
 
     function notifBellHTML() {
-      const list = NOTIFS_CACHE;
-      const unread = list.filter(n => !n.read).length;
-      const items = list.slice(0, 30).map(n => {
+      const combined = [
+        ...NOTIFS_CACHE.map(n => ({ ...n, bucket: "legacy" })),
+        ...USER_NOTIFS_CACHE.map(n => ({ ...n, bucket: "admin" }))
+      ].sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+      const unread = combined.filter(n => !n.read).length;
+      const items = combined.slice(0, 30).map(n => {
+        if (n.bucket === "admin") {
+          const isWarning = n.type === "warning";
+          const iconClass = isWarning ? "warning" : "admin-response";
+          const iconName = isWarning ? "fa-triangle-exclamation" : (n.type === "notice" ? "fa-bullhorn" : "fa-user-shield");
+          return `<div class="notif-item ${n.read ? "" : "unread"}" role="button" tabindex="0" onclick="event.stopPropagation();openUserNotification('${escapeHtml(n.id)}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openUserNotification('${escapeHtml(n.id)}');}">
+            <span class="notif-icon ${iconClass}"><i class="fas ${iconName}"></i></span>
+            <span style="min-width:0"><b>${escapeHtml(n.title || "Thông báo từ Admin")}</b>
+              <span class="notif-snippet">${escapeHtml(n.message || "Bấm để đọc nội dung")}</span><span class="notif-time">${timeAgo(n.createdAt)}</span></span>
+          </div>`;
+        }
         const like = n.type === "like";
         const adminResponse = n.type === "admin_response" && Boolean(n.responseId);
         const iconClass = adminResponse ? "admin-response" : (like ? "like" : "reply");
@@ -1887,7 +2012,7 @@
         const heading = adminResponse
           ? "đã phản hồi yêu cầu của bạn"
           : (like ? "đã đánh dấu hữu ích bình luận của bạn" : "đã phản hồi bình luận của bạn");
-        return `<div class="notif-item ${n.read ? "" : "unread"}" role="button" tabindex="0" onclick="event.stopPropagation();openNotif('${n.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openNotif('${n.id}');}">
+        return `<div class="notif-item ${n.read ? "" : "unread"}" role="button" tabindex="0" onclick="event.stopPropagation();openNotif('${escapeHtml(n.id)}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openNotif('${escapeHtml(n.id)}');}">
           <span class="notif-icon ${iconClass}"><i class="fas ${iconName}"></i></span>
           <span style="min-width:0"><b>${escapeHtml(n.actor || "Quản trị viên")}</b> ${heading}
             <span class="notif-snippet">${adminResponse ? escapeHtml(n.snippet || "Bấm để xem phản hồi") : `“${escapeHtml(n.snippet)}”`}</span><span class="notif-time">${timeAgo(n.createdAt)}</span></span>
@@ -1905,16 +2030,29 @@
     window.toggleNotifPanel = function(e) { e?.stopPropagation(); notifOpen = !notifOpen; updateAuthActions(); };
     window.markAllNotifsRead = async function() {
       if (!supabaseClient || !currentUser) return;
-      await supabaseClient.from("notifications").update({ is_read: true }).eq("to_user_id", currentUser.id).eq("is_read", false);
-      NOTIFS_CACHE.forEach(n => n.read = true);
-      updateAuthActions();
+      try {
+        const [legacyRes, adminRes] = await Promise.all([
+          supabaseClient.from("notifications").update({ is_read: true }).eq("to_user_id", currentUser.id).eq("is_read", false),
+          supabaseClient.from("user_notifications").update({ is_read: true }).eq("user_id", currentUser.id).eq("is_read", false)
+        ]);
+        if (legacyRes.error) throw legacyRes.error;
+        if (adminRes.error) throw adminRes.error;
+        NOTIFS_CACHE.forEach(n => n.read = true);
+        USER_NOTIFS_CACHE.forEach(n => n.read = true);
+        updateAuthActions();
+      } catch (error) {
+        console.error("Mark notifications read error:", error);
+        alert("Không thể đánh dấu đã đọc: " + (error?.message || "Lỗi không xác định"));
+      }
     };
     window.openNotif = async function(id) {
       const n = NOTIFS_CACHE.find(x => x.id === id);
       if (!n) return;
       if (!n.read && supabaseClient) {
+        const { error } = await supabaseClient.from("notifications").update({ is_read: true })
+          .eq("id", id).eq("to_user_id", currentUser.id);
+        if (error) { alert("Không cập nhật được trạng thái thông báo: " + error.message); return; }
         n.read = true;
-        await supabaseClient.from("notifications").update({ is_read: true }).eq("id", id);
       }
       notifOpen = false;
       updateAuthActions();
@@ -1925,6 +2063,28 @@
       }
       const target = `#/${n.targetType === "major" ? "major" : "lecturer"}/${n.targetId}?reviewId=${n.reviewId}${n.replyId ? `&replyId=${n.replyId}` : ""}`;
       if (window.location.hash === target) route(); else window.location.hash = target;
+    };
+    window.openUserNotification = async function(id) {
+      const n = USER_NOTIFS_CACHE.find(x => x.id === id);
+      if (!n || !currentUser) return;
+      if (!n.read && supabaseClient) {
+        const { error } = await supabaseClient.from("user_notifications").update({ is_read: true })
+          .eq("id", id).eq("user_id", currentUser.id);
+        if (error) { alert("Không cập nhật được trạng thái thông báo: " + error.message); return; }
+        n.read = true;
+      }
+      notifOpen = false;
+      const typeLabel = n.type === "warning" ? "Cảnh báo tài khoản" : (n.type === "notice" ? "Thông báo từ Admin" : "Thông tin tài khoản");
+      const title = document.getElementById("userNotificationTitle");
+      const type = document.getElementById("userNotificationType");
+      const time = document.getElementById("userNotificationTime");
+      const body = document.getElementById("userNotificationMessage");
+      if (title) title.innerHTML = `<i class="fas ${n.type === "warning" ? "fa-triangle-exclamation" : "fa-bell"}" style="color:${n.type === "warning" ? "var(--danger)" : "var(--primary)"}"></i> ${escapeHtml(n.title || "Thông báo")}`;
+      if (type) type.textContent = typeLabel;
+      if (time) time.textContent = exactTime(n.createdAt);
+      if (body) body.textContent = n.message || "Không có nội dung.";
+      document.getElementById("userNotificationModal")?.classList.add("active");
+      updateAuthActions();
     };
 
     async function loadAdminResponsePage(responseId) {
@@ -2509,7 +2669,6 @@
             <p style="color:var(--muted);font-size:.92rem;margin:0 0 16px;">Quên mật khẩu, không đăng nhập được hoặc gặp sự cố tài khoản? Biểu mẫu này <b>có thể gửi ngay cả khi bạn chưa đăng nhập</b>.</p>
             <div class="notice-banner" style="margin:0 0 18px;">
               <i class="fas fa-shield-halved"></i>
-              <div class="notice-content"><h4>Lưu ý bảo mật</h4><p>Tuyệt đối không nhập mật khẩu hiện tại, mật khẩu cũ, mã OTP hoặc mật khẩu cổng sinh viên HUIT vào biểu mẫu này.</p></div>
             </div>
             ${currentUser
               ? `<div class="comment-as-bar"><span><i class="fas fa-user-check" style="color:var(--primary)"></i> Đã liên kết tài khoản: <strong>${escapeHtml(currentProfile?.username || "tài khoản của bạn")}</strong>. Khi Admin phản hồi, bạn sẽ nhận thông báo tại quả chuông.</span></div>`
@@ -2625,8 +2784,25 @@
             <div class="admin-tab ${isTab("tab-feedbacks")}" onclick="switchTab('tab-feedbacks', this)">Phản ánh &amp; Góp ý (${DB.feedbacks.length})</div>
             <div class="admin-tab ${isTab("tab-support")}" onclick="switchTab('tab-support', this)">Hỗ trợ tài khoản (${DB.supportTickets.length})</div>
             <div class="admin-tab ${isTab("tab-notices")}" onclick="switchTab('tab-notices', this)">Thông báo (${DB.notices.length})</div>
+            <div class="admin-tab ${isTab("tab-users")}" onclick="switchTab('tab-users', this)">Người dùng &amp; Cảnh báo</div>
             <div class="admin-tab ${isTab("tab-words")}" onclick="switchTab('tab-words', this)">Từ cấm (${DB.forbiddenWords.length})</div>
             <div class="admin-tab ${isTab("tab-add")}" onclick="switchTab('tab-add', this)">Thêm GV / Ngành</div>
+          </div>
+
+          <div id="tab-users" class="admin-content ${isTab("tab-users")}">
+            <div class="admin-box" style="margin-top:0;">
+              <h3><i class="fas fa-users-gear" style="color:var(--primary)"></i> Tìm kiếm &amp; quản lý tài khoản</h3>
+              <p style="margin:0 0 14px;color:var(--muted);font-size:.9rem;">Tìm theo tên đăng nhập. Chọn một tài khoản để gửi thông báo riêng, cảnh cáo, gỡ cảnh cáo hoặc khóa/mở khóa.</p>
+              <div class="user-admin-search">
+                <div><label for="admin-user-search" style="display:block;margin:0 0 7px;font-weight:700;color:var(--primary-dark);">Tên đăng nhập người dùng</label>
+                  <input type="search" id="admin-user-search" minlength="2" maxlength="30" placeholder="Nhập username, ví dụ: sinhvien_huit26" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();adminSearchUsers();}" />
+                </div>
+                <button type="button" class="btn" style="margin:0;white-space:nowrap;" onclick="adminSearchUsers()"><i class="fas fa-search"></i> Tìm người dùng</button>
+              </div>
+              <div id="admin-user-search-message" class="auth-message" role="status" aria-live="polite"></div>
+              <div id="admin-user-results" class="user-admin-results"><div class="empty-state" style="padding:24px;"><p style="margin:0;font-size:.9rem;">Nhập ít nhất 2 ký tự để tìm tài khoản.</p></div></div>
+              <div id="admin-user-selected-panel"></div>
+            </div>
           </div>
 
           <div id="tab-pending" class="admin-content ${isTab("tab-pending")}">
@@ -3088,6 +3264,211 @@
       document.getElementById(tabId).classList.add("active");
     };
 
+    /* ================= ADMIN QUẢN LÝ TÀI KHOẢN ================= */
+    function setAdminUserSearchMessage(message, type = "info") {
+      const box = document.getElementById("admin-user-search-message");
+      if (!box) return;
+      box.textContent = message || "";
+      box.className = message ? `auth-message show ${type}` : "auth-message";
+    }
+
+    window.adminSearchUsers = async function() {
+      if (!supabaseClient || !isCurrentAdmin()) return;
+      const field = document.getElementById("admin-user-search");
+      const resultsBox = document.getElementById("admin-user-results");
+      const query = String(field?.value || "").trim().toLowerCase();
+      if (query.length < 2) { setAdminUserSearchMessage("Nhập ít nhất 2 ký tự tên đăng nhập.", "error"); return; }
+      setAdminUserSearchMessage("Đang tìm tài khoản...", "info");
+      if (resultsBox) resultsBox.innerHTML = `<div class="loading-box" style="padding:20px;"><i class="fas fa-spinner fa-spin"></i> Đang tìm...</div>`;
+      try {
+        const { data, error } = await supabaseClient.rpc("admin_search_users", { p_query: query });
+        if (error) throw error;
+        ADMIN_USER_RESULTS = Array.isArray(data) ? data : [];
+        setAdminUserSearchMessage(ADMIN_USER_RESULTS.length ? `Tìm thấy ${ADMIN_USER_RESULTS.length} tài khoản.` : "Không tìm thấy tài khoản phù hợp.", ADMIN_USER_RESULTS.length ? "success" : "info");
+        if (resultsBox) resultsBox.innerHTML = ADMIN_USER_RESULTS.length ? ADMIN_USER_RESULTS.map(u => `
+          <div class="user-admin-result ${ADMIN_SELECTED_USER?.id === u.id ? "selected" : ""}">
+            <div style="min-width:220px;flex:1;">
+              <b style="color:var(--primary-dark);">@${escapeHtml(u.username || "")}</b>
+              <span style="color:var(--muted);font-size:.85rem;"> · ${escapeHtml(u.display_name || "Chưa có tên hiển thị")}</span>
+              <div class="user-admin-result-meta">
+                <span class="user-state-pill ${u.account_status === "locked" ? "locked" : "active"}"><i class="fas ${u.account_status === "locked" ? "fa-lock" : "fa-check-circle"}"></i> ${u.account_status === "locked" ? "Đang khóa" : "Hoạt động"}</span>
+                <span><i class="fas fa-triangle-exclamation" style="color:var(--danger)"></i> ${Number(u.warning_count || 0)}/4 cảnh cáo</span>
+              </div>
+            </div>
+            <button type="button" class="btn btn-sm" onclick="adminSelectUser('${escapeHtml(u.id)}')"><i class="fas fa-user-gear"></i> Quản lý</button>
+          </div>`).join("") : `<div class="empty-state" style="padding:24px;"><p style="margin:0;font-size:.9rem;">Không tìm thấy người dùng.</p></div>`;
+        if (ADMIN_SELECTED_USER) {
+          const refreshed = ADMIN_USER_RESULTS.find(u => u.id === ADMIN_SELECTED_USER.id);
+          if (refreshed) { ADMIN_SELECTED_USER = refreshed; renderAdminSelectedUserPanel(); loadAdminUserHistory(refreshed.id); }
+          else { ADMIN_SELECTED_USER = null; const panel = document.getElementById("admin-user-selected-panel"); if (panel) panel.innerHTML = ""; }
+        }
+      } catch (error) {
+        console.error("Admin user search error:", error);
+        ADMIN_USER_RESULTS = [];
+        setAdminUserSearchMessage("Không tìm được người dùng: " + (error?.message || "Lỗi không xác định") + ". Hãy chạy file SQL thiết lập Supabase đi kèm.", "error");
+        if (resultsBox) resultsBox.innerHTML = "";
+      }
+    };
+
+    window.adminSelectUser = function(userId) {
+      if (!isCurrentAdmin()) return;
+      ADMIN_SELECTED_USER = ADMIN_USER_RESULTS.find(u => u.id === userId) || null;
+      if (!ADMIN_SELECTED_USER) return;
+      const resultsBox = document.getElementById("admin-user-results");
+      if (resultsBox) resultsBox.querySelectorAll(".user-admin-result").forEach((el, index) => el.classList.toggle("selected", ADMIN_USER_RESULTS[index]?.id === userId));
+      renderAdminSelectedUserPanel();
+      loadAdminUserHistory(userId);
+    };
+
+    function renderAdminSelectedUserPanel() {
+      const panel = document.getElementById("admin-user-selected-panel");
+      const u = ADMIN_SELECTED_USER;
+      if (!panel) return;
+      if (!u) { panel.innerHTML = ""; return; }
+      const locked = u.account_status === "locked";
+      panel.innerHTML = `
+        <div class="user-admin-detail">
+          <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap;">
+            <div><h3><i class="fas fa-user-shield"></i> @${escapeHtml(u.username || "")}</h3><div style="color:var(--muted);font-size:.86rem;">${escapeHtml(u.display_name || "Chưa có tên hiển thị")}</div></div>
+            <span class="user-state-pill ${locked ? "locked" : "active"}">${locked ? "ĐANG BỊ KHÓA" : "ĐANG HOẠT ĐỘNG"}</span>
+          </div>
+          <div class="user-admin-result-meta" style="margin:12px 0 6px;">
+            <b style="color:var(--primary-dark);font-size:1rem;">${Number(u.warning_count || 0)}/4 cảnh cáo</b>
+            ${locked && u.lock_reason ? `<span>Lý do khóa: ${escapeHtml(u.lock_reason)}</span>` : ""}
+          </div>
+          <div class="admin-public-reply" style="margin-top:14px;">
+            <h3 style="font-size:1rem;margin:0 0 8px;"><i class="fas fa-bullhorn"></i> Gửi thông báo riêng</h3>
+            <label for="admin-user-notice-title">Tiêu đề</label>
+            <input id="admin-user-notice-title" type="text" maxlength="150" placeholder="VD: Cập nhật về tài khoản của bạn" />
+            <label for="admin-user-notice-message">Nội dung thông báo</label>
+            <textarea id="admin-user-notice-message" rows="3" maxlength="5000" placeholder="Viết nội dung người dùng sẽ mở chuông thông báo để đọc..."></textarea>
+            <button type="button" class="btn btn-sm btn-approve" style="margin-top:10px;" onclick="adminSendUserNotice()"><i class="fas fa-paper-plane"></i> Gửi thông báo</button>
+          </div>
+          <div class="admin-public-reply" style="border-color:#fecaca;background:#fffafa;">
+            <h3 style="font-size:1rem;margin:0 0 8px;color:#991b1b;"><i class="fas fa-triangle-exclamation"></i> Gửi cảnh cáo</h3>
+            <label for="admin-user-warning-reason">Lý do cảnh cáo</label>
+            <textarea id="admin-user-warning-reason" rows="3" maxlength="1000" placeholder="Nêu rõ nội dung vi phạm, thời điểm hoặc quy tắc đã vi phạm..."></textarea>
+            <button type="button" class="btn btn-sm btn-del" style="margin-top:10px;" onclick="adminWarnUser()"><i class="fas fa-gavel"></i> Gửi cảnh cáo</button>
+            <p class="auth-help" style="margin-top:8px;">Cảnh cáo thứ 4 sẽ tự động khóa tài khoản. Mỗi cảnh cáo đều được lưu trong lịch sử.</p>
+          </div>
+          <div style="margin-top:14px;">
+            <label for="admin-user-action-reason">Lý do khi gỡ cảnh cáo / khóa / mở khóa</label>
+            <textarea id="admin-user-action-reason" rows="2" maxlength="1000" placeholder="Ghi rõ căn cứ xử lý hoặc lý do điều chỉnh..."></textarea>
+            <div class="user-admin-actions">
+              ${Number(u.warning_count || 0) > 0 ? `<button type="button" class="btn btn-sm" style="background:#64748b;" onclick="adminRemoveUserWarning()"><i class="fas fa-eraser"></i> Gỡ 1 cảnh cáo</button>` : ""}
+              ${locked
+                ? `<button type="button" class="btn btn-sm btn-approve" onclick="adminSetUserLock(false)"><i class="fas fa-lock-open"></i> Mở khóa tài khoản</button>`
+                : `<button type="button" class="btn btn-sm btn-del" onclick="adminSetUserLock(true)"><i class="fas fa-lock"></i> Khóa tài khoản</button>`}
+            </div>
+            <p class="auth-help">Gỡ cảnh cáo không tự mở khóa tài khoản. Khi số cảnh cáo còn dưới 4, Admin có thể thực hiện mở khóa riêng.</p>
+          </div>
+          <div class="user-admin-history"><b><i class="fas fa-clock-rotate-left"></i> Lịch sử quản trị</b><div id="admin-user-history" style="margin-top:6px;color:var(--muted);font-size:.84rem;">Đang tải lịch sử...</div></div>
+        </div>`;
+    }
+
+    async function loadAdminUserHistory(userId) {
+      const box = document.getElementById("admin-user-history");
+      if (!box || !supabaseClient || !isCurrentAdmin()) return;
+      box.textContent = "Đang tải lịch sử...";
+      try {
+        const { data, error } = await supabaseClient.rpc("admin_get_user_moderation_history", { p_user_id: userId });
+        if (error) throw error;
+        box.innerHTML = data?.length ? data.map(item => `
+          <div class="user-admin-history-item">
+            <b>${escapeHtml(item.action_type || "Thao tác")}</b> · ${exactTime(item.created_at)}
+            <div>${escapeHtml(item.reason || "Không có ghi chú")}</div>
+            <small>Sau thao tác: ${Number(item.warning_count_after || 0)} cảnh cáo · ${item.account_status_after === "locked" ? "Đang khóa" : "Hoạt động"} · Admin: ${escapeHtml(item.actor_username || "Quản trị viên")}</small>
+          </div>`).join("") : `<div style="padding:8px 0;">Chưa có lịch sử cảnh cáo hoặc khóa tài khoản.</div>`;
+      } catch (error) {
+        console.error("Load moderation history error:", error);
+        box.textContent = "Không tải được lịch sử. Hãy kiểm tra đã chạy file SQL thiết lập Supabase.";
+      }
+    }
+
+    async function refreshAdminSelectedUser() {
+      const field = document.getElementById("admin-user-search");
+      const resultsBox = document.getElementById("admin-user-results");
+      const query = String(field?.value || "").trim();
+      if (query.length >= 2) await window.adminSearchUsers();
+      else if (resultsBox) resultsBox.innerHTML = "";
+    }
+
+    window.adminSendUserNotice = async function() {
+      if (!supabaseClient || !isCurrentAdmin() || !ADMIN_SELECTED_USER) return;
+      const title = document.getElementById("admin-user-notice-title")?.value.trim() || "";
+      const message = document.getElementById("admin-user-notice-message")?.value.trim() || "";
+      if (title.length < 4 || title.length > 150) { alert("Tiêu đề cần từ 4 đến 150 ký tự."); return; }
+      if (message.length < 5 || message.length > 5000) { alert("Nội dung cần từ 5 đến 5.000 ký tự."); return; }
+      try {
+        const { error } = await supabaseClient.rpc("admin_send_user_notification", {
+          p_user_id: ADMIN_SELECTED_USER.id, p_type: "notice", p_title: title, p_message: message
+        });
+        if (error) throw error;
+        alert("Đã gửi thông báo. Người dùng sẽ nhận được tại biểu tượng chuông và mở ra để đọc.");
+        document.getElementById("admin-user-notice-title").value = "";
+        document.getElementById("admin-user-notice-message").value = "";
+        await refreshAdminSelectedUser();
+      } catch (error) {
+        console.error("Send user notice error:", error);
+        alert("Không gửi được thông báo: " + (error?.message || "Lỗi không xác định") + ". Hãy chạy file SQL thiết lập Supabase đi kèm.");
+      }
+    };
+
+    window.adminWarnUser = async function() {
+      if (!supabaseClient || !isCurrentAdmin() || !ADMIN_SELECTED_USER) return;
+      const reason = document.getElementById("admin-user-warning-reason")?.value.trim() || "";
+      if (reason.length < 5 || reason.length > 1000) { alert("Lý do cảnh cáo cần từ 5 đến 1.000 ký tự."); return; }
+      if (!confirm(`Gửi một cảnh cáo cho @${ADMIN_SELECTED_USER.username}? Cảnh cáo thứ 4 sẽ tự động khóa tài khoản.`)) return;
+      try {
+        const { data, error } = await supabaseClient.rpc("admin_warn_user", { p_user_id: ADMIN_SELECTED_USER.id, p_reason: reason });
+        if (error) throw error;
+        const result = Array.isArray(data) ? data[0] : data;
+        alert(result?.locked
+          ? `Đã gửi cảnh cáo thứ ${result.warning_count}. Tài khoản đã tự động bị khóa.`
+          : `Đã gửi cảnh cáo. Người dùng hiện có ${result?.warning_count ?? "?"}/4 cảnh cáo.`);
+        await refreshAdminSelectedUser();
+      } catch (error) {
+        console.error("Warn user error:", error);
+        alert("Không gửi được cảnh cáo: " + (error?.message || "Lỗi không xác định"));
+      }
+    };
+
+    window.adminRemoveUserWarning = async function() {
+      if (!supabaseClient || !isCurrentAdmin() || !ADMIN_SELECTED_USER) return;
+      const reason = document.getElementById("admin-user-action-reason")?.value.trim() || "";
+      if (reason.length < 5 || reason.length > 1000) { alert("Vui lòng ghi lý do gỡ cảnh cáo (5–1.000 ký tự)."); return; }
+      if (!confirm(`Gỡ một cảnh cáo của @${ADMIN_SELECTED_USER.username}? Lịch sử cảnh cáo cũ vẫn được lưu.`)) return;
+      try {
+        const { data, error } = await supabaseClient.rpc("admin_remove_user_warning", { p_user_id: ADMIN_SELECTED_USER.id, p_reason: reason });
+        if (error) throw error;
+        const result = Array.isArray(data) ? data[0] : data;
+        alert(`Đã gỡ một cảnh cáo. Số cảnh cáo còn lại: ${result?.warning_count ?? "?"}.`);
+        await refreshAdminSelectedUser();
+      } catch (error) {
+        console.error("Remove warning error:", error);
+        alert("Không gỡ được cảnh cáo: " + (error?.message || "Lỗi không xác định"));
+      }
+    };
+
+    window.adminSetUserLock = async function(locked) {
+      if (!supabaseClient || !isCurrentAdmin() || !ADMIN_SELECTED_USER) return;
+      const reason = document.getElementById("admin-user-action-reason")?.value.trim() || "";
+      if (reason.length < 5 || reason.length > 1000) { alert("Vui lòng ghi lý do (5–1.000 ký tự)."); return; }
+      const action = locked ? "khóa" : "mở khóa";
+      if (!confirm(`Bạn chắc chắn muốn ${action} tài khoản @${ADMIN_SELECTED_USER.username}?`)) return;
+      try {
+        const { error } = await supabaseClient.rpc("admin_set_user_lock", {
+          p_user_id: ADMIN_SELECTED_USER.id, p_locked: Boolean(locked), p_reason: reason
+        });
+        if (error) throw error;
+        alert(`Đã ${action} tài khoản và gửi thông báo cho người dùng.`);
+        await refreshAdminSelectedUser();
+      } catch (error) {
+        console.error("Set user lock error:", error);
+        alert("Không thể " + action + " tài khoản: " + (error?.message || "Lỗi không xác định"));
+      }
+    };
+
     /* ================= ADMIN ACTIONS ================= */
     window.adminSendResponse = async function(sourceType, sourceId) {
       if (!supabaseClient || !isCurrentAdmin()) return;
@@ -3391,6 +3772,14 @@
       else html = `<div class="empty-state fade-up"><h2>404</h2><a href="#/" class="btn">Về trang chủ</a></div>`;
 
       document.getElementById("app").innerHTML = html;
+      if (currentUser && currentProfile) {
+        const warningCount = Number(currentProfile.warning_count || 0);
+        if (currentProfile.account_status === "locked") {
+          document.getElementById("app").insertAdjacentHTML("afterbegin", `<div class="account-status-banner"><i class="fas fa-lock"></i><div><b>Tài khoản đang bị khóa</b><div>Bạn đã nhận ${warningCount} cảnh cáo. Quyền đăng nội dung và tương tác bị tạm dừng. Bạn vẫn có thể đọc thông báo và gửi yêu cầu hỗ trợ tài khoản để đề nghị xem xét.</div>${currentProfile.lock_reason ? `<small>Lý do: ${escapeHtml(currentProfile.lock_reason)}</small>` : ""}</div></div>`);
+        } else if (warningCount > 0) {
+          document.getElementById("app").insertAdjacentHTML("afterbegin", `<div class="account-status-banner warning"><i class="fas fa-triangle-exclamation"></i><div><b>Tài khoản đã có ${warningCount}/4 cảnh cáo</b><div>Vui lòng tuân thủ quy tắc cộng đồng. Khi nhận đủ 4 cảnh cáo, tài khoản sẽ tự động bị khóa.</div></div></div>`);
+        }
+      }
 
       document.querySelectorAll(".main-nav a").forEach(item => item.classList.remove("active"));
       if (parts.length === 0) document.querySelector('.main-nav a[href="#/"]')?.classList.add("active");
@@ -3408,6 +3797,10 @@
       if (document.getElementById("suggestForm")) initSuggestForm();
       if (document.getElementById("supportForm")) initSupportForm();
       if (document.getElementById("adminAddNoticeForm")) initAdminAddNoticeForm();
+      if (document.getElementById("admin-user-search")) {
+        ADMIN_USER_RESULTS = [];
+        ADMIN_SELECTED_USER = null;
+      }
 
       const focusEl = highlightReplyId
         ? document.getElementById(`reply-${highlightReplyId}`)
@@ -3424,6 +3817,7 @@
         event.preventDefault();
         if (!supabaseClient) { alert("Chưa kết nối Supabase."); return; }
         if (!currentUser) { openAuthModal("login"); setAuthMessage("Bạn cần đăng nhập trước khi gửi đánh giá.", "info"); return; }
+        if (!ensureAccountActive()) return;
         const form = event.currentTarget;
         const btn = form.querySelector("button[type='submit']");
         const content = form.querySelector("#rv-content").value.trim();
@@ -3455,6 +3849,7 @@
         event.preventDefault();
         if (!supabaseClient) return;
         if (!currentUser) { openAuthModal("login"); setAuthMessage("Bạn cần đăng nhập trước khi gửi đề xuất.", "info"); return; }
+        if (!ensureAccountActive()) return;
         const btn = event.currentTarget.querySelector("button[type='submit']");
         const name = toTitleCase(document.getElementById("new-lect-name").value.trim());
         const degree = document.getElementById("new-lect-degree").value.trim();
@@ -3531,7 +3926,9 @@
         event.preventDefault();
         if (!supabaseClient) { alert("Chưa kết nối Supabase."); return; }
         if (!currentUser) { openAuthModal("login"); setAuthMessage("Bạn cần đăng nhập để gửi phản ánh sai sót.", "info"); return; }
-        const btn = event.currentTarget.querySelector("button[type='submit']");
+        if (!ensureAccountActive()) return;
+        const form = event.currentTarget;
+        const btn = form.querySelector("button[type='submit']");
         const type = document.getElementById("ri-type").value;
         const target = document.getElementById("ri-target").value.trim();
         let targetType = document.getElementById("ri-target-type").value || null;
@@ -3539,7 +3936,6 @@
         const content = document.getElementById("ri-content").value.trim();
         if (content.length < 10 || content.length > 2000) { alert("Nội dung cần từ 10 đến 2.000 ký tự."); return; }
 
-        // Nếu người dùng tự gõ tên giảng viên / ngành mà không bấm từ nút báo cáo, thử tự khớp ID
         if ((!targetType || !targetId) && target) {
           const auto = resolveTargetLink("", "", target, type);
           if (auto) {
@@ -3548,22 +3944,28 @@
           }
         }
 
-        btn.disabled = true;
-        const { error } = await supabaseClient.from("feedbacks").insert({
-          user_id: currentUser.id,
-          category: "report_info",
-          type,
-          target: target || null,
-          target_type: targetType,
-          target_id: targetId,
-          content
-        });
-        btn.disabled = false;
-        if (error) { alert("Gửi phản ánh lỗi: " + error.message); return; }
-        alert("Cảm ơn bạn! Phản ánh sai sót đã được gửi đến Admin.");
-        event.currentTarget.reset();
-        document.getElementById("ri-target-type").value = "";
-        document.getElementById("ri-target-id").value = "";
+        if (btn) { btn.disabled = true; btn.dataset.originalText = btn.innerHTML; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi...'; }
+        try {
+          const { error } = await supabaseClient.from("feedbacks").insert({
+            user_id: currentUser.id,
+            category: "report_info",
+            type,
+            target: target || null,
+            target_type: targetType,
+            target_id: targetId,
+            content
+          });
+          if (error) throw error;
+          form.reset();
+          document.getElementById("ri-target-type").value = "";
+          document.getElementById("ri-target-id").value = "";
+          alert("Cảm ơn bạn! Phản ánh sai sót đã được gửi đến Admin.");
+        } catch (error) {
+          console.error("Report information submission error:", error);
+          alert("Không gửi được phản ánh: " + (error?.message || "Lỗi không xác định") + "\nNếu lỗi liên quan quyền truy cập/RLS, hãy chạy file SQL thiết lập Supabase đi kèm.");
+        } finally {
+          if (btn) { btn.disabled = false; btn.innerHTML = btn.dataset.originalText || '<i class="fas fa-paper-plane"></i> Gửi phản ánh sai sót'; }
+        }
       });
     }
 
@@ -3572,24 +3974,32 @@
         event.preventDefault();
         if (!supabaseClient) { alert("Chưa kết nối Supabase."); return; }
         if (!currentUser) { openAuthModal("login"); setAuthMessage("Bạn cần đăng nhập để gửi góp ý.", "info"); return; }
-        const btn = event.currentTarget.querySelector("button[type='submit']");
+        if (!ensureAccountActive()) return;
+        const form = event.currentTarget;
+        const btn = form.querySelector("button[type='submit']");
         const type = document.getElementById("sg-type").value;
         const title = document.getElementById("sg-title").value.trim();
         const content = document.getElementById("sg-content").value.trim();
         if (title.length < 4 || title.length > 120) { alert("Tiêu đề cần từ 4 đến 120 ký tự."); return; }
         if (content.length < 10 || content.length > 2000) { alert("Nội dung góp ý cần từ 10 đến 2.000 ký tự."); return; }
-        btn.disabled = true;
-        const { error } = await supabaseClient.from("feedbacks").insert({
-          user_id: currentUser.id,
-          category: "suggest",
-          type,
-          target: title,
-          content
-        });
-        btn.disabled = false;
-        if (error) { alert("Gửi góp ý lỗi: " + error.message); return; }
-        alert("Cảm ơn bạn đã đóng góp ý kiến cho HUIT Review!");
-        event.currentTarget.reset();
+        if (btn) { btn.disabled = true; btn.dataset.originalText = btn.innerHTML; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi...'; }
+        try {
+          const { error } = await supabaseClient.from("feedbacks").insert({
+            user_id: currentUser.id,
+            category: "suggest",
+            type,
+            target: title,
+            content
+          });
+          if (error) throw error;
+          form.reset();
+          alert("Cảm ơn bạn đã đóng góp ý kiến cho HUIT Review! Góp ý đã được chuyển đến Admin.");
+        } catch (error) {
+          console.error("Suggestion submission error:", error);
+          alert("Không gửi được góp ý: " + (error?.message || "Lỗi không xác định") + "\nNếu lỗi liên quan quyền truy cập/RLS, hãy chạy file SQL thiết lập Supabase đi kèm.");
+        } finally {
+          if (btn) { btn.disabled = false; btn.innerHTML = btn.dataset.originalText || '<i class="fas fa-paper-plane"></i> Gửi góp ý'; }
+        }
       });
     }
 
