@@ -1698,7 +1698,11 @@
 
       supabaseClient.auth.onAuthStateChange((event, session) => {
         if (event === "INITIAL_SESSION") return;
+        const prevUserId = currentUser?.id || null;
+        const nextUserId = session?.user?.id || null;
         currentUser = session?.user || null;
+     // Không vẽ lại trang khi chuyển qua lại giữa các tab cùng 1 tài khoản
+        if (event === "TOKEN_REFRESHED" || nextUserId === prevUserId) return;
         currentProfile = null;
         Promise.resolve().then(async () => {
           if (currentUser) await loadCurrentProfile();
