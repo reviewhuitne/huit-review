@@ -82,10 +82,15 @@
     ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 999px; border: 2px solid transparent; background-clip: content-box; }
     ::-webkit-scrollbar-thumb:hover { background: #94a3b8; border: 2px solid transparent; background-clip: content-box; }
 
-    @keyframes fadeInUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeInUp { from { opacity: 0; transform: translate3d(0, 14px, 0); } to { opacity: 1; transform: translate3d(0, 0, 0); } }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes panelReveal { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes fieldReveal { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes panelReveal { from { opacity: 0; transform: translate3d(0, 10px, 0) scale(.994); } to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); } }
+    @keyframes panelSlideFromRight { from { opacity: 0; transform: translate3d(22px, 0, 0); } to { opacity: 1; transform: translate3d(0, 0, 0); } }
+    @keyframes panelSlideFromLeft { from { opacity: 0; transform: translate3d(-22px, 0, 0); } to { opacity: 1; transform: translate3d(0, 0, 0); } }
+    @keyframes pageEnterUp { from { opacity: 0; transform: translate3d(0, 16px, 0) scale(.994); } to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); } }
+    @keyframes pageEnterRight { from { opacity: 0; transform: translate3d(24px, 0, 0); } to { opacity: 1; transform: translate3d(0, 0, 0); } }
+    @keyframes pageEnterLeft { from { opacity: 0; transform: translate3d(-24px, 0, 0); } to { opacity: 1; transform: translate3d(0, 0, 0); } }
+    @keyframes fieldReveal { from { opacity: 0; transform: translate3d(0, -6px, 0); } to { opacity: 1; transform: translate3d(0, 0, 0); } }
     @keyframes clickRipple { to { transform: translate(-50%, -50%) scale(1); opacity: 0; } }
     @keyframes likePop { 0% { transform: scale(1); } 38% { transform: scale(1.36) rotate(-13deg); } 72% { transform: scale(.92) rotate(4deg); } 100% { transform: scale(1) rotate(0); } }
     @keyframes starPop { 0% { transform: scale(1); } 45% { transform: scale(1.32); } 100% { transform: scale(1.12); } }
@@ -93,8 +98,40 @@
     @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
     @keyframes flash { 0% { background-color: #fef3c7; } 100% { background-color: #fffdf6; } }
     .fade-up { animation: fadeInUp .46s var(--ease-gentle) both; }
-    #app.is-in-place .fade-up { animation: none !important; }
-    .panel-reveal { animation: panelReveal .34s var(--ease-gentle) both; }
+    #app.is-in-place .fade-up,
+    #app.is-page-transitioning .fade-up { animation: none !important; }
+    .panel-reveal { animation: panelReveal .36s var(--ease-gentle) both; }
+    .panel-slide-right { animation: panelSlideFromRight .36s var(--ease-gentle) both; }
+    .panel-slide-left { animation: panelSlideFromLeft .36s var(--ease-gentle) both; }
+
+    /* Smooth 2-Phase Page Container Transitions */
+    main#app {
+      will-change: opacity, transform;
+      transition: opacity .15s ease-out, transform .15s ease-out;
+    }
+    main#app.page-leave-left { opacity: 0; transform: translate3d(-16px, 0, 0); pointer-events: none; }
+    main#app.page-leave-right { opacity: 0; transform: translate3d(16px, 0, 0); pointer-events: none; }
+    main#app.page-leave-up { opacity: 0; transform: translate3d(0, -8px, 0) scale(.995); pointer-events: none; }
+    main#app.page-enter-up { animation: pageEnterUp .40s var(--ease-gentle) both; }
+    main#app.page-enter-right { animation: pageEnterRight .38s var(--ease-gentle) both; }
+    main#app.page-enter-left { animation: pageEnterLeft .38s var(--ease-gentle) both; }
+
+    /* Newly appended cards when clicking "Xem thêm" */
+    .card.card-batch-enter { animation: fadeInUp .42s var(--ease-gentle) both; }
+
+    /* Ultra-thin top progress bar for route changes & Supabase syncs */
+    #routeProgressBar {
+      position: fixed; top: 0; left: 0; right: 0; height: 2.5px; z-index: 4000;
+      pointer-events: none; opacity: 0; transition: opacity .24s ease;
+    }
+    #routeProgressBar.active { opacity: 1; }
+    #routeProgressBar > span {
+      display: block; height: 100%; width: 0%;
+      background: linear-gradient(90deg, var(--primary) 0%, #38bdf8 55%, var(--accent) 100%);
+      border-radius: 0 999px 999px 0;
+      box-shadow: 0 0 10px rgba(10, 94, 168, 0.35);
+      transition: width .34s var(--ease-gentle);
+    }
 
     /* Subtle staggered card glide on fresh route views */
     #app:not(.is-in-place) .grid > .card { animation: fadeInUp .44s var(--ease-gentle) both; }
@@ -139,17 +176,26 @@
     .logo:hover img { transform: scale(1.06); }
     .logo strong { color: var(--accent); }
 
-    .main-nav { display: flex; gap: 4px; flex: 1; align-items: center; padding-left: 8px; }
+    .main-nav { position: relative; display: flex; gap: 4px; flex: 1; align-items: center; padding-left: 8px; }
+    .nav-pill-bg {
+      position: absolute; top: 0; left: 0; border-radius: 999px;
+      background: var(--primary-soft); pointer-events: none; z-index: 0;
+      opacity: 0; will-change: transform, width, height;
+      transition: transform .38s var(--ease-gentle), width .36s var(--ease-gentle), height .28s var(--ease-gentle), opacity .22s ease;
+    }
+    .nav-pill-bg.ready { opacity: 1; }
     .main-nav a {
-      position: relative; overflow: hidden;
+      position: relative; z-index: 1; overflow: hidden;
       color: var(--text-soft); font-weight: 600; font-size: .89rem; white-space: nowrap;
       display: inline-flex; align-items: center; gap: 7px;
       padding: 8px 13px; border-radius: 999px;
       transition: background .24s var(--ease-gentle), color .24s var(--ease-gentle), transform .22s var(--ease-gentle);
     }
     .main-nav a:active { transform: scale(.955); }
-    .main-nav a i { color: #8a9bb0; font-size: .86rem; transition: color .2s var(--ease); }
-    .main-nav a:hover, .main-nav a.active { background: var(--primary-soft); color: var(--primary); }
+    .main-nav a i { color: #8a9bb0; font-size: .86rem; transition: color .24s var(--ease-gentle); }
+    .main-nav a:hover { background: rgba(10, 94, 168, 0.06); color: var(--primary); }
+    .main-nav a.active { background: transparent; color: var(--primary); }
+    .main-nav:not(.has-pill) a.active { background: var(--primary-soft); }
     .main-nav a:hover i, .main-nav a.active i { color: var(--primary); }
 
     .search-box { position: relative; min-width: 218px; max-width: 268px; }
@@ -188,7 +234,7 @@
       padding: 11px 15px; border-bottom: 1px solid #f1f5f9; color: var(--text); font-size: .88rem;
     }
     .search-results a:last-child { border-bottom: 0; }
-    .search-results a:hover { background: var(--surface-soft); color: var(--primary); }
+    .search-results a:hover, .search-results a.kb-active { background: var(--primary-soft); color: var(--primary); }
     .search-results a i { margin-right: 8px; color: var(--primary); }
     .search-result-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .search-star { flex-shrink: 0; color: var(--accent); font-weight: 700; font-size: .8rem; display: inline-flex; align-items: center; gap: 4px; }
@@ -858,12 +904,24 @@
     .activity-mini-stat.tone-red i { background: var(--danger-soft); color: var(--danger); }
     .activity-mini-stat.tone-red strong { color: #b91c1c; }
 
-    .activity-scope-bar { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px; padding: 5px; margin-bottom: 13px; border-radius: 14px; background: #eaf1f8; border: 1px solid #dce6f1; }
-    .activity-scope-btn { position: relative; overflow: hidden; border: 0; background: transparent; border-radius: 10px; padding: 9px 12px; font: 700 .83rem 'Inter', sans-serif; color: #475d75; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px; transition: all .26s var(--ease-gentle); }
+    .seg-pill-bg {
+      position: absolute; top: 0; left: 0; border-radius: 10px;
+      background: #fff; box-shadow: 0 3px 10px rgba(15, 42, 72, .09);
+      pointer-events: none; z-index: 0; opacity: 0;
+      will-change: transform, width, height;
+      transition: transform .36s var(--ease-gentle), width .34s var(--ease-gentle), height .28s var(--ease-gentle), background .28s ease, box-shadow .28s ease, opacity .2s ease;
+    }
+    .seg-pill-bg.ready { opacity: 1; }
+    .seg-pill-bg.is-indigo { background: linear-gradient(135deg, #4f46e5, #3730a3); box-shadow: 0 5px 16px rgba(79, 70, 229, .26); }
+
+    .activity-scope-bar { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px; padding: 5px; margin-bottom: 13px; border-radius: 14px; background: #eaf1f8; border: 1px solid #dce6f1; }
+    .activity-scope-btn { position: relative; z-index: 1; overflow: hidden; border: 0; background: transparent; border-radius: 10px; padding: 9px 12px; font: 700 .83rem 'Inter', sans-serif; color: #475d75; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px; transition: color .26s var(--ease-gentle), background .22s ease, transform .22s var(--ease-gentle); }
     .activity-scope-btn:active { transform: scale(.97); }
-    .activity-scope-btn:hover { color: var(--primary-dark); background: rgba(255, 255, 255, .6); }
-    .activity-scope-btn.active { background: #fff; color: var(--primary-dark); box-shadow: 0 3px 10px rgba(15, 42, 72, .08); }
-    .activity-scope-btn.scope-admin.active { background: linear-gradient(135deg, #4f46e5, #3730a3); color: #fff; box-shadow: 0 5px 15px rgba(79, 70, 229, .24); }
+    .activity-scope-btn:hover:not(.active) { color: var(--primary-dark); background: rgba(255, 255, 255, .45); }
+    .activity-scope-btn.active { background: transparent; color: var(--primary-dark); }
+    .activity-scope-bar:not(.has-pill) .activity-scope-btn.active { background: #fff; box-shadow: 0 3px 10px rgba(15, 42, 72, .08); }
+    .activity-scope-btn.scope-admin.active { background: transparent; color: #fff; }
+    .activity-scope-bar:not(.has-pill) .activity-scope-btn.scope-admin.active { background: linear-gradient(135deg, #4f46e5, #3730a3); box-shadow: 0 5px 15px rgba(79, 70, 229, .24); }
     .activity-scope-count { display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 19px; padding: 0 6px; border-radius: 999px; background: rgba(15, 23, 42, .08); font-size: .71rem; font-weight: 800; font-variant-numeric: tabular-nums; }
     .activity-scope-btn.scope-admin.active .activity-scope-count { background: rgba(255, 255, 255, .22); color: #fff; }
 
@@ -963,10 +1021,12 @@
     .admin-catalog-clear { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); width: 26px; height: 26px; border: 0; border-radius: 50%; background: #eef2f7; color: #64748b; display: none; align-items: center; justify-content: center; cursor: pointer; font-size: .8rem; }
     .admin-catalog-clear.visible { display: inline-flex; }
     .admin-catalog-bottom { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
-    .admin-catalog-segments { display: inline-flex; align-items: center; gap: 4px; padding: 4px; background: #e5eef8; border-radius: 11px; flex-wrap: wrap; }
-    .admin-catalog-seg { position: relative; overflow: hidden; border: 0; background: transparent; color: #4a6178; padding: 6px 12px; border-radius: 8px; font: 700 .8rem 'Inter', sans-serif; cursor: pointer; transition: all .22s var(--ease-gentle); display: inline-flex; align-items: center; gap: 6px; }
+    .admin-catalog-segments { position: relative; display: inline-flex; align-items: center; gap: 4px; padding: 4px; background: #e5eef8; border-radius: 11px; flex-wrap: wrap; }
+    .admin-catalog-segments .seg-pill-bg { border-radius: 8px; }
+    .admin-catalog-seg { position: relative; z-index: 1; overflow: hidden; border: 0; background: transparent; color: #4a6178; padding: 6px 12px; border-radius: 8px; font: 700 .8rem 'Inter', sans-serif; cursor: pointer; transition: color .22s var(--ease-gentle), transform .22s var(--ease-gentle); display: inline-flex; align-items: center; gap: 6px; }
     .admin-catalog-seg:active { transform: scale(.96); }
-    .admin-catalog-seg.active { background: #fff; color: var(--primary-dark); box-shadow: 0 2px 6px rgba(15, 45, 72, .08); }
+    .admin-catalog-seg.active { background: transparent; color: var(--primary-dark); }
+    .admin-catalog-segments:not(.has-pill) .admin-catalog-seg.active { background: #fff; box-shadow: 0 2px 6px rgba(15, 45, 72, .08); }
     .admin-catalog-summary { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
     .admin-catalog-count { display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; border-radius: 999px; background: #fff; border: 1px solid #d6e4f2; color: #245b88; font-size: .79rem; font-weight: 700; font-variant-numeric: tabular-nums; }
     .admin-catalog-reset { border: 1px solid var(--border-strong); background: #fff; color: #475569; padding: 5px 11px; border-radius: 999px; font: 700 .77rem 'Inter', sans-serif; cursor: pointer; display: none; align-items: center; gap: 5px; }
@@ -1151,18 +1211,25 @@
     }
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
-      *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+      /* Giữ chuyển động mờ dịu nhẹ thay vì tắt cứng 0ms để giao diện không bị giật cụp */
+      .fade-up, .panel-reveal, .panel-slide-right, .panel-slide-left,
+      main#app.page-enter-up, main#app.page-enter-right, main#app.page-enter-left {
+        animation: fadeIn .22s ease both !important;
+      }
+      .click-ripple { display: none !important; }
     }
   </style>
 </head>
 <body>
+  <div id="routeProgressBar" aria-hidden="true"><span></span></div>
   <header class="site-header">
     <div class="container header-inner">
       <a href="#/" class="logo">
         <img src="https://kllct.huit.edu.vn/app_web/kllct/images/logo/logo-huit-xanh.png" alt="HUIT Logo" onerror="this.style.display='none'">
         <span>HUIT <strong>Review</strong></span>
       </a>
-      <nav class="main-nav">
+      <nav class="main-nav" id="mainNav">
+        <span class="nav-pill-bg" id="navPillBg" aria-hidden="true"></span>
         <a href="#/"><i class="fas fa-home"></i> Trang chủ</a>
         <a href="#/majors"><i class="fas fa-graduation-cap"></i> Ngành học</a>
         <a href="#/lecturers"><i class="fas fa-chalkboard-teacher"></i> Giảng viên</a>
@@ -1791,32 +1858,142 @@
       if (fn) fn(Boolean(result));
     };
 
-    /* ================= MOTION & TACTILE CLICK ENGINE ================= */
-    const REDUCED_MOTION_MQ = window.matchMedia ? window.matchMedia("(prefers-reduced-motion: reduce)") : null;
-    function prefersReducedMotion() { return Boolean(REDUCED_MOTION_MQ?.matches); }
+    /* ================= MOTION, SLIDING PILLS & TACTILE CLICK ENGINE ================= */
+    let ANIM_TOKEN_SEQ = 0;
+    let ROUTE_TRANSITION_TOKEN = 0;
+    let LAST_ROUTE_STATE = { section: "", navIndex: -1, initialized: false };
+    let LAST_SUPPORT_TAB_INDEX = 0;
+    let PROGRESS_ACTIVE_COUNT = 0;
+    let PROGRESS_HIDE_TIMER = null;
+    const IN_FLIGHT_SYNCS = new Map();
+
+    function scrollToTopInstant() {
+      try { window.scrollTo({ top: 0, left: 0, behavior: "instant" }); }
+      catch { window.scrollTo(0, 0); }
+    }
+
+    function progressStart() {
+      PROGRESS_ACTIVE_COUNT++;
+      clearTimeout(PROGRESS_HIDE_TIMER);
+      const bar = document.getElementById("routeProgressBar");
+      const fill = bar?.firstElementChild;
+      if (!bar || !fill) return;
+      bar.classList.add("active");
+      fill.style.transition = "none";
+      if (!fill.style.width || fill.style.width === "0%" || fill.style.width === "100%") {
+        fill.style.width = "16%";
+      }
+      void fill.offsetWidth;
+      fill.style.transition = "width .42s cubic-bezier(0.16, 1, 0.3, 1)";
+      fill.style.width = "76%";
+    }
+    function progressDone() {
+      PROGRESS_ACTIVE_COUNT = Math.max(0, PROGRESS_ACTIVE_COUNT - 1);
+      if (PROGRESS_ACTIVE_COUNT > 0) return;
+      const bar = document.getElementById("routeProgressBar");
+      const fill = bar?.firstElementChild;
+      if (!bar || !fill) return;
+      fill.style.transition = "width .22s ease-out";
+      fill.style.width = "100%";
+      clearTimeout(PROGRESS_HIDE_TIMER);
+      PROGRESS_HIDE_TIMER = setTimeout(() => {
+        bar.classList.remove("active");
+        setTimeout(() => {
+          if (PROGRESS_ACTIVE_COUNT === 0) {
+            fill.style.transition = "none";
+            fill.style.width = "0%";
+          }
+        }, 260);
+      }, 180);
+    }
+
+    // Viên thuốc trượt mượt cho thanh điều hướng & bộ lọc dạng segmented control
+    function syncSlidingPill(container, pill, activeEl, opts = {}) {
+      if (!container || !pill) return;
+      if (!activeEl) {
+        pill.classList.remove("ready");
+        container.classList.remove("has-pill");
+        return;
+      }
+      const left = activeEl.offsetLeft;
+      const top = activeEl.offsetTop;
+      const width = activeEl.offsetWidth;
+      const height = activeEl.offsetHeight;
+      if (!width || !height) return;
+
+      const wasReady = pill.classList.contains("ready");
+      if (opts.instant || !wasReady) {
+        pill.style.transition = "none";
+      }
+      pill.style.width = `${width}px`;
+      pill.style.height = `${height}px`;
+      pill.style.transform = `translate3d(${left}px, ${top}px, 0)`;
+      if (typeof opts.indigo === "boolean") pill.classList.toggle("is-indigo", opts.indigo);
+
+      container.classList.add("has-pill");
+      pill.classList.add("ready");
+      if (opts.instant || !wasReady) {
+        void pill.offsetWidth;
+        pill.style.transition = "";
+      }
+    }
+
+    function syncMainNavPill(instant = false) {
+      const nav = document.getElementById("mainNav");
+      const pill = document.getElementById("navPillBg");
+      if (!nav || !pill) return;
+      const active = nav.querySelector("a.active");
+      syncSlidingPill(nav, pill, active, { instant });
+    }
+
+    function syncSegmentedPills(instant = false) {
+      const scopeBar = document.querySelector(".activity-scope-bar");
+      if (scopeBar) {
+        let pill = scopeBar.querySelector(".seg-pill-bg");
+        if (!pill) {
+          pill = document.createElement("span");
+          pill.className = "seg-pill-bg";
+          pill.setAttribute("aria-hidden", "true");
+          scopeBar.prepend(pill);
+        }
+        const activeBtn = scopeBar.querySelector(".activity-scope-btn.active");
+        syncSlidingPill(scopeBar, pill, activeBtn, {
+          instant,
+          indigo: Boolean(activeBtn?.classList.contains("scope-admin"))
+        });
+      }
+      const catBar = document.querySelector(".admin-catalog-segments");
+      if (catBar) {
+        let pill = catBar.querySelector(".seg-pill-bg");
+        if (!pill) {
+          pill = document.createElement("span");
+          pill.className = "seg-pill-bg";
+          pill.setAttribute("aria-hidden", "true");
+          catBar.prepend(pill);
+        }
+        const activeBtn = catBar.querySelector(".admin-catalog-seg.active");
+        syncSlidingPill(catBar, pill, activeBtn, { instant });
+      }
+    }
 
     function smoothExpand(el, displayType = "block", onDone = null) {
       if (!el) return;
-      if (prefersReducedMotion()) {
-        el.style.display = displayType;
-        if (onDone) onDone();
-        return;
-      }
-      el.dataset.animating = "open";
+      const token = String(++ANIM_TOKEN_SEQ);
+      el.dataset.animToken = token;
       el.style.display = displayType;
       el.style.overflow = "hidden";
       const targetHeight = el.scrollHeight;
       el.style.height = "0px";
       el.style.opacity = "0";
-      el.style.transform = "translateY(-6px)";
+      el.style.transform = "translate3d(0, -8px, 0)";
       el.getBoundingClientRect();
-      el.style.transition = "height .34s cubic-bezier(0.16, 1, 0.3, 1), opacity .28s ease, transform .34s cubic-bezier(0.16, 1, 0.3, 1)";
+      el.style.transition = "height .38s cubic-bezier(0.16, 1, 0.3, 1), opacity .30s ease, transform .38s cubic-bezier(0.16, 1, 0.3, 1)";
       el.style.height = `${targetHeight}px`;
       el.style.opacity = "1";
-      el.style.transform = "translateY(0)";
+      el.style.transform = "translate3d(0, 0, 0)";
       const finish = () => {
-        if (el.dataset.animating !== "open") return;
-        delete el.dataset.animating;
+        if (el.dataset.animToken !== token) return;
+        delete el.dataset.animToken;
         el.style.height = "";
         el.style.overflow = "";
         el.style.opacity = "";
@@ -1829,30 +2006,31 @@
         el.removeEventListener("transitionend", handler);
         finish();
       });
-      setTimeout(finish, 380);
+      setTimeout(finish, 420);
     }
 
     function smoothCollapse(el, onDone = null) {
       if (!el) return;
-      if (prefersReducedMotion() || getComputedStyle(el).display === "none") {
+      if (getComputedStyle(el).display === "none") {
         el.style.display = "none";
         if (onDone) onDone();
         return;
       }
-      el.dataset.animating = "close";
+      const token = String(++ANIM_TOKEN_SEQ);
+      el.dataset.animToken = token;
       const startHeight = el.scrollHeight;
       el.style.overflow = "hidden";
       el.style.height = `${startHeight}px`;
       el.style.opacity = "1";
-      el.style.transform = "translateY(0)";
+      el.style.transform = "translate3d(0, 0, 0)";
       el.getBoundingClientRect();
-      el.style.transition = "height .28s cubic-bezier(0.22, 1, 0.36, 1), opacity .22s ease, transform .28s cubic-bezier(0.22, 1, 0.36, 1)";
+      el.style.transition = "height .30s cubic-bezier(0.22, 1, 0.36, 1), opacity .24s ease, transform .30s cubic-bezier(0.22, 1, 0.36, 1)";
       el.style.height = "0px";
       el.style.opacity = "0";
-      el.style.transform = "translateY(-4px)";
+      el.style.transform = "translate3d(0, -6px, 0)";
       const finish = () => {
-        if (el.dataset.animating !== "close") return;
-        delete el.dataset.animating;
+        if (el.dataset.animToken !== token) return;
+        delete el.dataset.animToken;
         el.style.display = "none";
         el.style.height = "";
         el.style.overflow = "";
@@ -1866,7 +2044,7 @@
         el.removeEventListener("transitionend", handler);
         finish();
       });
-      setTimeout(finish, 330);
+      setTimeout(finish, 340);
     }
 
     function initSmoothAccordions() {
@@ -1876,7 +2054,6 @@
         if (!summary || !body || summary.dataset.smoothBound) return;
         summary.dataset.smoothBound = "1";
         summary.addEventListener("click", (e) => {
-          if (prefersReducedMotion()) return;
           e.preventDefault();
           if (details.dataset.toggling) return;
           details.dataset.toggling = "1";
@@ -1896,11 +2073,12 @@
       });
     }
 
-    function triggerSubtlePanelGlide(el) {
-      if (!el || prefersReducedMotion()) return;
-      el.classList.remove("panel-reveal");
+    function triggerSubtlePanelGlide(el, direction = "up") {
+      if (!el) return;
+      el.classList.remove("panel-reveal", "panel-slide-right", "panel-slide-left");
       void el.offsetWidth;
-      el.classList.add("panel-reveal");
+      const cls = direction === "right" ? "panel-slide-right" : (direction === "left" ? "panel-slide-left" : "panel-reveal");
+      el.classList.add(cls);
     }
 
     function initTactileClicks() {
@@ -1914,7 +2092,7 @@
       ].join(", ");
 
       document.addEventListener("pointerdown", (e) => {
-        if (e.button !== 0 || prefersReducedMotion()) return;
+        if (e.button !== 0) return;
         const target = e.target.closest(RIPPLE_SELECTOR);
         if (!target || target.disabled || target.getAttribute("aria-disabled") === "true") return;
         const rect = target.getBoundingClientRect();
@@ -1937,7 +2115,17 @@
         target.appendChild(ripple);
         window.setTimeout(() => ripple.remove(), 600);
       }, { passive: true });
+
+      let resizeRaf = null;
+      window.addEventListener("resize", () => {
+        if (resizeRaf) cancelAnimationFrame(resizeRaf);
+        resizeRaf = requestAnimationFrame(() => {
+          syncMainNavPill(true);
+          syncSegmentedPills(true);
+        });
+      }, { passive: true });
     }
+
     function renderReasonChipsHTML(reasons, toneClass = "") {
       return reasons.map(r => `<button type="button" class="reason-chip ${toneClass}" data-reason="${escapeHtml(r)}" onclick="toggleReasonChip(this)"><span class="chip-check"><i class="fas fa-check"></i></span><span>${escapeHtml(r)}</span></button>`).join("");
     }
@@ -2027,22 +2215,22 @@
     function resolveTargetLink(targetType, targetId, targetName, fallbackTypeLabel = "") {
       if (targetType === "lecturer" && targetId) {
         const l = getLecturer(targetId);
-        return { href: `#/lecturer/${targetId}`, label: `GV ${l ? l.name : (targetName || targetId)}`, icon: "fa-user-tie" };
+        return { href: `#/lecturer/${encodeURIComponent(targetId)}`, label: `GV ${l ? l.name : (targetName || targetId)}`, icon: "fa-user-tie" };
       }
       if (targetType === "major" && targetId) {
         const m = getMajor(targetId);
-        return { href: `#/major/${targetId}`, label: `Ngành ${m ? m.name : (targetName || targetId)}`, icon: "fa-book" };
+        return { href: `#/major/${encodeURIComponent(targetId)}`, label: `Ngành ${m ? m.name : (targetName || targetId)}`, icon: "fa-book" };
       }
       const q = normalizeSearch(targetName || "");
       if (!q) return null;
       const hint = normalizeSearch(fallbackTypeLabel || "");
       if (!hint || hint.includes("giang vien")) {
         const l = DB.lecturers.find(x => normalizeSearch(x.name) === q) || DB.pendingLecturers.find(x => normalizeSearch(x.name) === q);
-        if (l) return { href: `#/lecturer/${l.id}`, label: `GV ${l.name}`, icon: "fa-user-tie" };
+        if (l) return { href: `#/lecturer/${encodeURIComponent(l.id)}`, label: `GV ${l.name}`, icon: "fa-user-tie" };
       }
       if (!hint || hint.includes("nganh")) {
         const m = DB.majors.find(x => normalizeSearch(x.name) === q || String(x.code) === String(targetName || "").trim());
-        if (m) return { href: `#/major/${m.id}`, label: `Ngành ${m.name}`, icon: "fa-book" };
+        if (m) return { href: `#/major/${encodeURIComponent(m.id)}`, label: `Ngành ${m.name}`, icon: "fa-book" };
       }
       return null;
     }
@@ -2051,7 +2239,7 @@
       if (!r) return null;
       const isLect = r.targetType === "lecturer";
       const target = isLect ? getLecturer(r.targetId) : getMajor(r.targetId);
-      const base = `#/${isLect ? "lecturer" : "major"}/${r.targetId}?reviewId=${r.id}${replyId ? `&replyId=${replyId}` : ""}`;
+      const base = `#/${isLect ? "lecturer" : "major"}/${encodeURIComponent(r.targetId)}?reviewId=${encodeURIComponent(r.id)}${replyId ? `&replyId=${encodeURIComponent(replyId)}` : ""}`;
       return {
         href: base,
         label: `${isLect ? "GV" : "Ngành"} ${target ? target.name : r.targetId}`,
@@ -2125,6 +2313,13 @@
 
     async function syncFromSupabase(scope = "all") {
       if (!supabaseClient) return;
+      if (IN_FLIGHT_SYNCS.has(scope)) return IN_FLIGHT_SYNCS.get(scope);
+      const job = _runSyncFromSupabase(scope);
+      IN_FLIGHT_SYNCS.set(scope, job);
+      try { return await job; } finally { IN_FLIGHT_SYNCS.delete(scope); }
+    }
+    async function _runSyncFromSupabase(scope = "all") {
+      progressStart();
       const wantAll = scope === "all";
       const wantReviews = wantAll || scope === "reviews";
       const wantCatalog = wantAll || scope === "catalog";
@@ -2335,6 +2530,8 @@
         }
       } catch (err) {
         console.error("Lỗi đồng bộ Supabase:", err);
+      } finally {
+        progressDone();
       }
     }
 
@@ -2786,7 +2983,7 @@
         if (window.location.hash === target) route(); else window.location.hash = target;
         return;
       }
-      const target = `#/${n.targetType === "major" ? "major" : "lecturer"}/${n.targetId}?reviewId=${n.reviewId}${n.replyId ? `&replyId=${n.replyId}` : ""}`;
+      const target = `#/${n.targetType === "major" ? "major" : "lecturer"}/${encodeURIComponent(n.targetId)}?reviewId=${encodeURIComponent(n.reviewId)}${n.replyId ? `&replyId=${encodeURIComponent(n.replyId)}` : ""}`;
       if (window.location.hash === target) route(); else window.location.hash = target;
     };
     window.openUserNotification = async function(id) {
@@ -3251,6 +3448,7 @@
         const template = document.createElement("template");
         template.innerHTML = res.html;
         container.replaceChildren(template.content);
+        triggerSubtlePanelGlide(container);
       }
       const label = document.getElementById("majorResultCount");
       if (label) label.innerHTML = `<i class="fas fa-list-ol" aria-hidden="true"></i> ${res.count} / ${DB.majors.length} ngành`;
@@ -3577,12 +3775,15 @@
     window.switchSupportHubTab = function(tab) {
       const panels = ["report-info", "suggest", "account"];
       const safeTab = panels.includes(tab) ? tab : "report-info";
+      const nextIdx = panels.indexOf(safeTab);
+      const dir = nextIdx > LAST_SUPPORT_TAB_INDEX ? "right" : (nextIdx < LAST_SUPPORT_TAB_INDEX ? "left" : "up");
+      LAST_SUPPORT_TAB_INDEX = nextIdx;
       panels.forEach(p => {
         const el = document.getElementById(`hub-panel-${p}`);
         if (!el) return;
         const show = p === safeTab;
         el.style.display = show ? "block" : "none";
-        if (show) triggerSubtlePanelGlide(el);
+        if (show) triggerSubtlePanelGlide(el, dir);
       });
       document.querySelectorAll(".hub-tab-btn").forEach(btn => {
         const isActive = btn.dataset.tab === safeTab;
@@ -4157,6 +4358,7 @@
       document.querySelectorAll(".admin-catalog-seg").forEach(btn => {
         btn.classList.toggle("active", btn.dataset.kind === ADMIN_CATALOG_FILTER.kind);
       });
+      syncSegmentedPills(false);
       renderAdminCatalogResults();
       triggerSubtlePanelGlide(document.getElementById("admin-catalog-results"));
     };
@@ -4307,7 +4509,7 @@
 
     window.setFeedbackFilter = function(val) {
       activeFeedbackFilter = val;
-      route();
+      route({ preserveScroll: true });
     };
 
     window.openReviewComposer = function() {
@@ -4604,7 +4806,7 @@
         button.classList.toggle("active", isLiked);
         button.setAttribute("aria-pressed", isLiked ? "true" : "false");
         button.innerHTML = `<i class="fas fa-thumbs-up"></i> Hữu ích (${Number(item.likes || 0)})`;
-        if (animatePop && isLiked && !prefersReducedMotion()) {
+        if (animatePop && isLiked) {
           button.classList.remove("like-pop");
           void button.offsetWidth;
           button.classList.add("like-pop");
@@ -4698,17 +4900,33 @@
       }
     };
 
-    function applyLecturerFilters() {
+    function renderLecturerLoadMoreUI(shownCount, totalFiltered) {
+      const moreWrap = document.getElementById("lecturerLoadMore");
+      if (!moreWrap) return;
+      const remaining = totalFiltered - shownCount;
+      if (remaining > 0) {
+        moreWrap.style.display = "flex";
+        moreWrap.innerHTML = `
+          <button type="button" class="btn-load-more" onclick="loadMoreLecturers()">
+            <i class="fas fa-plus-circle"></i> Xem thêm giảng viên (còn ${remaining})
+          </button>
+          <small style="color:var(--muted);font-size:.8rem;">Đang hiển thị ${shownCount} / ${totalFiltered} giảng viên</small>`;
+      } else {
+        moreWrap.style.display = "none";
+        moreWrap.innerHTML = "";
+      }
+    }
+    function applyLecturerFilters(animateGrid = false) {
       const grid = document.getElementById("lecturerGrid");
       if (!grid) return;
       const list = getFilteredSortedLecturers();
       const limit = Math.max(LECTURER_PAGE_SIZE, Number(CATALOG_FILTERS.lecturers.limit || LECTURER_PAGE_SIZE));
       const visible = list.slice(0, limit);
-      const remaining = list.length - visible.length;
 
       const template = document.createElement("template");
       template.innerHTML = visible.map(l => lecturerCardHTML(l)).join("");
       grid.replaceChildren(template.content);
+      if (animateGrid) triggerSubtlePanelGlide(grid);
 
       const label = document.getElementById("resultCount");
       if (label) label.innerHTML = `<i class="fas fa-users" aria-hidden="true"></i> ${list.length} / ${DB.lecturers.length} giảng viên`;
@@ -4716,24 +4934,29 @@
       const emptyBox = document.getElementById("lecturerEmptyState");
       if (emptyBox) emptyBox.style.display = list.length === 0 ? "flex" : "none";
 
-      const moreWrap = document.getElementById("lecturerLoadMore");
-      if (moreWrap) {
-        if (remaining > 0) {
-          moreWrap.style.display = "flex";
-          moreWrap.innerHTML = `
-            <button type="button" class="btn-load-more" onclick="loadMoreLecturers()">
-              <i class="fas fa-plus-circle"></i> Xem thêm giảng viên (còn ${remaining})
-            </button>
-            <small style="color:var(--muted);font-size:.8rem;">Đang hiển thị ${visible.length} / ${list.length} giảng viên</small>`;
-        } else {
-          moreWrap.style.display = "none";
-          moreWrap.innerHTML = "";
-        }
-      }
+      renderLecturerLoadMoreUI(visible.length, list.length);
     }
     window.loadMoreLecturers = function() {
-      CATALOG_FILTERS.lecturers.limit = (CATALOG_FILTERS.lecturers.limit || LECTURER_PAGE_SIZE) + LECTURER_PAGE_SIZE;
-      applyLecturerFilters();
+      const grid = document.getElementById("lecturerGrid");
+      const prevLimit = Math.max(LECTURER_PAGE_SIZE, Number(CATALOG_FILTERS.lecturers.limit || LECTURER_PAGE_SIZE));
+      const nextLimit = prevLimit + LECTURER_PAGE_SIZE;
+      CATALOG_FILTERS.lecturers.limit = nextLimit;
+      if (!grid) { applyLecturerFilters(); return; }
+
+      const list = getFilteredSortedLecturers();
+      const nextBatch = list.slice(prevLimit, nextLimit);
+      if (!nextBatch.length) {
+        renderLecturerLoadMoreUI(Math.min(nextLimit, list.length), list.length);
+        return;
+      }
+      const template = document.createElement("template");
+      template.innerHTML = nextBatch.map(l => lecturerCardHTML(l)).join("");
+      [...template.content.children].forEach((card, i) => {
+        card.classList.add("card-batch-enter");
+        card.style.animationDelay = `${Math.min(i, 12) * 22}ms`;
+      });
+      grid.appendChild(template.content);
+      renderLecturerLoadMoreUI(Math.min(nextLimit, list.length), list.length);
     };
     window.filterAndSortLecturers = function(immediate = false) {
       const nextSearch = document.getElementById("lecturerSearch")?.value ?? CATALOG_FILTERS.lecturers.search;
@@ -4747,8 +4970,8 @@
       CATALOG_FILTERS.lecturers.sort = nextSort;
       if (changed) CATALOG_FILTERS.lecturers.limit = LECTURER_PAGE_SIZE;
       clearTimeout(lecturerFilterTimer);
-      if (immediate) { applyLecturerFilters(); return; }
-      lecturerFilterTimer = setTimeout(applyLecturerFilters, 130);
+      if (immediate) { applyLecturerFilters(true); return; }
+      lecturerFilterTimer = setTimeout(() => applyLecturerFilters(true), 130);
     };
 
     function syncAdminSidebarActive(tabId) {
@@ -4766,10 +4989,13 @@
       if (!isCurrentAdmin()) return;
       ADMIN_ACTIVITY_FILTER.scope = ["all", "user", "admin"].includes(scope) ? scope : "all";
       ADMIN_ACTIVITY_FILTER.group = "all";
+      const wasActive = activeAdminTab === "tab-admin-activity";
       activeAdminTab = "tab-admin-activity";
       syncAdminSidebarActive("tab-admin-activity");
       document.querySelectorAll(".admin-content").forEach(c => c.classList.toggle("active", c.id === "tab-admin-activity"));
+      if (!wasActive) triggerSubtlePanelGlide(document.getElementById("tab-admin-activity"));
       if (ADMIN_ACTIVITY_CACHE.length) paintAdminActivityFeed();
+      requestAnimationFrame(() => syncSegmentedPills(!wasActive));
       loadAdminActivityFeed();
     };
 
@@ -4779,8 +5005,18 @@
       activeAdminTab = tabId;
       syncAdminSidebarActive(tabId);
       document.querySelectorAll(".admin-content").forEach(c => c.classList.toggle("active", c.id === tabId));
-      if (tabId === "tab-admin-activity") loadAdminActivityFeed();
-      if (tabId === "tab-manage") renderAdminCatalogResults();
+      triggerSubtlePanelGlide(target);
+      if (tabId === "tab-admin-activity") {
+        loadAdminActivityFeed();
+        requestAnimationFrame(() => syncSegmentedPills(true));
+      }
+      if (tabId === "tab-manage") {
+        renderAdminCatalogResults();
+        requestAnimationFrame(() => syncSegmentedPills(true));
+      }
+      if (window.innerWidth <= 960) {
+        target.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
     };
 
     /* ================= ADMIN ACTIVITY CENTER (USER + ADMIN) ================= */
@@ -5200,6 +5436,7 @@
       ADMIN_ACTIVITY_FILTER.scope = ["all", "user", "admin"].includes(scope) ? scope : "all";
       ADMIN_ACTIVITY_FILTER.group = "all";
       paintAdminActivityFeed();
+      syncSegmentedPills(false);
       triggerSubtlePanelGlide(document.getElementById("admin-activity-feed"));
     };
 
@@ -5794,7 +6031,7 @@
         if (field) field.value = "";
         await syncFromSupabase("moderation");
         alert("Đã gửi phản hồi! Người dùng sẽ nhận thông báo ở quả chuông và xem được trong mục Hỗ trợ & Góp ý.");
-        route();
+        route({ preserveScroll: true });
       } catch (error) {
         console.error("Admin response error:", error);
         alert("Không gửi được phản hồi: " + (error?.message || "Lỗi không xác định"));
@@ -5818,7 +6055,7 @@
       if (error) { alert("Không cập nhật được yêu cầu hỗ trợ: " + error.message); return; }
       await syncFromSupabase("moderation");
       alert("Đã lưu trạng thái và ghi chú xử lý.");
-      route();
+      route({ preserveScroll: true });
     };
 
     window.adminDeleteSupportTicket = async function(id) {
@@ -6276,6 +6513,14 @@
     };
 
     /* ================= ROUTER & FORMS ================= */
+    function getRouteNavIndex(parts) {
+      if (parts.length === 0) return 0;
+      if (parts[0] === "majors" || parts[0] === "major" || (parts[0] === "faculty" && parts[2] === "majors")) return 1;
+      if (parts[0] === "lecturers" || parts[0] === "lecturer" || parts[0] === "faculty") return 2;
+      if (parts[0] === "feedback" || parts[0] === "support" || parts[0] === "response") return 3;
+      return -1;
+    }
+
     function route(options = {}) {
       const preserveScroll = Boolean(options.preserveScroll);
       const preservedScrollY = Number.isFinite(options.scrollY) ? options.scrollY : window.scrollY;
@@ -6288,85 +6533,148 @@
       const highlightReviewId = params.get("reviewId");
       const highlightReplyId = params.get("replyId");
 
-      if (parts[0] === "major" || parts[0] === "lecturer") {
-        const nextKey = `${parts[0]}:${parts[1] || ""}`;
-        if (REVIEW_VIEW_STATE.targetKey !== nextKey) {
-          REVIEW_VIEW_STATE.targetKey = nextKey;
-          REVIEW_VIEW_STATE.star = 0;
-          REVIEW_VIEW_STATE.sort = "newest";
-          REVIEW_VIEW_STATE.composerOpen = false;
-        } else if (highlightReviewId || highlightReplyId) {
-          REVIEW_VIEW_STATE.star = 0;
-        }
-      }
+      const nextNavIndex = getRouteNavIndex(parts);
+      const nextSection = parts.join("/") || "home";
+      const prevNavIndex = LAST_ROUTE_STATE.navIndex;
+      const isTopNavSwitch = LAST_ROUTE_STATE.initialized
+        && !preserveScroll
+        && prevNavIndex >= 0 && nextNavIndex >= 0
+        && prevNavIndex !== nextNavIndex
+        && parts.length <= 1;
+      const shouldAnimatePage = LAST_ROUTE_STATE.initialized && !preserveScroll;
 
-      let html = "";
-      if (parts.length === 0) html = viewHome();
-      else if (parts[0] === "majors") html = viewMajors();
-      else if (parts[0] === "faculty" && parts[2] === "majors") html = viewFacultyMajors(parts[1]);
-      else if (parts[0] === "faculty") html = viewFaculty(parts[1]);
-      else if (parts[0] === "major") html = viewMajor(parts[1], highlightReviewId, highlightReplyId);
-      else if (parts[0] === "lecturers") html = viewLecturers();
-      else if (parts[0] === "lecturer") html = viewLecturer(parts[1], highlightReviewId, highlightReplyId);
-      else if (parts[0] === "feedback") html = viewSupportCenter("report-info");
-      else if (parts[0] === "support") html = viewSupportCenter("report-info");
-      else if (parts[0] === "response") html = `<div class="loading-box"><i class="fas fa-spinner fa-spin"></i> Đang tải phản hồi...</div>`;
-      else if (parts[0] === "add-lecturer") html = viewAddLecturer();
-      else if (parts[0] === "admin") html = viewAdmin();
-      else html = `<div class="empty-state fade-up"><h2>404</h2><a href="#/" class="btn">Về trang chủ</a></div>`;
+      // Cập nhật ngay trạng thái thanh điều hướng + viên thuốc trượt để phản hồi tức thì khi bấm
+      const navLinks = document.querySelectorAll(".main-nav a");
+      navLinks.forEach(item => item.classList.remove("active"));
+      if (nextNavIndex === 0) document.querySelector('.main-nav a[href="#/"]')?.classList.add("active");
+      else if (nextNavIndex === 1) document.querySelector('.main-nav a[href="#/majors"]')?.classList.add("active");
+      else if (nextNavIndex === 2) document.querySelector('.main-nav a[href="#/lecturers"]')?.classList.add("active");
+      else if (nextNavIndex === 3) document.querySelector('.main-nav a[href="#/support"]')?.classList.add("active");
+      requestAnimationFrame(() => syncMainNavPill(!LAST_ROUTE_STATE.initialized));
 
+      const token = ++ROUTE_TRANSITION_TOKEN;
       const appEl = document.getElementById("app");
-      appEl.classList.toggle("is-admin-wide", parts[0] === "admin" && isCurrentAdmin());
-      appEl.classList.toggle("is-in-place", preserveScroll);
-      appEl.innerHTML = html;
-      if (currentUser && currentProfile) {
-        const warningCount = Number(currentProfile.warning_count || 0);
-        if (currentProfile.account_status === "locked") {
-          document.getElementById("app").insertAdjacentHTML("afterbegin", `<div class="account-status-banner"><i class="fas fa-lock"></i><div><b>Tài khoản đang bị khóa</b><div>Bạn đã nhận ${warningCount} cảnh cáo. Quyền đăng nội dung và tương tác bị tạm dừng. Bạn vẫn có thể đọc thông báo và gửi yêu cầu hỗ trợ tài khoản để đề nghị xem xét.</div>${currentProfile.lock_reason ? `<small>Lý do: ${escapeHtml(currentProfile.lock_reason)}</small>` : ""}</div></div>`);
-        } else if (warningCount > 0) {
-          document.getElementById("app").insertAdjacentHTML("afterbegin", `<div class="account-status-banner warning"><i class="fas fa-triangle-exclamation"></i><div><b>Tài khoản đã có ${warningCount}/4 cảnh cáo</b><div>Vui lòng tuân thủ quy tắc cộng đồng. Khi nhận đủ 4 cảnh cáo, tài khoản sẽ tự động bị khóa.</div></div></div>`);
+      if (!appEl) return;
+
+      const commitRender = () => {
+        if (token !== ROUTE_TRANSITION_TOKEN) return;
+
+        if (parts[0] === "major" || parts[0] === "lecturer") {
+          const nextKey = `${parts[0]}:${parts[1] || ""}`;
+          if (REVIEW_VIEW_STATE.targetKey !== nextKey) {
+            REVIEW_VIEW_STATE.targetKey = nextKey;
+            REVIEW_VIEW_STATE.star = 0;
+            REVIEW_VIEW_STATE.sort = "newest";
+            REVIEW_VIEW_STATE.composerOpen = false;
+          } else if (highlightReviewId || highlightReplyId) {
+            REVIEW_VIEW_STATE.star = 0;
+          }
         }
-      }
 
-      document.querySelectorAll(".main-nav a").forEach(item => item.classList.remove("active"));
-      if (parts.length === 0) document.querySelector('.main-nav a[href="#/"]')?.classList.add("active");
-      else if (parts[0] === "majors" || parts[0] === "major" || (parts[0] === "faculty" && parts[2] === "majors")) document.querySelector('.main-nav a[href="#/majors"]')?.classList.add("active");
-      else if (parts[0] === "lecturers" || parts[0] === "lecturer" || parts[0] === "faculty") document.querySelector('.main-nav a[href="#/lecturers"]')?.classList.add("active");
-      else if (parts[0] === "feedback" || parts[0] === "support" || parts[0] === "response") document.querySelector('.main-nav a[href="#/support"]')?.classList.add("active");
-      if (parts[0] === "response" && parts[1]) loadAdminResponsePage(parts[1]);
+        let html = "";
+        if (parts.length === 0) html = viewHome();
+        else if (parts[0] === "majors") html = viewMajors();
+        else if (parts[0] === "faculty" && parts[2] === "majors") html = viewFacultyMajors(parts[1]);
+        else if (parts[0] === "faculty") html = viewFaculty(parts[1]);
+        else if (parts[0] === "major") html = viewMajor(parts[1], highlightReviewId, highlightReplyId);
+        else if (parts[0] === "lecturers") html = viewLecturers();
+        else if (parts[0] === "lecturer") html = viewLecturer(parts[1], highlightReviewId, highlightReplyId);
+        else if (parts[0] === "feedback") html = viewSupportCenter("report-info");
+        else if (parts[0] === "support") html = viewSupportCenter("report-info");
+        else if (parts[0] === "response") html = `<div class="loading-box"><i class="fas fa-spinner fa-spin"></i> Đang tải phản hồi...</div>`;
+        else if (parts[0] === "add-lecturer") html = viewAddLecturer();
+        else if (parts[0] === "admin") html = viewAdmin();
+        else html = `<div class="empty-state fade-up"><h2>404</h2><a href="#/" class="btn">Về trang chủ</a></div>`;
 
-      if (document.querySelector("#app .review-form")) initReviewForm();
-      if (document.querySelector("#app .star-input")) initStarInput();
-      if (document.getElementById("addLecturerForm")) initAddLecturerForm();
-      if (document.getElementById("adminAddLecturerForm")) initAdminAddLecturerForm();
-      if (document.getElementById("adminAddMajorForm")) initAdminAddMajorForm();
-      if (document.getElementById("reportInfoForm")) initReportInfoForm();
-      if (document.getElementById("suggestForm")) initSuggestForm();
-      if (document.getElementById("supportForm")) initSupportForm();
-      if (document.getElementById("adminAddNoticeForm")) initAdminAddNoticeForm();
-      if (parts[0] === "admin" && isCurrentAdmin()) {
-        if (activeAdminTab === "tab-admin-activity" && document.getElementById("admin-activity-feed")) loadAdminActivityFeed();
-        if (activeAdminTab === "tab-manage" && document.getElementById("admin-catalog-results")) renderAdminCatalogResults();
-        if (document.getElementById("admin-user-search") && !preserveScroll) {
-          ADMIN_USER_RESULTS = [];
-          ADMIN_SELECTED_USER = null;
+        appEl.classList.remove("page-leave-left", "page-leave-right", "page-leave-up", "page-enter-up", "page-enter-right", "page-enter-left");
+        appEl.classList.toggle("is-admin-wide", parts[0] === "admin" && isCurrentAdmin());
+        appEl.classList.toggle("is-in-place", preserveScroll);
+        appEl.classList.toggle("is-page-transitioning", shouldAnimatePage);
+        appEl.innerHTML = html;
+
+        if (currentUser && currentProfile) {
+          const warningCount = Number(currentProfile.warning_count || 0);
+          if (currentProfile.account_status === "locked") {
+            appEl.insertAdjacentHTML("afterbegin", `<div class="account-status-banner"><i class="fas fa-lock"></i><div><b>Tài khoản đang bị khóa</b><div>Bạn đã nhận ${warningCount} cảnh cáo. Quyền đăng nội dung và tương tác bị tạm dừng. Bạn vẫn có thể đọc thông báo và gửi yêu cầu hỗ trợ tài khoản để đề nghị xem xét.</div>${currentProfile.lock_reason ? `<small>Lý do: ${escapeHtml(currentProfile.lock_reason)}</small>` : ""}</div></div>`);
+          } else if (warningCount > 0) {
+            appEl.insertAdjacentHTML("afterbegin", `<div class="account-status-banner warning"><i class="fas fa-triangle-exclamation"></i><div><b>Tài khoản đã có ${warningCount}/4 cảnh cáo</b><div>Vui lòng tuân thủ quy tắc cộng đồng. Khi nhận đủ 4 cảnh cáo, tài khoản sẽ tự động bị khóa.</div></div></div>`);
+          }
         }
-      }
-      if (document.getElementById("lecturerGrid")) applyLecturerFilters();
-      if (document.getElementById("heroSearch")) initHeroSearch();
-      if (document.querySelector("details.home-intro-accordion")) initSmoothAccordions();
 
-      if (!preserveScroll) {
-        const focusEl = highlightReplyId
-          ? document.getElementById(`reply-${highlightReplyId}`)
-          : (highlightReviewId ? document.getElementById(`review-${highlightReviewId}`) : null);
-        if (focusEl) {
-          setTimeout(() => focusEl.scrollIntoView({ behavior: "smooth", block: "center" }), 120);
+        if (parts[0] === "response" && parts[1]) loadAdminResponsePage(parts[1]);
+        if (parts[0] === "support" || parts[0] === "feedback") {
+          const tabNames = ["report-info", "suggest", "account"];
+          const activeBtn = document.querySelector(".hub-tab-btn.active");
+          LAST_SUPPORT_TAB_INDEX = Math.max(0, tabNames.indexOf(activeBtn?.dataset?.tab || "report-info"));
+        }
+
+        if (document.querySelector("#app .review-form")) initReviewForm();
+        if (document.querySelector("#app .star-input")) initStarInput();
+        if (document.getElementById("addLecturerForm")) initAddLecturerForm();
+        if (document.getElementById("adminAddLecturerForm")) initAdminAddLecturerForm();
+        if (document.getElementById("adminAddMajorForm")) initAdminAddMajorForm();
+        if (document.getElementById("reportInfoForm")) initReportInfoForm();
+        if (document.getElementById("suggestForm")) initSuggestForm();
+        if (document.getElementById("supportForm")) initSupportForm();
+        if (document.getElementById("adminAddNoticeForm")) initAdminAddNoticeForm();
+        if (parts[0] === "admin" && isCurrentAdmin()) {
+          if (activeAdminTab === "tab-admin-activity" && document.getElementById("admin-activity-feed")) loadAdminActivityFeed();
+          if (activeAdminTab === "tab-manage" && document.getElementById("admin-catalog-results")) renderAdminCatalogResults();
+          if (document.getElementById("admin-user-search") && !preserveScroll) {
+            ADMIN_USER_RESULTS = [];
+            ADMIN_SELECTED_USER = null;
+          }
+          requestAnimationFrame(() => syncSegmentedPills(true));
+        }
+        if (document.getElementById("lecturerGrid")) applyLecturerFilters(false);
+        if (document.getElementById("heroSearch")) initHeroSearch();
+        if (document.querySelector("details.home-intro-accordion")) initSmoothAccordions();
+
+        // Cuộn sạch ngay trước khi mở pha đi vào (không giật cuộn)
+        if (!preserveScroll) {
+          const focusEl = highlightReplyId
+            ? document.getElementById(`reply-${highlightReplyId}`)
+            : (highlightReviewId ? document.getElementById(`review-${highlightReviewId}`) : null);
+          if (focusEl) {
+            setTimeout(() => focusEl.scrollIntoView({ behavior: "smooth", block: "center" }), 180);
+          } else {
+            scrollToTopInstant();
+          }
         } else {
-          window.scrollTo(0, 0);
+          window.scrollTo({ top: preservedScrollY, left: 0, behavior: "instant" });
         }
+
+        // Pha đi vào mượt mà theo hướng chuyển mục
+        if (shouldAnimatePage) {
+          const enterClass = isTopNavSwitch
+            ? (nextNavIndex > prevNavIndex ? "page-enter-right" : "page-enter-left")
+            : "page-enter-up";
+          void appEl.offsetWidth;
+          appEl.classList.add(enterClass);
+          setTimeout(() => {
+            if (token === ROUTE_TRANSITION_TOKEN) {
+              appEl.classList.remove(enterClass, "is-page-transitioning");
+            }
+          }, 420);
+        }
+
+        LAST_ROUTE_STATE = { section: nextSection, navIndex: nextNavIndex, initialized: true };
+        if (shouldAnimatePage) progressDone();
+      };
+
+      if (shouldAnimatePage) {
+        progressStart();
+        const leaveClass = isTopNavSwitch
+          ? (nextNavIndex > prevNavIndex ? "page-leave-left" : "page-leave-right")
+          : "page-leave-up";
+        appEl.classList.remove("page-enter-up", "page-enter-right", "page-enter-left");
+        appEl.classList.add(leaveClass);
+        setTimeout(() => {
+          if (token !== ROUTE_TRANSITION_TOKEN) { progressDone(); return; }
+          commitRender();
+        }, 115);
       } else {
-        window.scrollTo(0, preservedScrollY);
+        commitRender();
       }
     }
 
@@ -6481,7 +6789,7 @@
           if (error) { alert("Lỗi thêm giảng viên: " + supabaseErrorText(error)); return; }
           await syncFromSupabase("catalog");
           alert(`Đã thêm thành công giảng viên: ${name}`);
-          route();
+          route({ preserveScroll: true });
         } catch (err) {
           alert("Lỗi thêm giảng viên: " + supabaseErrorText(err));
         } finally {
@@ -6508,7 +6816,7 @@
           if (error) { alert("Lỗi thêm ngành: " + supabaseErrorText(error)); return; }
           await syncFromSupabase("catalog");
           alert(`Đã thêm thành công ngành: ${name}`);
-          route();
+          route({ preserveScroll: true });
         } catch (err) {
           alert("Lỗi thêm ngành: " + supabaseErrorText(err));
         } finally {
@@ -6535,8 +6843,8 @@
         if ((!targetType || !targetId) && target) {
           const auto = resolveTargetLink("", "", target, type);
           if (auto) {
-            if (auto.href.startsWith("#/lecturer/")) { targetType = "lecturer"; targetId = auto.href.replace("#/lecturer/", ""); }
-            else if (auto.href.startsWith("#/major/")) { targetType = "major"; targetId = auto.href.replace("#/major/", ""); }
+            if (auto.href.startsWith("#/lecturer/")) { targetType = "lecturer"; targetId = decodeURIComponent(auto.href.replace("#/lecturer/", "")); }
+            else if (auto.href.startsWith("#/major/")) { targetType = "major"; targetId = decodeURIComponent(auto.href.replace("#/major/", "")); }
           }
         }
 
@@ -6663,7 +6971,7 @@
           if (error) { alert("Lỗi đăng thông báo: " + supabaseErrorText(error)); return; }
           await syncFromSupabase("notices");
           alert("Đã đăng thông báo lên trang chủ!");
-          route();
+          route({ preserveScroll: true });
         } catch (err) {
           alert("Lỗi đăng thông báo: " + supabaseErrorText(err));
         } finally {
@@ -6689,7 +6997,7 @@
           rating = parseInt(v, 10);
           wrap.dataset.rating = rating;
           paint(rating);
-          if (!prefersReducedMotion()) {
+          {
             span.classList.remove("star-pop");
             void span.offsetWidth;
             span.classList.add("star-pop");
@@ -6739,6 +7047,36 @@
         : `<div style="padding:12px 16px;color:var(--muted);font-size:.88rem;"><i class="fas fa-search"></i> Không tìm thấy kết quả phù hợp</div>`;
     }
 
+    function bindSearchKeyboardNav(input, box) {
+      if (!input || !box || input.dataset.kbBound) return;
+      input.dataset.kbBound = "1";
+      input.addEventListener("keydown", (e) => {
+        if (!box.classList.contains("active")) return;
+        const links = [...box.querySelectorAll("a")];
+        if (!links.length) return;
+        const curIdx = links.findIndex(a => a.classList.contains("kb-active"));
+        if (e.key === "ArrowDown") {
+          e.preventDefault();
+          links.forEach(a => a.classList.remove("kb-active"));
+          const next = links[(curIdx + 1) % links.length];
+          next.classList.add("kb-active");
+          next.scrollIntoView({ block: "nearest" });
+        } else if (e.key === "ArrowUp") {
+          e.preventDefault();
+          links.forEach(a => a.classList.remove("kb-active"));
+          const prev = links[curIdx <= 0 ? links.length - 1 : curIdx - 1];
+          prev.classList.add("kb-active");
+          prev.scrollIntoView({ block: "nearest" });
+        } else if (e.key === "Enter") {
+          const picked = links[curIdx >= 0 ? curIdx : 0];
+          if (picked) {
+            e.preventDefault();
+            picked.click();
+          }
+        }
+      });
+    }
+
     function initHeroSearch() {
       const input = document.getElementById("heroSearch");
       const box = document.getElementById("heroSearchResults");
@@ -6752,8 +7090,9 @@
           if (!html) { box.classList.remove("active"); return; }
           box.innerHTML = html;
           box.classList.add("active");
-        }, 120);
+        }, 110);
       });
+      bindSearchKeyboardNav(input, box);
       box.addEventListener("click", (e) => {
         if (!e.target.closest("a")) return;
         box.classList.remove("active");
@@ -6772,8 +7111,9 @@
         if (!html) { searchResultsBox.classList.remove("active"); return; }
         searchResultsBox.innerHTML = html;
         searchResultsBox.classList.add("active");
-      }, 120);
+      }, 110);
     });
+    bindSearchKeyboardNav(globalSearchInput, searchResultsBox);
     searchResultsBox?.addEventListener("click", (e) => {
       if (!e.target.closest("a")) return;
       searchResultsBox.classList.remove("active");
