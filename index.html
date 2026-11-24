@@ -63,6 +63,10 @@
     a { color: var(--primary); text-decoration: none; transition: color .24s var(--ease-gentle); }
     a:hover { color: var(--primary-dark); }
     button { font-family: inherit; }
+    a:focus-visible, button:focus-visible, summary:focus-visible {
+      outline: 2px solid var(--primary-light);
+      outline-offset: 2px;
+    }
     .container { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
 
     /* Base form inputs placed first so component-specific search bars cleanly override padding & radius */
@@ -1397,7 +1401,22 @@
       background: #fee2e2; color: #b91c1c;
     }
     .admin-team-card.is-super .admin-team-avatar { background: linear-gradient(135deg, #f59e0b, #b45309); color: #fff; }
-    .admin-team-card-actions { display: flex; gap: 7px; flex-wrap: wrap; }
+    .admin-team-card-actions { display: flex; gap: 7px; flex-wrap: wrap; align-items: center; }
+    .btn-warn-soft {
+      background: #fff7ed; color: #9a3412; border: 1px solid #fed7aa; box-shadow: none;
+    }
+    .btn-warn-soft:hover { background: #ffedd5; border-color: #fdba74; color: #7c2d12; box-shadow: none; }
+    .user-protected-pill {
+      display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px;
+      border-radius: 999px; background: #fffbeb; border: 1px solid #fde68a;
+      color: #92400e; font-size: .76rem; font-weight: 700; white-space: nowrap;
+    }
+    .admin-hero-scope-note {
+      display: inline-flex; align-items: center; gap: 6px; margin-top: 8px;
+      padding: 4px 10px; border-radius: 999px; font-size: .75rem; font-weight: 600;
+      background: rgba(6, 36, 70, 0.32); color: rgba(235, 245, 255, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+    }
     .admin-perm-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; padding-top: 11px; border-top: 1px dashed var(--border); }
     .admin-perm-chip {
       display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; border-radius: 999px;
@@ -3023,6 +3042,33 @@
         return true;
       }
       return hasAdminPerm(perm);
+    }
+    function isProtectedPrivilegedUserId(userId) {
+      if (!userId) return false;
+      const inTeam = ADMIN_TEAM_CACHE.find(x => x.id === userId);
+      if (inTeam && (inTeam.role === "admin" || inTeam.role === "super_admin")) return true;
+      const inSearch = ADMIN_USER_RESULTS.find(x => x.id === userId);
+      if (inSearch && (inSearch.role === "admin" || inSearch.role === "super_admin")) return true;
+      return false;
+    }
+    // Super Admin có toàn quyền kiểm duyệt (sửa/xóa) mọi bình luận; Admin thường chỉ kiểm duyệt bình luận của user thường (không tác động bài của Super Admin / Admin khác)
+    function canModerateComment(item) {
+      if (!item || !hasAdminPerm("moderate_comments")) return false;
+      if (isSuperAdmin()) return true;
+      if (item.isAdmin && !isMine(item)) return false;
+      if (!isMine(item) && isProtectedPrivilegedUserId(item.userId)) return false;
+      return true;
+    }
+    function canWarnCommentAuthor(item) {
+      if (!item || !item.userId || item.userId === currentUser?.id) return false;
+      if (!hasAdminPerm("moderate_comments") || !hasAdminPerm("manage_users")) return false;
+      if (isSuperAdmin()) {
+        const inTeam = ADMIN_TEAM_CACHE.find(x => x.id === item.userId);
+        if (inTeam?.role === "super_admin") return false;
+        return true;
+      }
+      if (item.isAdmin || isProtectedPrivilegedUserId(item.userId)) return false;
+      return true;
     }
     function ensureAccountActive() {
       if (isAccountLocked() && !isCurrentAdmin()) {
@@ -4985,9 +5031,10 @@
         <div class="admin-dashboard fade-up">
           <section class="admin-hero">
             <div class="admin-hero-main">
-              <div class="admin-hero-kicker"><i class="fas ${isSuper ? "fa-crown" : "fa-shield-halved"}"></i> ${isSuper ? "Super Admin · Toàn quyền hệ thống" : `Admin · Được cấp ${activePermCount}/${ADMIN_PERMISSIONS_DEF.length} nhóm quyền`}</div>
+              <div class="admin-hero-kicker"><i class="fas ${isSuper ? "fa-crown" : "fa-shield-halved"}"></i> ${isSuper ? "Super Admin · Toàn quyền cấp cao nhất" : `Admin · Được cấp ${activePermCount}/${ADMIN_PERMISSIONS_DEF.length} nhóm quyền`}</div>
               <h1><i class="fas fa-gauge-high"></i> Bảng điều khiển Quản trị viên</h1>
               <p>Xin chào <b>${escapeHtml(myDisplayName())}</b> · Hệ thống hiện có <b>${DB.lecturers.length}</b> giảng viên, <b>${DB.majors.length}</b> ngành học và <b>${REVIEWS_CACHE.length}</b> đánh giá.</p>
+              <div class="admin-hero-scope-note"><i class="fas ${isSuper ? "fa-check-double" : "fa-user-check"}"></i> ${isSuper ? "Toàn quyền quản trị: phân quyền đội ngũ Admin, kiểm duyệt mọi nội dung &amp; tài khoản, xem toàn bộ nhật ký hệ thống." : "Phạm vi quyền: thao tác với thành viên thường theo các nhóm quyền được cấp (tài khoản Quản trị viên được bảo vệ)."}</div>
             </div>
             <div class="admin-hero-actions">
               ${isSuper ? `<button type="button" class="admin-hero-btn primary" onclick="switchTab('tab-admins')"><i class="fas fa-crown"></i> Đội ngũ Admin</button>` : ""}
@@ -5184,10 +5231,10 @@
                       </div>
                       <div style="display:flex;gap:8px;flex-wrap:wrap;">
                         ${linkObj && reportedText ? `<a class="btn btn-sm" href="${linkObj.href}"><i class="fas fa-arrow-up-right-from-square"></i> Xem chỗ đó</a>` : ""}
-                        ${hasAdminPerm("manage_users") && rep.replyId && replyObj && replyObj.userId && (isSuper || !replyObj.isAdmin) && replyObj.userId !== currentUser?.id ? `<button type="button" class="btn btn-sm btn-del" onclick="adminOpenCommentModeration('warn_and_delete','reply',${jsArg(r.id)},${jsArg(replyObj.id)},${jsArg(replyObj.userId)},${jsArg(reportedAuthor)},${jsArg(String(replyObj.content || '').slice(0,260))},${jsArg(rep.id)})"><i class="fas fa-gavel"></i> Cảnh cáo &amp; Xóa</button>` : ""}
-                        ${hasAdminPerm("manage_users") && !rep.replyId && r && r.userId && (isSuper || !r.isAdmin) && r.userId !== currentUser?.id ? `<button type="button" class="btn btn-sm btn-del" onclick="adminOpenCommentModeration('warn_and_delete','review',${jsArg(r.id)},'',${jsArg(r.userId)},${jsArg(reportedAuthor)},${jsArg(String(r.content || '').slice(0,260))},${jsArg(rep.id)})"><i class="fas fa-gavel"></i> Cảnh cáo &amp; Xóa</button>` : ""}
-                        ${rep.replyId && replyObj ? `<button type="button" class="btn btn-sm" style="background:#fee2e2;color:#991b1b;box-shadow:none;" onclick="adminOpenCommentModeration('delete_only','reply',${jsArg(r.id)},${jsArg(replyObj.id)},${jsArg(replyObj.userId || '')},${jsArg(reportedAuthor)},${jsArg(String(replyObj.content || '').slice(0,260))},${jsArg(rep.id)})"><i class="fas fa-trash"></i> Xóa phản hồi</button>` : ""}
-                        ${!rep.replyId && r ? `<button type="button" class="btn btn-sm" style="background:#fee2e2;color:#991b1b;box-shadow:none;" onclick="adminOpenCommentModeration('delete_only','review',${jsArg(r.id)},'',${jsArg(r.userId || '')},${jsArg(reportedAuthor)},${jsArg(String(r.content || '').slice(0,260))},${jsArg(rep.id)})"><i class="fas fa-trash"></i> Xóa đánh giá</button>` : ""}
+                        ${rep.replyId && replyObj && canWarnCommentAuthor(replyObj) ? `<button type="button" class="btn btn-sm btn-del" onclick="adminOpenCommentModeration('warn_and_delete','reply',${jsArg(r.id)},${jsArg(replyObj.id)},${jsArg(replyObj.userId)},${jsArg(reportedAuthor)},${jsArg(String(replyObj.content || '').slice(0,260))},${jsArg(rep.id)})"><i class="fas fa-gavel"></i> Cảnh cáo &amp; Xóa</button>` : ""}
+                        ${!rep.replyId && r && canWarnCommentAuthor(r) ? `<button type="button" class="btn btn-sm btn-del" onclick="adminOpenCommentModeration('warn_and_delete','review',${jsArg(r.id)},'',${jsArg(r.userId)},${jsArg(reportedAuthor)},${jsArg(String(r.content || '').slice(0,260))},${jsArg(rep.id)})"><i class="fas fa-gavel"></i> Cảnh cáo &amp; Xóa</button>` : ""}
+                        ${rep.replyId && replyObj && canModerateComment(replyObj) ? `<button type="button" class="btn btn-sm" style="background:#fee2e2;color:#991b1b;box-shadow:none;" onclick="adminOpenCommentModeration('delete_only','reply',${jsArg(r.id)},${jsArg(replyObj.id)},${jsArg(replyObj.userId || '')},${jsArg(reportedAuthor)},${jsArg(String(replyObj.content || '').slice(0,260))},${jsArg(rep.id)})"><i class="fas fa-trash"></i> Xóa phản hồi</button>` : ""}
+                        ${!rep.replyId && r && canModerateComment(r) ? `<button type="button" class="btn btn-sm" style="background:#fee2e2;color:#991b1b;box-shadow:none;" onclick="adminOpenCommentModeration('delete_only','review',${jsArg(r.id)},'',${jsArg(r.userId || '')},${jsArg(reportedAuthor)},${jsArg(String(r.content || '').slice(0,260))},${jsArg(rep.id)})"><i class="fas fa-trash"></i> Xóa đánh giá</button>` : ""}
                         <button type="button" class="btn btn-sm" style="background:#94a3b8;" onclick="dismissReport(${jsArg(rep.id)})">Bỏ qua / Đóng</button>
                       </div>
                     </div>`;
@@ -5762,8 +5809,8 @@
                     ${replyMine
                       ? `<button type="button" onclick="openMyEdit('reply',${jsArg(r.id)},${jsArg(reply.id)})"><i class="fas fa-edit"></i> Sửa</button><button type="button" class="del" onclick="deleteMyReply(${jsArg(r.id)},${jsArg(reply.id)})"><i class="fas fa-trash"></i> Xóa</button>`
                       : `<button type="button" class="del" onclick="openReportModal(${jsArg(r.id)},${jsArg(reply.id)})"><i class="fas fa-flag"></i> Báo cáo</button>`}
-                    ${canWarnUser && reply.userId && (isSuper || !reply.isAdmin) && reply.userId !== currentUser?.id ? `<button type="button" class="admin-inline-warn" onclick="adminOpenCommentModeration('warn_and_delete','reply',${jsArg(r.id)},${jsArg(reply.id)},${jsArg(reply.userId)},${jsArg(repAuthor)},${jsArg(String(reply.content || '').slice(0,260))})" title="Cảnh cáo người viết và tự động xóa phản hồi này"><i class="fas fa-triangle-exclamation"></i> Cảnh cáo &amp; Xóa</button>` : ""}
-                    ${isAdmin ? `<button type="button" class="admin-inline-del" style="margin-left:auto;" onclick="adminOpenCommentModeration('delete_only','reply',${jsArg(r.id)},${jsArg(reply.id)},${jsArg(reply.userId || '')},${jsArg(repAuthor)},${jsArg(String(reply.content || '').slice(0,260))})" title="Xóa phản hồi"><i class="fas fa-trash"></i> Xóa (Admin)</button>` : ""}
+                    ${canWarnCommentAuthor(reply) ? `<button type="button" class="admin-inline-warn" onclick="adminOpenCommentModeration('warn_and_delete','reply',${jsArg(r.id)},${jsArg(reply.id)},${jsArg(reply.userId)},${jsArg(repAuthor)},${jsArg(String(reply.content || '').slice(0,260))})" title="Cảnh cáo người viết và tự động xóa phản hồi này"><i class="fas fa-triangle-exclamation"></i> Cảnh cáo &amp; Xóa</button>` : ""}
+                    ${canModerateComment(reply) ? `<button type="button" class="admin-inline-del" style="margin-left:auto;" onclick="adminOpenCommentModeration('delete_only','reply',${jsArg(r.id)},${jsArg(reply.id)},${jsArg(reply.userId || '')},${jsArg(repAuthor)},${jsArg(String(reply.content || '').slice(0,260))})" title="Xóa phản hồi"><i class="fas fa-trash"></i> Xóa (Admin)</button>` : ""}
                   </div>
                 </div>`;
               }).join("")}
@@ -5773,8 +5820,8 @@
             <button type="button" onclick="toggleReplyForm(${jsArg(r.id)})" style="color:var(--primary);"><i class="fas fa-reply"></i> Phản hồi (${r.replies.length})</button>
             ${mine ? `<button type="button" class="own-edit" onclick="openMyEdit('review',${jsArg(r.id)})"><i class="fas fa-pen"></i> Sửa bình luận</button>
             <button type="button" onclick="deleteMyReview(${jsArg(r.id)})"><i class="fas fa-trash"></i> Xóa bình luận</button>` : `<button type="button" onclick="openReportModal(${jsArg(r.id)})"><i class="fas fa-flag"></i> Báo cáo vi phạm</button>`}
-            ${isAdmin ? `
-            ${canWarnUser && r.userId && (isSuper || !r.isAdmin) && r.userId !== currentUser?.id ? `<button type="button" class="admin-inline-warn" onclick="adminOpenCommentModeration('warn_and_delete','review',${jsArg(r.id)},'',${jsArg(r.userId)},${jsArg(authorName)},${jsArg(String(r.content || '').slice(0,260))})" title="Cảnh cáo người viết và tự động xóa đánh giá này"><i class="fas fa-triangle-exclamation"></i> Cảnh cáo &amp; Xóa</button>` : ""}
+            ${canModerateComment(r) ? `
+            ${canWarnCommentAuthor(r) ? `<button type="button" class="admin-inline-warn" onclick="adminOpenCommentModeration('warn_and_delete','review',${jsArg(r.id)},'',${jsArg(r.userId)},${jsArg(authorName)},${jsArg(String(r.content || '').slice(0,260))})" title="Cảnh cáo người viết và tự động xóa đánh giá này"><i class="fas fa-triangle-exclamation"></i> Cảnh cáo &amp; Xóa</button>` : ""}
             <button type="button" class="admin-inline-edit" onclick="openEditReviewModal(${jsArg(r.id)})"><i class="fas fa-edit"></i> Sửa (Admin)</button>
             <button type="button" class="admin-inline-del" style="margin-left:auto;" onclick="adminOpenCommentModeration('delete_only','review',${jsArg(r.id)},'',${jsArg(r.userId || '')},${jsArg(authorName)},${jsArg(String(r.content || '').slice(0,260))})"><i class="fas fa-trash"></i> Xóa (Admin)</button>
             ` : ""}
@@ -6721,25 +6768,35 @@
         resultsBox.innerHTML = `<div class="empty-state" style="padding:24px;"><p style="margin:0;font-size:.9rem;">Nhập ít nhất 2 ký tự để tìm tài khoản.</p></div>`;
         return;
       }
-      resultsBox.innerHTML = ADMIN_USER_RESULTS.map(u => `
+      const isSuper = isSuperAdmin();
+      resultsBox.innerHTML = ADMIN_USER_RESULTS.map(u => {
+        const uRole = u.role || "user";
+        const isSelf = Boolean(currentUser?.id && u.id === currentUser.id);
+        const protectedFromAdmin = !isSuper && !isSelf && (uRole === "super_admin" || uRole === "admin");
+        return `
         <div class="user-admin-result ${ADMIN_SELECTED_USER?.id === u.id ? "selected" : ""}">
           <div class="user-admin-result-main">
-            <div class="user-admin-avatar" aria-hidden="true">${u.role === "super_admin" ? '<i class="fas fa-crown" style="color:#d97706;"></i>' : (u.role === "admin" ? '<i class="fas fa-user-shield" style="color:#dc2626;"></i>' : escapeHtml(String(u.username || "U").charAt(0)))}</div>
+            <div class="user-admin-avatar" aria-hidden="true">${uRole === "super_admin" ? '<i class="fas fa-crown" style="color:#d97706;"></i>' : (uRole === "admin" ? '<i class="fas fa-user-shield" style="color:#dc2626;"></i>' : escapeHtml(String(u.username || "U").charAt(0)))}</div>
             <div class="user-admin-identity">
-              <button type="button" class="user-admin-open-profile" onclick="adminSelectUser(${jsArg(u.id)})">@${escapeHtml(u.username || "")} <i class="fas fa-arrow-up-right-from-square" style="font-size:.68rem;"></i></button>
+              ${protectedFromAdmin
+                ? `<span style="font-weight:800;font-size:.92rem;color:var(--primary-dark);">@${escapeHtml(u.username || "")}</span>`
+                : `<button type="button" class="user-admin-open-profile" onclick="adminSelectUser(${jsArg(u.id)})">@${escapeHtml(u.username || "")} ${isSelf ? '<span class="own-badge">Bạn</span>' : ""} <i class="fas fa-arrow-up-right-from-square" style="font-size:.68rem;"></i></button>`}
               <span class="user-admin-display-name">${escapeHtml(u.display_name || "Chưa có tên hiển thị")}</span>
               <div class="user-admin-result-meta">
-                ${roleBadgeHTML(u.role || "user")}
+                ${roleBadgeHTML(uRole)}
                 <span class="user-state-pill ${u.account_status === "locked" ? "locked" : "active"}"><i class="fas ${u.account_status === "locked" ? "fa-lock" : "fa-check-circle"}"></i> ${u.account_status === "locked" ? "Đang khóa" : "Hoạt động"}</span>
                 <span class="user-admin-warning-count"><i class="fas fa-triangle-exclamation"></i> ${Number(u.warning_count || 0)}/4 cảnh cáo</span>
               </div>
             </div>
           </div>
-          <div style="display:flex;gap:6px;flex-wrap:wrap;">
-            ${isSuperAdmin() ? `<button type="button" class="btn btn-sm btn-neutral" onclick="openAdminRoleModal(${jsArg(u.id)}, 'users')" title="Cấp / sửa quyền Admin"><i class="fas fa-crown" style="color:#d97706;"></i> Quyền</button>` : ""}
-            <button type="button" class="btn btn-sm user-admin-select-btn" onclick="adminSelectUser(${jsArg(u.id)})"><i class="fas fa-user-gear"></i> Quản lý <i class="fas fa-arrow-right" style="font-size:.72rem;margin-left:2px;"></i></button>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+            ${isSuper ? `<button type="button" class="btn btn-sm btn-neutral" onclick="openAdminRoleModal(${jsArg(u.id)}, 'users')" title="Cấp / sửa quyền Admin"><i class="fas fa-crown" style="color:#d97706;"></i> Quyền</button>` : ""}
+            ${protectedFromAdmin
+              ? `<span class="user-protected-pill"><i class="fas fa-shield-halved"></i> Được bảo vệ (Chỉ Super Admin)</span>`
+              : `<button type="button" class="btn btn-sm user-admin-select-btn" onclick="adminSelectUser(${jsArg(u.id)})"><i class="fas fa-user-gear"></i> ${isSelf && !isSuper ? "Hồ sơ của tôi" : "Quản lý"} <i class="fas fa-arrow-right" style="font-size:.72rem;margin-left:2px;"></i></button>`}
           </div>
-        </div>`).join("");
+        </div>`;
+      }).join("");
     }
 
     window.adminOpenUserActivity = async function(userId, username, displayName = "", warningCount = 0, accountStatus = "active", lockReason = "", preferredTab = "history", roleHint = "") {
@@ -6857,7 +6914,12 @@
       }
       const rev = REVIEWS_CACHE.find(x => x.id === reviewId);
       const repObj = (commentKind === "reply" && replyId) ? rev?.replies?.find(x => x.id === replyId) : null;
-      const isTargetAdminPost = Boolean(commentKind === "reply" ? repObj?.isAdmin : rev?.isAdmin);
+      const targetItem = commentKind === "reply" ? repObj : rev;
+      if (targetItem && !canModerateComment(targetItem)) {
+        showToast("Chỉ Super Admin mới có quyền kiểm duyệt hoặc xóa bài viết của Quản trị viên khác.", "error");
+        return;
+      }
+      const isTargetAdminPost = Boolean(targetItem?.isAdmin);
       if (isWarnMode && isTargetAdminPost && !isSuperAdmin()) {
         showToast("Chỉ Super Admin mới có quyền cảnh cáo nội dung của Quản trị viên khác.", "error");
         return;
@@ -7081,8 +7143,14 @@
 
     window.adminSelectUser = function(userId) {
       if (!isCurrentAdmin()) return;
-      ADMIN_SELECTED_USER = ADMIN_USER_RESULTS.find(u => u.id === userId) || null;
-      if (!ADMIN_SELECTED_USER) return;
+      const picked = ADMIN_USER_RESULTS.find(u => u.id === userId) || null;
+      if (!picked) return;
+      const pRole = picked.role || "user";
+      if (!isSuperAdmin() && picked.id !== currentUser?.id && (pRole === "super_admin" || pRole === "admin")) {
+        showToast("Tài khoản Quản trị viên được bảo vệ — chỉ Super Admin mới có quyền thao tác.", "error");
+        return;
+      }
+      ADMIN_SELECTED_USER = picked;
       const resultsBox = document.getElementById("admin-user-results");
       if (resultsBox) resultsBox.querySelectorAll(".user-admin-result").forEach((el, index) => el.classList.toggle("selected", ADMIN_USER_RESULTS[index]?.id === userId));
       renderAdminSelectedUserPanel();
@@ -7323,7 +7391,7 @@
             <div class="admin-team-card-actions">
               <button type="button" class="btn btn-sm" onclick="openAdminRoleModal(${jsArg(a.id)}, 'team')"><i class="fas fa-sliders"></i> ${isSuper ? "Đổi vai trò" : "Sửa quyền"}</button>
               <button type="button" class="btn btn-sm btn-neutral" onclick="adminOpenUserActivity(${jsArg(a.id)},${jsArg(a.username || "")},${jsArg(a.display_name || "")},${jsArg(a.warning_count || 0)},${jsArg(a.account_status || "active")},${jsArg(a.lock_reason || "")},'profile',${jsArg(a.role || 'admin')})"><i class="fas fa-signature"></i> Hồ sơ &amp; Đổi tên</button>
-              ${!isSuper ? `<button type="button" class="btn btn-sm" style="background:#fff7ed;color:#9a3412;border:1px solid #fed7aa;box-shadow:none;" onclick="adminOpenUserActivity(${jsArg(a.id)},${jsArg(a.username || "")},${jsArg(a.display_name || "")},${jsArg(a.warning_count || 0)},${jsArg(a.account_status || "active")},${jsArg(a.lock_reason || "")},'mod',${jsArg(a.role || 'admin')})"><i class="fas fa-gavel"></i> Cảnh cáo / Khóa</button>` : ""}
+              ${!isSuper ? `<button type="button" class="btn btn-sm btn-warn-soft" onclick="adminOpenUserActivity(${jsArg(a.id)},${jsArg(a.username || "")},${jsArg(a.display_name || "")},${jsArg(a.warning_count || 0)},${jsArg(a.account_status || "active")},${jsArg(a.lock_reason || "")},'mod',${jsArg(a.role || 'admin')})"><i class="fas fa-gavel"></i> Cảnh cáo / Khóa</button>` : ""}
               ${!isSuper ? `<button type="button" class="btn btn-sm btn-del" onclick="adminQuickRevokeAdmin(${jsArg(a.id)}, ${jsArg(a.username || "")}, this)"><i class="fas fa-user-slash"></i> Hủy Admin</button>` : ""}
             </div>
           </div>
@@ -8281,6 +8349,10 @@
       if (!hasAdminPerm("moderate_comments")) return;
       const r = REVIEWS_CACHE.find(x => x.id === reviewId);
       if (!r) return;
+      if (!canModerateComment(r)) {
+        showToast("Chỉ Super Admin mới có quyền chỉnh sửa bài viết của Quản trị viên khác.", "error");
+        return;
+      }
       document.getElementById("edit-review-id").value = reviewId;
       document.getElementById("edit-review-author").value = r.author || "";
       document.getElementById("edit-review-content").value = r.content;
@@ -8291,6 +8363,11 @@
     window.saveEditedReview = async function() {
       if (!supabaseClient || !hasAdminPerm("moderate_comments")) return;
       const id = document.getElementById("edit-review-id").value;
+      const targetRev = REVIEWS_CACHE.find(x => x.id === id);
+      if (targetRev && !canModerateComment(targetRev)) {
+        showToast("Chỉ Super Admin mới có quyền chỉnh sửa bài viết của Quản trị viên khác.", "error");
+        return;
+      }
       const author = document.getElementById("edit-review-author").value.trim();
       const content = document.getElementById("edit-review-content").value.trim();
       const isAdminReview = document.getElementById("edit-review-as-admin").checked;
