@@ -1015,6 +1015,153 @@
       .activity-search-mini { max-width: none; width: 100%; }
       .search-kbd { display: none; }
     }
+
+    /* ===== V4 EXECUTIVE UI POLISH: ADMIN ACTIVITY CENTER, DATE TIMELINE & MICRO-UX ===== */
+    .admin-hero {
+      background:
+        radial-gradient(circle at 12% 18%, rgba(56, 189, 248, 0.24) 0%, transparent 45%),
+        radial-gradient(circle at 90% 85%, rgba(245, 158, 11, 0.28) 0%, transparent 46%),
+        linear-gradient(135deg, #062e59 0%, #0a5ea8 56%, #1c78c8 100%);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      box-shadow: 0 18px 42px rgba(7, 50, 96, 0.22);
+    }
+    .admin-hero-btn.indigo {
+      background: rgba(99, 102, 241, 0.28); border-color: rgba(199, 210, 254, 0.42);
+    }
+    .admin-hero-btn.indigo:hover { background: rgba(99, 102, 241, 0.42); }
+
+    .admin-kpi-card {
+      position: relative; overflow: hidden;
+      border-radius: 18px; border: 1px solid #dfe8f2;
+      transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+    }
+    .admin-kpi-card::after {
+      content: '\f061'; font-family: 'Font Awesome 6 Free'; font-weight: 900;
+      position: absolute; right: 14px; top: 14px; font-size: .72rem; color: #cbd5e1;
+      transition: transform .2s ease, color .2s ease;
+    }
+    .admin-kpi-card:hover::after { transform: translateX(3px); color: var(--primary); }
+
+    .admin-tab-badge.indigo { background: #e0e7ff; color: #4338ca; }
+    .admin-tab.active .admin-tab-badge.indigo { background: #4f46e5; color: #fff; }
+    .admin-tab.is-admin-log-tab.active {
+      background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+      color: #312e81; box-shadow: inset 3px 0 0 #4f46e5;
+    }
+    .admin-tab.is-admin-log-tab.active .admin-tab-left i { color: #4f46e5; }
+
+    /* Activity Scope Switcher (Tất cả / Người dùng / Admin) */
+    .activity-scope-bar {
+      display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px;
+      padding: 5px; margin-bottom: 14px; border-radius: 15px;
+      background: #eaf1f8; border: 1px solid #dce6f1;
+    }
+    .activity-scope-btn {
+      border: 0; background: transparent; border-radius: 11px; padding: 10px 14px;
+      font: 700 .84rem 'Inter', sans-serif; color: #475d75; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: .18s ease;
+    }
+    .activity-scope-btn:hover { color: var(--primary-dark); background: rgba(255,255,255,.55); }
+    .activity-scope-btn.active {
+      background: #fff; color: var(--primary-dark);
+      box-shadow: 0 4px 14px rgba(15, 42, 72, .09);
+    }
+    .activity-scope-btn.scope-admin.active {
+      background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+      color: #fff; box-shadow: 0 6px 18px rgba(79, 70, 229, .28);
+    }
+    .activity-scope-count {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 24px; height: 20px; padding: 0 7px; border-radius: 999px;
+      background: rgba(15, 23, 42, .08); font-size: .72rem; font-weight: 800;
+      font-variant-numeric: tabular-nums;
+    }
+    .activity-scope-btn.scope-admin.active .activity-scope-count {
+      background: rgba(255, 255, 255, .22); color: #fff;
+    }
+
+    /* Mini Live Stats Strip */
+    .activity-mini-stats {
+      display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px;
+      margin-bottom: 14px;
+    }
+    .activity-mini-stat {
+      border: 1px solid #e2eaf3; background: #fff; border-radius: 13px; padding: 11px 14px;
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      cursor: pointer; font-family: inherit; text-align: left; transition: .18s;
+    }
+    .activity-mini-stat:hover { border-color: #bfd6ec; transform: translateY(-1px); box-shadow: 0 5px 14px rgba(15,45,72,.06); }
+    .activity-mini-stat strong { display: block; font-size: 1.15rem; font-weight: 800; color: var(--primary-dark); line-height: 1.1; font-variant-numeric: tabular-nums; }
+    .activity-mini-stat span { display: block; font-size: .74rem; font-weight: 600; color: var(--muted); margin-top: 2px; }
+    .activity-mini-stat i {
+      width: 34px; height: 34px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; font-size: .9rem; flex-shrink: 0;
+    }
+    .activity-mini-stat.tone-blue i { background: #e6f0fb; color: var(--primary); }
+    .activity-mini-stat.tone-emerald i { background: #ecfdf5; color: #059669; }
+    .activity-mini-stat.tone-indigo i { background: #eef2ff; color: #4f46e5; }
+    .activity-mini-stat.tone-indigo strong { color: #3730a3; }
+    .activity-mini-stat.tone-red i { background: #fef2f2; color: #dc2626; }
+    .activity-mini-stat.tone-red strong { color: #b91c1c; }
+
+    /* Activity Timeline Date Groups & Admin Action Cards */
+    .activity-date-divider {
+      display: flex; align-items: center; gap: 10px; margin: 12px 0 4px;
+      font-size: .73rem; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: #64748b;
+    }
+    .activity-date-divider:first-child { margin-top: 2px; }
+    .activity-date-divider::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, #dce5f0 0%, transparent 100%); }
+    .activity-date-pill {
+      display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px;
+      border-radius: 999px; background: #edf3f9; border: 1px solid #dce6f2; color: #3b5570;
+    }
+
+    .admin-activity-item {
+      border-radius: 15px; border: 1px solid #e2eaf2; padding: 15px 16px;
+      transition: border-color .18s, box-shadow .18s, transform .18s;
+    }
+    .admin-activity-item:hover {
+      border-color: #c5daef; box-shadow: 0 7px 20px rgba(15, 45, 72, .06); transform: translateY(-1px);
+    }
+    .admin-activity-item.is-admin-action {
+      border-left: 4px solid #4f46e5;
+      background: linear-gradient(120deg, #fafbff 0%, #ffffff 68%);
+      border-color: #dbe2f9;
+      border-left-color: #4f46e5;
+    }
+    .admin-activity-item.is-admin-action:hover {
+      border-color: #a5b4fc; border-left-color: #4338ca;
+      box-shadow: 0 8px 22px rgba(79, 70, 229, .10);
+    }
+    .admin-activity-icon.admin-op { background: linear-gradient(135deg, #eef2ff, #e0e7ff); color: #4338ca; border: 1px solid #c7d2fe; }
+    .admin-activity-type.admin-op { background: #e0e7ff; color: #3730a3; }
+    .admin-actor-chip {
+      display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px; border-radius: 7px;
+      background: linear-gradient(135deg, #4f46e5, #3730a3); color: #fff;
+      font-size: .68rem; font-weight: 800; letter-spacing: .04em;
+    }
+    .admin-target-user-btn {
+      display: inline-flex; align-items: center; gap: 5px; border: 1px solid #d7e5f4;
+      background: #f3f8fd; color: #174d78; border-radius: 999px; padding: 2px 9px;
+      font: 700 .74rem 'Inter', sans-serif; cursor: pointer; transition: .16s;
+    }
+    .admin-target-user-btn:hover { background: #e1effc; border-color: var(--primary-light); color: var(--primary-dark); }
+    .admin-activity-excerpt.admin-op { border-left-color: #818cf8; background: #f5f7ff; color: #312e81; }
+
+    /* Search mini clear button */
+    .activity-search-mini input { padding-right: 30px; }
+    .activity-search-clear {
+      position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+      width: 22px; height: 22px; border: 0; border-radius: 50%; background: #e2e8f0; color: #475569;
+      display: none; align-items: center; justify-content: center; cursor: pointer; font-size: .72rem;
+    }
+    .activity-search-clear.visible { display: inline-flex; }
+    .activity-search-clear:hover { background: #cbd5e1; color: #0f172a; }
+
+    @media (max-width: 780px) {
+      .activity-scope-bar { grid-template-columns: 1fr; }
+      .activity-mini-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
   </style>
 </head>
 <body>
@@ -1850,8 +1997,8 @@
     let ADMIN_SELECTED_USER = null;
     let ADMIN_ACTIVITY_CACHE = [];
     let ADMIN_USER_ACTIVITY_CACHE = [];
-    let ADMIN_ACTIVITY_FILTER = { group: "all", search: "" };
-    let ADMIN_USER_ACTIVITY_FILTER = { group: "all", search: "" };
+    let ADMIN_ACTIVITY_FILTER = { scope: "all", group: "all", search: "" };
+    let ADMIN_USER_ACTIVITY_FILTER = { scope: "all", group: "all", search: "" };
     let ADMIN_ACTIVITY_CHANNEL = null;
     let ADMIN_QUICK_WARNING_TARGET = null;
 
@@ -3504,8 +3651,8 @@
             <form id="supportForm" novalidate>
               <label for="support-username">Tên đăng nhập HUIT Review (*)</label>
               <input id="support-username" type="text" minlength="4" maxlength="20" pattern="[A-Za-z0-9_]{4,20}" required autocomplete="username" value="${escapeHtml(currentProfile?.username || currentUser?.user_metadata?.username || "")}" ${currentUser ? "readonly" : ""} placeholder="VD: sinhvien_huit26" />
-              <label for="support-contact">Phương thức để Admin liên hệ lại nếu cần thiết</label>
-              <input id="support-contact" type="text" maxlength="160" placeholder="Email, Zalo, Facebook... (không bắt buộc)" />
+              <label for="support-contact">Phương thức để Admin liên hệ lại ${currentUser ? '<span style="font-weight:500;color:var(--muted);">(không bắt buộc)</span>' : '(*)'}</label>
+              <input id="support-contact" type="text" maxlength="160" ${currentUser ? "" : 'minlength="5" required'} placeholder="${currentUser ? "Email, Zalo, Facebook... (có thể bỏ trống, Admin sẽ phản hồi qua chuông)" : "Email, Zalo hoặc link Facebook để Admin xác minh"}" />
               <label for="support-category">Vấn đề cần hỗ trợ (*)</label>
               <select id="support-category" required>
                 <option value="Quên mật khẩu">Quên mật khẩu</option>
@@ -3614,6 +3761,7 @@
               <p>Xin chào <b>${escapeHtml(myDisplayName())}</b> · Hệ thống hiện có <b>${DB.lecturers.length}</b> giảng viên, <b>${DB.majors.length}</b> ngành học và <b>${REVIEWS_CACHE.length}</b> đánh giá.</p>
             </div>
             <div class="admin-hero-actions">
+              <button type="button" class="admin-hero-btn indigo" onclick="openActivityScope('admin')"><i class="fas fa-user-shield"></i> Nhật ký Admin</button>
               <button type="button" class="admin-hero-btn" onclick="adminRefreshAll(this)"><i class="fas fa-rotate"></i> Làm mới dữ liệu</button>
               <button type="button" class="admin-hero-btn primary" onclick="switchTab('tab-add')"><i class="fas fa-plus"></i> Thêm GV / Ngành</button>
             </div>
@@ -3655,8 +3803,13 @@
               <div class="admin-nav-group">
                 <div class="admin-nav-group-title">Giám sát &amp; Kiểm duyệt</div>
                 <div class="admin-nav-list">
-                  <button type="button" class="admin-tab ${isTab("tab-admin-activity")}" data-tab="tab-admin-activity" onclick="switchTab('tab-admin-activity', this)">
-                    <span class="admin-tab-left"><i class="fas fa-tower-broadcast"></i><span>Hoạt động mới</span></span>
+                  <button type="button" class="admin-tab ${activeAdminTab === "tab-admin-activity" && ADMIN_ACTIVITY_FILTER.scope !== "admin" ? "active" : ""}" data-tab="tab-admin-activity" data-scope="all" onclick="openActivityScope('all', this)">
+                    <span class="admin-tab-left"><i class="fas fa-tower-broadcast"></i><span>Hoạt động hệ thống</span></span>
+                    <span id="sidebar-all-activity-count" class="admin-tab-badge">${ADMIN_ACTIVITY_CACHE.length || ""}</span>
+                  </button>
+                  <button type="button" class="admin-tab is-admin-log-tab ${activeAdminTab === "tab-admin-activity" && ADMIN_ACTIVITY_FILTER.scope === "admin" ? "active" : ""}" data-tab="tab-admin-activity" data-scope="admin" onclick="openActivityScope('admin', this)">
+                    <span class="admin-tab-left"><i class="fas fa-user-shield"></i><span>Hoạt động của Admin</span></span>
+                    <span id="sidebar-admin-activity-count" class="admin-tab-badge indigo"></span>
                   </button>
                   <button type="button" class="admin-tab ${isTab("tab-pending")}" data-tab="tab-pending" onclick="switchTab('tab-pending', this)">
                     <span class="admin-tab-left"><i class="fas fa-user-check"></i><span>Duyệt giảng viên</span></span>
@@ -3713,23 +3866,50 @@
                 <div class="admin-box">
                   <div class="admin-panel-head">
                     <div>
-                      <h3><i class="fas fa-tower-broadcast" style="color:var(--primary)"></i> Trung tâm giám sát hoạt động <span class="live-dot-badge">Trực tiếp</span></h3>
-                      <p>Ghi nhận toàn bộ hoạt động: đăng ký, đăng/sửa/xóa đánh giá &amp; phản hồi, lượt hữu ích, đề xuất GV, góp ý, báo cáo và cảnh cáo tự động/thủ công.</p>
+                      <h3 id="activity-center-heading"><i class="fas fa-tower-broadcast" style="color:var(--primary)"></i> Trung tâm giám sát hoạt động <span class="live-dot-badge">Trực tiếp</span></h3>
+                      <p id="activity-center-subtitle">Theo dõi toàn diện mọi hoạt động của người dùng và nhật ký thao tác của đội ngũ Quản trị viên theo thời gian thực.</p>
                     </div>
                     <button type="button" class="btn btn-sm" style="margin:0;" onclick="loadAdminActivityFeed()"><i class="fas fa-rotate"></i> Làm mới</button>
                   </div>
+
+                  <div class="activity-mini-stats" aria-label="Thống kê nhanh nhật ký">
+                    <button type="button" class="activity-mini-stat tone-blue" onclick="setAdminActivityScope('all')">
+                      <div><strong id="act-stat-total">0</strong><span>Tổng sự kiện</span></div>
+                      <i class="fas fa-layer-group" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="activity-mini-stat tone-emerald" onclick="setAdminActivityScope('user')">
+                      <div><strong id="act-stat-user">0</strong><span>Từ người dùng</span></div>
+                      <i class="fas fa-users" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="activity-mini-stat tone-indigo" onclick="setAdminActivityScope('admin')">
+                      <div><strong id="act-stat-admin">0</strong><span>Từ Quản trị viên</span></div>
+                      <i class="fas fa-user-shield" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="activity-mini-stat tone-red" onclick="setAdminActivityScope('all');setAdminActivityFilter('feed','moderation')">
+                      <div><strong id="act-stat-mod">0</strong><span>Vi phạm &amp; Kiểm duyệt</span></div>
+                      <i class="fas fa-triangle-exclamation" aria-hidden="true"></i>
+                    </button>
+                  </div>
+
+                  <div class="activity-scope-bar" role="tablist" aria-label="Chọn nguồn hoạt động">
+                    <button type="button" class="activity-scope-btn ${ADMIN_ACTIVITY_FILTER.scope === "all" ? "active" : ""}" data-scope="all" onclick="setAdminActivityScope('all')">
+                      <i class="fas fa-globe"></i><span>Tất cả hoạt động</span><span id="scope-cnt-all" class="activity-scope-count">0</span>
+                    </button>
+                    <button type="button" class="activity-scope-btn ${ADMIN_ACTIVITY_FILTER.scope === "user" ? "active" : ""}" data-scope="user" onclick="setAdminActivityScope('user')">
+                      <i class="fas fa-users"></i><span>Hoạt động người dùng</span><span id="scope-cnt-user" class="activity-scope-count">0</span>
+                    </button>
+                    <button type="button" class="activity-scope-btn scope-admin ${ADMIN_ACTIVITY_FILTER.scope === "admin" ? "active" : ""}" data-scope="admin" onclick="setAdminActivityScope('admin')">
+                      <i class="fas fa-user-shield"></i><span>Hoạt động của Admin</span><span id="scope-cnt-admin" class="activity-scope-count">0</span>
+                    </button>
+                  </div>
+
                   <div class="activity-controls">
                     <div class="activity-controls-top">
-                      <div class="activity-filter-pills" id="admin-activity-filter-pills">
-                        <button type="button" class="activity-filter-pill ${ADMIN_ACTIVITY_FILTER.group === "all" ? "active" : ""}" data-group="all" onclick="setAdminActivityFilter('feed','all')">Tất cả</button>
-                        <button type="button" class="activity-filter-pill ${ADMIN_ACTIVITY_FILTER.group === "posts" ? "active" : ""}" data-group="posts" onclick="setAdminActivityFilter('feed','posts')"><i class="fas fa-comment-dots"></i> Đăng &amp; Sửa</button>
-                        <button type="button" class="activity-filter-pill ${ADMIN_ACTIVITY_FILTER.group === "deletes" ? "active" : ""}" data-group="deletes" onclick="setAdminActivityFilter('feed','deletes')"><i class="fas fa-trash-can"></i> Xóa nội dung</button>
-                        <button type="button" class="activity-filter-pill ${ADMIN_ACTIVITY_FILTER.group === "moderation" ? "active" : ""}" data-group="moderation" onclick="setAdminActivityFilter('feed','moderation')"><i class="fas fa-triangle-exclamation"></i> Vi phạm &amp; Cảnh cáo</button>
-                        <button type="button" class="activity-filter-pill ${ADMIN_ACTIVITY_FILTER.group === "other" ? "active" : ""}" data-group="other" onclick="setAdminActivityFilter('feed','other')"><i class="fas fa-bolt"></i> Tương tác &amp; Khác</button>
-                      </div>
+                      <div class="activity-filter-pills" id="admin-activity-filter-pills"></div>
                       <div class="activity-search-mini">
                         <i class="fas fa-search" aria-hidden="true"></i>
-                        <input type="search" id="admin-activity-search" value="${escapeHtml(ADMIN_ACTIVITY_FILTER.search)}" placeholder="Lọc theo @username, nội dung..." oninput="setAdminActivitySearch('feed', this.value)" autocomplete="off" />
+                        <input type="search" id="admin-activity-search" value="${escapeHtml(ADMIN_ACTIVITY_FILTER.search)}" placeholder="Lọc theo @username, @admin, nội dung..." oninput="setAdminActivitySearch('feed', this.value)" autocomplete="off" />
+                        <button type="button" id="admin-activity-search-clear" class="activity-search-clear ${ADMIN_ACTIVITY_FILTER.search ? "visible" : ""}" onclick="clearAdminActivitySearch()" aria-label="Xóa lọc">&times;</button>
                       </div>
                     </div>
                   </div>
@@ -4574,92 +4754,241 @@
       lecturerFilterTimer = setTimeout(applyLecturerFilters, 140);
     };
 
+    function syncAdminSidebarActive(tabId) {
+      document.querySelectorAll(".admin-tab").forEach(t => {
+        if (tabId === "tab-admin-activity" && t.dataset.tab === "tab-admin-activity") {
+          const wantAdmin = ADMIN_ACTIVITY_FILTER.scope === "admin";
+          t.classList.toggle("active", wantAdmin ? t.dataset.scope === "admin" : t.dataset.scope !== "admin");
+        } else {
+          t.classList.toggle("active", t.dataset.tab === tabId);
+        }
+      });
+    }
+
+    window.openActivityScope = function(scope = "all") {
+      if (!isCurrentAdmin()) return;
+      ADMIN_ACTIVITY_FILTER.scope = ["all", "user", "admin"].includes(scope) ? scope : "all";
+      ADMIN_ACTIVITY_FILTER.group = "all";
+      activeAdminTab = "tab-admin-activity";
+      syncAdminSidebarActive("tab-admin-activity");
+      document.querySelectorAll(".admin-content").forEach(c => c.classList.toggle("active", c.id === "tab-admin-activity"));
+      if (ADMIN_ACTIVITY_CACHE.length) paintAdminActivityFeed();
+      loadAdminActivityFeed();
+    };
+
     window.switchTab = function(tabId, el) {
       const target = document.getElementById(tabId);
       if (!target || !isCurrentAdmin()) return;
       activeAdminTab = tabId;
-      document.querySelectorAll(".admin-tab").forEach(t => {
-        t.classList.toggle("active", t.dataset.tab === tabId || (el && t === el));
-      });
+      syncAdminSidebarActive(tabId);
       document.querySelectorAll(".admin-content").forEach(c => c.classList.toggle("active", c.id === tabId));
       if (tabId === "tab-admin-activity") loadAdminActivityFeed();
       if (tabId === "tab-manage") renderAdminCatalogResults();
     };
 
-    /* ================= ADMIN ACTIVITY CENTER ================= */
+    /* ================= ADMIN ACTIVITY CENTER (USER + ADMIN) ================= */
+    function isAdminActivityItem(item) {
+      if (!item) return false;
+      const type = String(item.activity_type || "");
+      const meta = item.metadata || {};
+      if (type.startsWith("admin_")) return true;
+      if (type === "moderation_action") {
+        // Loại trừ cảnh cáo tự động của hệ thống (không phải thao tác thủ công của Admin)
+        const act = String(meta.action_type || "");
+        if (act === "auto_warning_forbidden_word" || act === "auto_warning_and_locked") return false;
+        return true;
+      }
+      if (meta.deleted_by_admin || meta.edited_by_admin || meta.is_admin || meta.actor_role === "admin") return true;
+      if (item.performed_by_role === "admin" && type !== "forbidden_word_violation" && type !== "account_created") {
+        return true;
+      }
+      return false;
+    }
+
     function adminActivityTypeInfo(item) {
       const type = item?.activity_type;
       const meta = item?.metadata || {};
+      const byAdmin = isAdminActivityItem(item);
+
+      // ===== 1. CÁC HOẠT ĐỘNG QUẢN TRỊ CỦA ADMIN =====
+      if (type === "admin_lecturer_added") {
+        return { label: "Thêm giảng viên", badgeTone: "admin-op", icon: "fa-user-plus", tone: "admin-op", group: "other", adminGroup: "catalog", isAdminAction: true, summary: "đã thêm mới một giảng viên trực tiếp vào danh sách chính thức" };
+      }
+      if (type === "admin_lecturer_approved") {
+        return { label: "Duyệt giảng viên", badgeTone: "success", icon: "fa-circle-check", tone: "account", group: "other", adminGroup: "catalog", isAdminAction: true, summary: "đã phê duyệt đề xuất giảng viên từ cộng đồng" };
+      }
+      if (type === "admin_lecturer_rejected") {
+        return { label: "Từ chối GV", badgeTone: "danger", icon: "fa-circle-xmark", tone: "deleted", group: "deletes", adminGroup: "catalog", isAdminAction: true, summary: "đã từ chối và xóa đề xuất giảng viên đang chờ duyệt" };
+      }
+      if (type === "admin_lecturer_edited") {
+        return { label: "Sửa giảng viên", badgeTone: "edited", icon: "fa-user-pen", tone: "edited", group: "posts", adminGroup: "catalog", isAdminAction: true, summary: "đã cập nhật thông tin giảng viên" };
+      }
+      if (type === "admin_lecturer_deleted") {
+        return { label: "Xóa giảng viên", badgeTone: "danger", icon: "fa-user-minus", tone: "deleted", group: "deletes", adminGroup: "catalog", isAdminAction: true, summary: "đã xóa / ẩn một giảng viên khỏi hệ thống" };
+      }
+      if (type === "admin_major_added") {
+        return { label: "Thêm ngành học", badgeTone: "admin-op", icon: "fa-book-medical", tone: "admin-op", group: "other", adminGroup: "catalog", isAdminAction: true, summary: "đã thêm một ngành học mới vào danh mục" };
+      }
+      if (type === "admin_major_edited") {
+        return { label: "Sửa ngành học", badgeTone: "edited", icon: "fa-pen-to-square", tone: "edited", group: "posts", adminGroup: "catalog", isAdminAction: true, summary: "đã cập nhật thông tin ngành học" };
+      }
+      if (type === "admin_major_deleted") {
+        return { label: "Xóa ngành học", badgeTone: "danger", icon: "fa-trash-can", tone: "deleted", group: "deletes", adminGroup: "catalog", isAdminAction: true, summary: "đã xóa / ẩn một ngành học khỏi hệ thống" };
+      }
+      if (type === "admin_notice_created") {
+        return { label: "Đăng thông báo", badgeTone: "amber", icon: "fa-bullhorn", tone: "propose", group: "other", adminGroup: "system", isAdminAction: true, summary: "đã đăng thông báo nổi bật lên Trang chủ" };
+      }
+      if (type === "admin_notice_deleted") {
+        return { label: "Xóa thông báo", badgeTone: "danger", icon: "fa-trash-can", tone: "deleted", group: "deletes", adminGroup: "system", isAdminAction: true, summary: "đã gỡ một thông báo khỏi Trang chủ" };
+      }
+      if (type === "admin_word_added") {
+        return { label: "Thêm từ cấm", badgeTone: "admin-op", icon: "fa-shield-virus", tone: "admin-op", group: "moderation", adminGroup: "system", isAdminAction: true, summary: "đã bổ sung từ khóa vào bộ lọc tự động" };
+      }
+      if (type === "admin_word_removed") {
+        return { label: "Gỡ từ cấm", badgeTone: "", icon: "fa-eraser", tone: "admin-op", group: "moderation", adminGroup: "system", isAdminAction: true, summary: "đã gỡ một từ khóa khỏi bộ lọc tự động" };
+      }
+      if (type === "admin_response_sent") {
+        const srcMap = { support: "yêu cầu hỗ trợ", feedback: "phản ánh / góp ý", report: "báo cáo vi phạm" };
+        return { label: "Phản hồi Admin", badgeTone: "admin-op", icon: "fa-paper-plane", tone: "admin-op", group: "other", adminGroup: "support", isAdminAction: true, summary: `đã gửi phản hồi chính thức cho ${srcMap[meta.source_type] || "yêu cầu của người dùng"}` };
+      }
+      if (type === "admin_support_updated") {
+        return { label: "Cập nhật hỗ trợ", badgeTone: "edited", icon: "fa-life-ring", tone: "admin-op", group: "other", adminGroup: "support", isAdminAction: true, summary: "đã cập nhật trạng thái / ghi chú xử lý yêu cầu hỗ trợ tài khoản" };
+      }
+      if (type === "admin_support_deleted") {
+        return { label: "Xóa yêu cầu hỗ trợ", badgeTone: "danger", icon: "fa-trash-can", tone: "deleted", group: "deletes", adminGroup: "support", isAdminAction: true, summary: "đã xóa một yêu cầu hỗ trợ tài khoản khỏi danh sách" };
+      }
+      if (type === "admin_report_resolved") {
+        return { label: "Đóng báo cáo", badgeTone: "success", icon: "fa-check-double", tone: "account", group: "moderation", adminGroup: "support", isAdminAction: true, summary: "đã xử lý / đóng một báo cáo vi phạm nội dung" };
+      }
+      if (type === "admin_feedback_resolved") {
+        return { label: "Xử lý góp ý", badgeTone: "success", icon: "fa-check-double", tone: "account", group: "other", adminGroup: "support", isAdminAction: true, summary: "đã đánh dấu đã xử lý và dọn một mục phản ánh / góp ý" };
+      }
+      if (type === "admin_user_notice_sent") {
+        return { label: "Thông báo riêng", badgeTone: "admin-op", icon: "fa-envelope-open-text", tone: "admin-op", group: "other", adminGroup: "system", isAdminAction: true, summary: "đã gửi thông báo riêng đến tài khoản người dùng" };
+      }
+
+      // ===== 2. CÁC HOẠT ĐỘNG NGƯỜI DÙNG & TƯƠNG TÁC CHUNG =====
       if (type === "account_created") {
-        return { label: "Tạo tài khoản", badgeTone: "success", icon: "fa-user-plus", tone: "account", group: "other", summary: "vừa tạo tài khoản HUIT Review" };
+        return { label: "Tạo tài khoản", badgeTone: "success", icon: "fa-user-plus", tone: "account", group: "other", adminGroup: "moderation", isAdminAction: false, summary: "vừa tạo tài khoản HUIT Review" };
       }
       if (type === "review_created") {
         const starText = meta.rating ? ` (${meta.rating}★)` : "";
-        return { label: "Đăng đánh giá", badgeTone: "", icon: "fa-star", tone: "", group: "posts", summary: `vừa đăng một đánh giá mới${starText}` };
+        return {
+          label: byAdmin ? "Admin đăng đánh giá" : "Đăng đánh giá",
+          badgeTone: byAdmin ? "admin-op" : "",
+          icon: "fa-star",
+          tone: byAdmin ? "admin-op" : "",
+          group: "posts",
+          adminGroup: "moderation",
+          isAdminAction: byAdmin,
+          summary: byAdmin ? `đã đăng đánh giá với tư cách Admin${starText}` : `vừa đăng một đánh giá mới${starText}`
+        };
       }
       if (type === "review_edited") {
-        const byAdmin = meta.edited_by_admin ? " (do Admin chỉnh sửa)" : "";
-        return { label: "Sửa đánh giá", badgeTone: "edited", icon: "fa-pen-to-square", tone: "edited", group: "posts", summary: `đã chỉnh sửa đánh giá${byAdmin}` };
+        return {
+          label: meta.edited_by_admin ? "Admin sửa đánh giá" : "Sửa đánh giá",
+          badgeTone: "edited",
+          icon: "fa-pen-to-square",
+          tone: meta.edited_by_admin ? "admin-op" : "edited",
+          group: "posts",
+          adminGroup: "moderation",
+          isAdminAction: byAdmin,
+          summary: meta.edited_by_admin ? "đã chỉnh sửa một đánh giá của người dùng" : "đã chỉnh sửa đánh giá"
+        };
       }
       if (type === "review_deleted") {
-        const who = meta.deleted_by_admin ? "bị Admin xóa đánh giá" : "đã tự xóa đánh giá của mình";
-        return { label: "Xóa đánh giá", badgeTone: "danger", icon: "fa-trash-can", tone: "deleted", group: "deletes", summary: who };
+        return {
+          label: meta.deleted_by_admin ? "Admin xóa đánh giá" : "Xóa đánh giá",
+          badgeTone: "danger",
+          icon: "fa-trash-can",
+          tone: "deleted",
+          group: "deletes",
+          adminGroup: "moderation",
+          isAdminAction: byAdmin,
+          summary: meta.deleted_by_admin ? "đã xóa một đánh giá vi phạm của người dùng" : "đã tự xóa đánh giá của mình"
+        };
       }
       if (type === "reply_created") {
         const mention = meta.reply_to_author ? ` tới @${meta.reply_to_author}` : "";
-        return { label: "Đăng bình luận", badgeTone: "", icon: "fa-comments", tone: "", group: "posts", summary: `vừa viết một bình luận / phản hồi${mention}` };
+        return {
+          label: byAdmin ? "Admin phản hồi" : "Đăng bình luận",
+          badgeTone: byAdmin ? "admin-op" : "",
+          icon: "fa-comments",
+          tone: byAdmin ? "admin-op" : "",
+          group: "posts",
+          adminGroup: "moderation",
+          isAdminAction: byAdmin,
+          summary: byAdmin ? `đã phản hồi với tư cách Admin${mention}` : `vừa viết một bình luận / phản hồi${mention}`
+        };
       }
       if (type === "reply_edited") {
-        return { label: "Sửa bình luận", badgeTone: "edited", icon: "fa-pen", tone: "edited", group: "posts", summary: "đã chỉnh sửa một bình luận / phản hồi" };
+        return { label: "Sửa bình luận", badgeTone: "edited", icon: "fa-pen", tone: "edited", group: "posts", adminGroup: "moderation", isAdminAction: byAdmin, summary: "đã chỉnh sửa một bình luận / phản hồi" };
       }
       if (type === "reply_deleted") {
-        const who = meta.deleted_by_admin ? "bị Admin xóa bình luận / phản hồi" : "đã tự xóa bình luận / phản hồi của mình";
-        return { label: "Xóa bình luận", badgeTone: "danger", icon: "fa-comment-slash", tone: "deleted", group: "deletes", summary: who };
+        return {
+          label: meta.deleted_by_admin ? "Admin xóa phản hồi" : "Xóa bình luận",
+          badgeTone: "danger",
+          icon: "fa-comment-slash",
+          tone: "deleted",
+          group: "deletes",
+          adminGroup: "moderation",
+          isAdminAction: byAdmin,
+          summary: meta.deleted_by_admin ? "đã xóa một bình luận / phản hồi của người dùng" : "đã tự xóa bình luận / phản hồi của mình"
+        };
       }
       if (type === "review_liked") {
-        return { label: "Hữu ích", badgeTone: "success", icon: "fa-thumbs-up", tone: "like", group: "other", summary: "đã đánh dấu hữu ích một đánh giá" };
+        return { label: "Hữu ích", badgeTone: "success", icon: "fa-thumbs-up", tone: "like", group: "other", adminGroup: "moderation", isAdminAction: false, summary: "đã đánh dấu hữu ích một đánh giá" };
       }
       if (type === "review_unliked") {
-        return { label: "Bỏ hữu ích", badgeTone: "", icon: "fa-thumbs-down", tone: "", group: "other", summary: "đã bỏ đánh dấu hữu ích một đánh giá" };
+        return { label: "Bỏ hữu ích", badgeTone: "", icon: "fa-thumbs-down", tone: "", group: "other", adminGroup: "moderation", isAdminAction: false, summary: "đã bỏ đánh dấu hữu ích một đánh giá" };
       }
       if (type === "reply_liked") {
-        return { label: "Hữu ích", badgeTone: "success", icon: "fa-thumbs-up", tone: "like", group: "other", summary: "đã đánh dấu hữu ích một phản hồi" };
+        return { label: "Hữu ích", badgeTone: "success", icon: "fa-thumbs-up", tone: "like", group: "other", adminGroup: "moderation", isAdminAction: false, summary: "đã đánh dấu hữu ích một phản hồi" };
       }
       if (type === "reply_unliked") {
-        return { label: "Bỏ hữu ích", badgeTone: "", icon: "fa-thumbs-down", tone: "", group: "other", summary: "đã bỏ đánh dấu hữu ích một phản hồi" };
+        return { label: "Bỏ hữu ích", badgeTone: "", icon: "fa-thumbs-down", tone: "", group: "other", adminGroup: "moderation", isAdminAction: false, summary: "đã bỏ đánh dấu hữu ích một phản hồi" };
       }
       if (type === "lecturer_proposed") {
-        return { label: "Đề xuất GV", badgeTone: "amber", icon: "fa-user-plus", tone: "propose", group: "other", summary: "vừa đề xuất thêm một giảng viên mới (chờ duyệt)" };
+        return { label: "Đề xuất GV", badgeTone: "amber", icon: "fa-user-plus", tone: "propose", group: "other", adminGroup: "catalog", isAdminAction: false, summary: "vừa đề xuất thêm một giảng viên mới (chờ duyệt)" };
       }
       if (type === "feedback_submitted") {
-        return { label: "Góp ý / phản ánh", badgeTone: "amber", icon: "fa-lightbulb", tone: "propose", group: "other", summary: `vừa gửi ${meta.category === "suggest" ? "góp ý cải thiện" : "phản ánh sai sót"}${meta.topic ? ` · ${meta.topic}` : ""}` };
+        return { label: "Góp ý / phản ánh", badgeTone: "amber", icon: "fa-lightbulb", tone: "propose", group: "other", adminGroup: "support", isAdminAction: false, summary: `vừa gửi ${meta.category === "suggest" ? "góp ý cải thiện" : "phản ánh sai sót"}${meta.topic ? ` · ${meta.topic}` : ""}` };
       }
       if (type === "report_submitted") {
-        return { label: "Báo cáo nội dung", badgeTone: "danger", icon: "fa-flag", tone: "warning", group: "moderation", summary: "vừa gửi báo cáo vi phạm nội dung" };
+        return { label: "Báo cáo nội dung", badgeTone: "danger", icon: "fa-flag", tone: "warning", group: "moderation", adminGroup: "support", isAdminAction: false, summary: "vừa gửi báo cáo vi phạm nội dung" };
       }
       if (type === "support_ticket_created") {
-        return { label: "Hỗ trợ tài khoản", badgeTone: "", icon: "fa-life-ring", tone: "", group: "other", summary: "vừa gửi yêu cầu hỗ trợ tài khoản" };
+        return { label: "Hỗ trợ tài khoản", badgeTone: "", icon: "fa-life-ring", tone: "", group: "other", adminGroup: "support", isAdminAction: false, summary: "vừa gửi yêu cầu hỗ trợ tài khoản" };
       }
       if (type === "forbidden_word_violation") {
         const lockedText = meta.account_status_after === "locked" ? " và bị khóa tự động (4/4)" : "";
-        return { label: "Vi phạm từ cấm (Auto)", badgeTone: "danger", icon: "fa-ban", tone: "warning", group: "moderation", summary: `bị hệ thống từ chối nội dung & tự động cảnh cáo${lockedText}` };
+        return { label: "Vi phạm từ cấm (Auto)", badgeTone: "danger", icon: "fa-ban", tone: "warning", group: "moderation", adminGroup: "moderation", isAdminAction: false, summary: `bị hệ thống từ chối nội dung & tự động cảnh cáo${lockedText}` };
       }
       if (type === "moderation_action") {
-        const labels = {
-          warning_issued: "đã nhận một cảnh cáo từ Admin",
-          warning_and_comment_deleted: "đã nhận cảnh cáo & bị Admin xóa bình luận",
-          comment_deleted_by_admin: "đã bị Admin xóa bình luận vi phạm",
-          auto_warning_forbidden_word: "bị hệ thống tự động cảnh cáo do vi phạm quy tắc ngôn từ",
-          warning_issued_and_auto_locked: "đã nhận cảnh cáo thứ 4 và bị khóa tự động",
-          warning_removed: "đã được Admin gỡ một cảnh cáo",
-          manually_locked: "đã bị Admin khóa tài khoản",
-          unlocked: "đã được Admin mở khóa tài khoản",
-          notice_sent: "đã được Admin gửi thông báo riêng"
-        };
         const action = meta.action_type || "moderation_action";
-        return { label: "Kiểm duyệt", badgeTone: "danger", icon: "fa-shield-halved", tone: "warning", group: "moderation", summary: labels[action] || "vừa có thay đổi kiểm duyệt trên tài khoản" };
+        const labels = {
+          warning_issued: "đã gửi +1 cảnh cáo tài khoản",
+          warning_and_comment_deleted: "đã cảnh cáo & xóa bình luận vi phạm",
+          comment_deleted_by_admin: "đã xóa bình luận vi phạm",
+          auto_warning_forbidden_word: "bị hệ thống tự động cảnh cáo do vi phạm quy tắc ngôn từ",
+          warning_issued_and_auto_locked: "đã gửi cảnh cáo thứ 4 (tài khoản bị khóa tự động)",
+          warning_removed: "đã gỡ 1 cảnh cáo cho tài khoản",
+          manually_locked: "đã khóa tài khoản người dùng",
+          unlocked: "đã mở khóa tài khoản người dùng",
+          notice_sent: "đã gửi thông báo riêng cho tài khoản"
+        };
+        return {
+          label: action === "notice_sent" ? "Thông báo riêng" : "Kiểm duyệt",
+          badgeTone: action === "notice_sent" ? "admin-op" : "danger",
+          icon: action === "notice_sent" ? "fa-envelope-open-text" : "fa-shield-halved",
+          tone: action === "notice_sent" ? "admin-op" : "warning",
+          group: "moderation",
+          adminGroup: action === "notice_sent" ? "system" : "moderation",
+          isAdminAction: byAdmin,
+          summary: labels[action] || "đã thực hiện thao tác kiểm duyệt tài khoản"
+        };
       }
-      return { label: "Hoạt động", badgeTone: "", icon: "fa-clock", tone: "", group: "other", summary: "vừa có hoạt động mới" };
+      return { label: "Hoạt động", badgeTone: "", icon: "fa-clock", tone: "", group: "other", adminGroup: "system", isAdminAction: byAdmin, summary: "vừa có hoạt động mới" };
     }
 
     function adminActivityTargetLabel(item) {
@@ -4668,55 +4997,110 @@
       if (item.target_type === "major") return getMajor(item.target_id)?.name || `Ngành ${item.target_id}`;
       if (item.target_type === "review") return "Đánh giá bị báo cáo";
       if (item.target_type === "feedback") return "Mục góp ý / phản ánh";
-      if (item.target_type === "support_ticket") return "Yêu cầu hỗ trợ";
+      if (item.target_type === "support_ticket" || item.target_type === "support") return "Yêu cầu hỗ trợ";
+      if (item.target_type === "report") return "Báo cáo vi phạm";
+      if (item.target_type === "notice") return "Thông báo Trang chủ";
+      if (item.target_type === "system") return "Cấu hình hệ thống";
       if (item.target_type === "profile") return "Hồ sơ tài khoản";
       return `${item.target_type}: ${item.target_id}`;
     }
 
     function adminActivityCanOpenTarget(item) {
-      if (["review_deleted", "reply_deleted"].includes(item?.activity_type)) {
-        return Boolean(["lecturer", "major"].includes(item.target_type) && item.target_id);
-      }
-      return Boolean(["lecturer", "major"].includes(item?.target_type) && item?.target_id);
+      if (!["lecturer", "major"].includes(item?.target_type) || !item?.target_id) return false;
+      if (["admin_lecturer_deleted", "admin_lecturer_rejected", "admin_major_deleted"].includes(item?.activity_type)) return false;
+      return item.target_type === "lecturer" ? Boolean(getLecturer(item.target_id)) : Boolean(getMajor(item.target_id));
+    }
+
+    function formatActivityDateGroup(iso) {
+      if (!iso) return "Khác";
+      const d = new Date(iso);
+      const now = new Date();
+      const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+      const startItem = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+      const diffDays = Math.round((startToday - startItem) / 86400000);
+      if (diffDays === 0) return "Hôm nay";
+      if (diffDays === 1) return "Hôm qua";
+      return d.toLocaleDateString("vi-VN", { weekday: "short", day: "2-digit", month: "2-digit", year: "numeric" });
     }
 
     function filterActivityList(items, filterState) {
+      const scope = filterState?.scope || "all";
       const group = filterState?.group || "all";
       const q = normalizeSearch(filterState?.search || "");
       return (items || []).filter(item => {
         const info = adminActivityTypeInfo(item);
-        if (group !== "all" && info.group !== group) return false;
+        if (scope === "admin" && !info.isAdminAction) return false;
+        if (scope === "user" && info.isAdminAction) return false;
+        if (group !== "all") {
+          if (scope === "admin") {
+            if (info.adminGroup !== group) return false;
+          } else {
+            if (info.group !== group) return false;
+          }
+        }
         if (!q) return true;
         const hay = normalizeSearch([
           item.username, item.display_name, info.label, info.summary,
-          item.content_excerpt, adminActivityTargetLabel(item), item.performed_by_username
+          item.content_excerpt, adminActivityTargetLabel(item),
+          item.performed_by_username, item.performed_by_display_name
         ].join(" "));
         return hay.includes(q);
       });
     }
 
     function renderAdminActivityItems(items, emptyText = "Chưa có hoạt động nào được ghi nhận.") {
-      if (!items?.length) return `<div class="admin-activity-empty"><i class="far fa-bell" style="font-size:1.5rem;margin-bottom:8px;"></i><div>${escapeHtml(emptyText)}</div></div>`;
+      if (!items?.length) {
+        return `<div class="admin-activity-empty"><i class="far fa-bell" style="font-size:1.7rem;margin-bottom:8px;color:#cbd5e1;"></i><div>${escapeHtml(emptyText)}</div></div>`;
+      }
+      let lastDateLabel = "";
       return items.map(item => {
         const info = adminActivityTypeInfo(item);
-        const username = item.username || "tài khoản đã xóa / chưa đồng bộ hồ sơ";
+        const dateLabel = formatActivityDateGroup(item.created_at);
+        const dateHeader = dateLabel !== lastDateLabel
+          ? `<div class="activity-date-divider"><span class="activity-date-pill"><i class="far fa-calendar"></i> ${escapeHtml(dateLabel)}</span></div>`
+          : "";
+        lastDateLabel = dateLabel;
+
+        const targetUsername = item.username || (item.user_id ? "tài khoản đã xóa" : "");
+        const adminUsername = item.performed_by_username || (info.isAdminAction ? (currentProfile?.username || "admin") : "");
         const targetLabel = adminActivityTargetLabel(item);
-        const activitySummary = info.summary;
-        const adminActor = item.performed_by_username && item.performed_by_username !== item.username
-          ? `<span style="color:var(--muted);font-size:.76rem;">· bởi Admin @${escapeHtml(item.performed_by_username)}</span>` : "";
-        const isDeleted = item.activity_type === "review_deleted" || item.activity_type === "reply_deleted";
-        return `<article class="admin-activity-item">
+        const isDeleted = ["review_deleted", "reply_deleted", "admin_lecturer_deleted", "admin_lecturer_rejected", "admin_major_deleted", "admin_notice_deleted", "admin_support_deleted"].includes(item.activity_type);
+
+        // Nếu là thao tác Admin: hiển thị Admin làm chủ thể chính + chip "Tác động tới @user" (nếu có)
+        let actorLineHTML = "";
+        if (info.isAdminAction) {
+          const targetUserChip = item.user_id && targetUsername && item.user_id !== item.performed_by
+            ? `<button type="button" class="admin-target-user-btn" onclick="adminOpenUserActivity(${jsArg(item.user_id)},${jsArg(targetUsername)},${jsArg(item.display_name || "")},${jsArg(item.warning_count || 0)},${jsArg(item.account_status || "active")},${jsArg(item.lock_reason || "")})" title="Xem hồ sơ người dùng bị tác động"><i class="fas fa-arrow-right"></i> @${escapeHtml(targetUsername)}</button>`
+            : "";
+          const adminNameBtn = item.performed_by
+            ? `<button type="button" class="admin-activity-user" style="color:#3730a3;" onclick="adminOpenUserActivity(${jsArg(item.performed_by)},${jsArg(adminUsername)},${jsArg(item.performed_by_display_name || "Quản trị viên")},0,'active','')">@${escapeHtml(adminUsername)}</button>`
+            : `<span style="color:#3730a3;font-weight:800;font-size:.9rem;">@${escapeHtml(adminUsername || "admin")}</span>`;
+          actorLineHTML = `
+            <span class="admin-actor-chip"><i class="fas fa-shield-halved"></i> ADMIN</span>
+            ${adminNameBtn}
+            <span class="admin-activity-type ${info.badgeTone || ""}">${escapeHtml(info.label)}</span>
+            ${targetUserChip}
+          `;
+        } else {
+          const displayUser = targetUsername || "tài khoản đã xóa / chưa đồng bộ hồ sơ";
+          const adminActor = item.performed_by_username && item.performed_by_username !== targetUsername
+            ? `<span style="color:var(--muted);font-size:.76rem;">· bởi Admin @${escapeHtml(item.performed_by_username)}</span>` : "";
+          actorLineHTML = `
+            ${item.user_id
+              ? `<button type="button" class="admin-activity-user" onclick="adminOpenUserActivity(${jsArg(item.user_id)},${jsArg(displayUser)},${jsArg(item.display_name || "")},${jsArg(item.warning_count || 0)},${jsArg(item.account_status || "active")},${jsArg(item.lock_reason || "")})">@${escapeHtml(displayUser)}</button>`
+              : `<span style="color:var(--muted);font-weight:700;font-size:.88rem;">@${escapeHtml(displayUser)}</span>`}
+            <span class="admin-activity-type ${info.badgeTone || ""}">${escapeHtml(info.label)}</span>
+            ${adminActor}
+          `;
+        }
+
+        const excerptClass = isDeleted ? "deleted" : (info.isAdminAction ? "admin-op" : "");
+        return `${dateHeader}<article class="admin-activity-item ${info.isAdminAction ? "is-admin-action" : ""}">
           <div class="admin-activity-icon ${info.tone}"><i class="fas ${info.icon}"></i></div>
           <div class="admin-activity-main">
-            <div class="admin-activity-line">
-              ${item.user_id
-                ? `<button type="button" class="admin-activity-user" onclick="adminOpenUserActivity(${jsArg(item.user_id)},${jsArg(username)},${jsArg(item.display_name || "")},${jsArg(item.warning_count || 0)},${jsArg(item.account_status || "active")},${jsArg(item.lock_reason || "")})">@${escapeHtml(username)}</button>`
-                : `<span style="color:var(--muted);font-weight:700;font-size:.88rem;">@${escapeHtml(username)}</span>`}
-              <span class="admin-activity-type ${info.badgeTone || ""}">${escapeHtml(info.label)}</span>
-              ${adminActor}
-            </div>
-            <div class="admin-activity-summary">${escapeHtml(activitySummary)}</div>
-            ${item.content_excerpt ? `<div class="admin-activity-excerpt ${isDeleted ? "deleted" : ""}">${escapeHtml(item.content_excerpt)}</div>` : ""}
+            <div class="admin-activity-line">${actorLineHTML}</div>
+            <div class="admin-activity-summary">${escapeHtml(info.summary)}</div>
+            ${item.content_excerpt ? `<div class="admin-activity-excerpt ${excerptClass}">${escapeHtml(item.content_excerpt)}</div>` : ""}
             ${targetLabel ? (adminActivityCanOpenTarget(item)
               ? `<button type="button" class="admin-activity-target" onclick="adminOpenActivityTarget(${jsArg(item.target_type)},${jsArg(item.target_id)},${jsArg(isDeleted ? "" : (item.related_review_id || ""))},${jsArg(item.activity_type === "reply_created" || item.activity_type === "reply_edited" ? (item.content_id || "") : "")})"><i class="fas fa-arrow-up-right-from-square"></i> ${escapeHtml(targetLabel)}</button>`
               : `<div style="margin-top:6px;color:#718399;font-size:.75rem;">${escapeHtml(targetLabel)}</div>`) : ""}
@@ -4726,16 +5110,81 @@
       }).join("");
     }
 
+    function renderActivitySubPills() {
+      const wrap = document.getElementById("admin-activity-filter-pills");
+      if (!wrap) return;
+      const isAdminScope = ADMIN_ACTIVITY_FILTER.scope === "admin";
+      const pills = isAdminScope
+        ? [
+            { id: "all", label: "Tất cả Admin", icon: "" },
+            { id: "moderation", label: "Kiểm duyệt & Tài khoản", icon: "fa-gavel" },
+            { id: "catalog", label: "Giảng viên & Ngành", icon: "fa-chalkboard-user" },
+            { id: "support", label: "Báo cáo & Hỗ trợ", icon: "fa-life-ring" },
+            { id: "system", label: "Thông báo & Từ cấm", icon: "fa-sliders" }
+          ]
+        : [
+            { id: "all", label: "Tất cả", icon: "" },
+            { id: "posts", label: "Đăng & Sửa", icon: "fa-comment-dots" },
+            { id: "deletes", label: "Xóa nội dung", icon: "fa-trash-can" },
+            { id: "moderation", label: "Vi phạm & Cảnh cáo", icon: "fa-triangle-exclamation" },
+            { id: "other", label: "Tương tác & Khác", icon: "fa-bolt" }
+          ];
+      wrap.innerHTML = pills.map(p => `<button type="button" class="activity-filter-pill ${ADMIN_ACTIVITY_FILTER.group === p.id ? "active" : ""}" data-group="${p.id}" onclick="setAdminActivityFilter('feed',${jsArg(p.id)})">${p.icon ? `<i class="fas ${p.icon}"></i> ` : ""}${p.label}</button>`).join("");
+    }
+
+    function updateActivityCountersUI() {
+      const total = ADMIN_ACTIVITY_CACHE.length;
+      let adminCnt = 0;
+      let modCnt = 0;
+      ADMIN_ACTIVITY_CACHE.forEach(item => {
+        const info = adminActivityTypeInfo(item);
+        if (info.isAdminAction) adminCnt++;
+        if (info.group === "moderation") modCnt++;
+      });
+      const userCnt = total - adminCnt;
+      const setText = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = String(val); };
+      setText("act-stat-total", total);
+      setText("act-stat-user", userCnt);
+      setText("act-stat-admin", adminCnt);
+      setText("act-stat-mod", modCnt);
+      setText("scope-cnt-all", total);
+      setText("scope-cnt-user", userCnt);
+      setText("scope-cnt-admin", adminCnt);
+      setText("sidebar-all-activity-count", total || "");
+      setText("sidebar-admin-activity-count", adminCnt || "");
+
+      const heading = document.getElementById("activity-center-heading");
+      const subtitle = document.getElementById("activity-center-subtitle");
+      if (heading && subtitle) {
+        if (ADMIN_ACTIVITY_FILTER.scope === "admin") {
+          heading.innerHTML = `<i class="fas fa-user-shield" style="color:#4f46e5"></i> Nhật ký hoạt động của Quản trị viên <span class="live-dot-badge">Trực tiếp</span>`;
+          subtitle.textContent = "Ghi nhận minh bạch mọi thao tác quản trị: duyệt/sửa/xóa GV & ngành, cảnh cáo/khóa tài khoản, xử lý báo cáo, hỗ trợ, thông báo và từ cấm.";
+        } else if (ADMIN_ACTIVITY_FILTER.scope === "user") {
+          heading.innerHTML = `<i class="fas fa-users" style="color:var(--primary)"></i> Nhật ký hoạt động người dùng <span class="live-dot-badge">Trực tiếp</span>`;
+          subtitle.textContent = "Theo dõi đăng ký, đăng/sửa/xóa đánh giá & bình luận, lượt hữu ích, đề xuất GV, góp ý, báo cáo và vi phạm từ cấm tự động.";
+        } else {
+          heading.innerHTML = `<i class="fas fa-tower-broadcast" style="color:var(--primary)"></i> Trung tâm giám sát hoạt động <span class="live-dot-badge">Trực tiếp</span>`;
+          subtitle.textContent = "Theo dõi toàn diện mọi hoạt động của người dùng và nhật ký thao tác của đội ngũ Quản trị viên theo thời gian thực.";
+        }
+      }
+      document.querySelectorAll(".activity-scope-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.scope === ADMIN_ACTIVITY_FILTER.scope);
+      });
+      if (activeAdminTab === "tab-admin-activity") syncAdminSidebarActive("tab-admin-activity");
+    }
+
     function paintAdminActivityFeed() {
+      updateActivityCountersUI();
+      renderActivitySubPills();
       const box = document.getElementById("admin-activity-feed");
       if (!box) return;
       const filtered = filterActivityList(ADMIN_ACTIVITY_CACHE, ADMIN_ACTIVITY_FILTER);
-      box.innerHTML = renderAdminActivityItems(
-        filtered,
-        ADMIN_ACTIVITY_CACHE.length
-          ? "Không có hoạt động nào khớp với bộ lọc hiện tại."
-          : "Chưa có hoạt động mới. Hãy chạy file supabase_v3_activity_and_autowarn.sql trong Supabase SQL Editor."
-      );
+      const emptyMsg = ADMIN_ACTIVITY_CACHE.length
+        ? (ADMIN_ACTIVITY_FILTER.scope === "admin"
+          ? "Chưa có hoạt động quản trị nào khớp bộ lọc. Hãy thử thực hiện 1 thao tác Admin sau khi chạy file SQL v4."
+          : "Không có hoạt động nào khớp với bộ lọc hiện tại.")
+        : "Chưa có hoạt động mới. Hãy chạy file huit_review_v4_admin_activity.sql trong Supabase SQL Editor.";
+      box.innerHTML = renderAdminActivityItems(filtered, emptyMsg);
     }
 
     function paintAdminUserActivity() {
@@ -4749,6 +5198,12 @@
           : "Tài khoản này chưa có hoạt động nào được ghi nhận."
       );
     }
+
+    window.setAdminActivityScope = function(scope) {
+      ADMIN_ACTIVITY_FILTER.scope = ["all", "user", "admin"].includes(scope) ? scope : "all";
+      ADMIN_ACTIVITY_FILTER.group = "all";
+      paintAdminActivityFeed();
+    };
 
     window.setAdminActivityFilter = function(scope, group) {
       if (scope === "user") {
@@ -4768,8 +5223,19 @@
         paintAdminUserActivity();
       } else {
         ADMIN_ACTIVITY_FILTER.search = value || "";
+        const clearBtn = document.getElementById("admin-activity-search-clear");
+        if (clearBtn) clearBtn.classList.toggle("visible", Boolean(ADMIN_ACTIVITY_FILTER.search.trim()));
         paintAdminActivityFeed();
       }
+    };
+
+    window.clearAdminActivitySearch = function() {
+      ADMIN_ACTIVITY_FILTER.search = "";
+      const field = document.getElementById("admin-activity-search");
+      if (field) { field.value = ""; field.focus(); }
+      const clearBtn = document.getElementById("admin-activity-search-clear");
+      if (clearBtn) clearBtn.classList.remove("visible");
+      paintAdminActivityFeed();
     };
 
     async function loadAdminActivityFeed() {
@@ -4777,15 +5243,15 @@
       if (!supabaseClient || !isCurrentAdmin()) return;
       if (box && !ADMIN_ACTIVITY_CACHE.length) box.innerHTML = `<div class="loading-box" style="padding:20px;"><i class="fas fa-spinner fa-spin"></i> Đang cập nhật...</div>`;
       try {
-        const { data, error } = await supabaseClient.rpc("admin_get_activity_feed", { p_limit: 200 });
+        const { data, error } = await supabaseClient.rpc("admin_get_activity_feed", { p_limit: 250 });
         if (error) throw error;
         ADMIN_ACTIVITY_CACHE = Array.isArray(data) ? data : [];
         paintAdminActivityFeed();
         const updated = document.getElementById("admin-activity-updated");
-        if (updated) updated.textContent = `Cập nhật lúc ${new Date().toLocaleString("vi-VN")} · Tổng ${ADMIN_ACTIVITY_CACHE.length} hoạt động gần nhất`;
+        if (updated) updated.textContent = `Cập nhật lúc ${new Date().toLocaleString("vi-VN")} · Đã tải ${ADMIN_ACTIVITY_CACHE.length} sự kiện gần nhất`;
       } catch (error) {
         console.error("Load Admin activity feed error:", error);
-        if (box) box.innerHTML = `<div class="admin-activity-empty">Không tải được hoạt động. Hãy chạy file <b>supabase_v3_activity_and_autowarn.sql</b> trong Supabase SQL Editor. <div style="margin-top:6px;font-size:.76rem;">${escapeHtml(error?.message || "Lỗi không xác định")}</div></div>`;
+        if (box) box.innerHTML = `<div class="admin-activity-empty">Không tải được hoạt động. Hãy chạy file <b>huit_review_v4_admin_activity.sql</b> trong Supabase SQL Editor. <div style="margin-top:6px;font-size:.76rem;">${escapeHtml(error?.message || "Lỗi không xác định")}</div></div>`;
       }
     }
 
@@ -4801,7 +5267,7 @@
       } catch (error) {
         console.error("Load per-user activity error:", error);
         ADMIN_USER_ACTIVITY_CACHE = [];
-        box.innerHTML = `<div class="admin-activity-empty">Không tải được hoạt động tài khoản. Hãy chạy file <b>supabase_v3_activity_and_autowarn.sql</b>. <div style="font-size:.76rem;margin-top:6px;">${escapeHtml(error?.message || "Lỗi không xác định")}</div></div>`;
+        box.innerHTML = `<div class="admin-activity-empty">Không tải được hoạt động tài khoản. Hãy chạy file <b>huit_review_v4_admin_activity.sql</b>. <div style="font-size:.76rem;margin-top:6px;">${escapeHtml(error?.message || "Lỗi không xác định")}</div></div>`;
       }
     }
 
@@ -4822,7 +5288,7 @@
         lock_reason: lockReason || ""
       };
       ADMIN_USER_RESULTS = [ADMIN_SELECTED_USER];
-      ADMIN_USER_ACTIVITY_FILTER = { group: "all", search: "" };
+      ADMIN_USER_ACTIVITY_FILTER = { scope: "all", group: "all", search: "" };
       const resultsBox = document.getElementById("admin-user-results");
       if (resultsBox) resultsBox.innerHTML = `
         <div class="user-admin-result selected">
@@ -4855,8 +5321,11 @@
       ADMIN_ACTIVITY_CHANNEL = supabaseClient.channel("huit-admin-activity-events")
         .on("postgres_changes", { event: "INSERT", schema: "public", table: "admin_activity_events" }, payload => {
           const userId = payload?.new?.user_id;
+          const actorId = payload?.new?.performed_by;
           if (document.getElementById("admin-activity-feed")) loadAdminActivityFeed();
-          if (ADMIN_SELECTED_USER?.id && ADMIN_SELECTED_USER.id === userId) loadAdminUserActivity(userId);
+          if (ADMIN_SELECTED_USER?.id && (ADMIN_SELECTED_USER.id === userId || ADMIN_SELECTED_USER.id === actorId)) {
+            loadAdminUserActivity(ADMIN_SELECTED_USER.id);
+          }
         })
         .subscribe(status => {
           if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
