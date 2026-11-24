@@ -738,6 +738,7 @@
     .review:hover { border-color: #d6e3f0; box-shadow: 0 6px 22px rgba(15, 39, 71, 0.065); }
     .review.highlighted { border: 2px solid var(--accent); background-color: #fffdf6; animation: flash 1.8s ease-out; }
     .review.is-admin-comment { border: 1.5px solid #c7d2fe; background-color: #fafbff; }
+    .review.is-super-admin-comment { border: 1.5px solid #fcd34d; background: linear-gradient(155deg, #fffdf4 0%, #ffffff 70%); }
     .admin-badge { background: linear-gradient(135deg, #ef4444, #b91c1c); color: #fff; padding: 2px 8px; border-radius: 6px; font-size: .68rem; font-weight: 800; letter-spacing: .04em; margin-left: 6px; vertical-align: middle; }
     .own-badge { background: var(--primary-soft); color: var(--primary); font-size: .68rem; font-weight: 700; padding: 2px 7px; border-radius: 999px; margin-left: 5px; }
     .edited-tag { color: #94a3b8; font-size: .74rem; margin-left: 6px; font-style: italic; }
@@ -753,6 +754,7 @@
     }
     .comment-avatar.sm { flex-basis: 28px; width: 28px; height: 28px; border-radius: 9px; font-size: .72rem; }
     .comment-avatar.is-admin { background: linear-gradient(135deg, #ef4444, #b91c1c); color: #fff; border-color: transparent; }
+    .comment-avatar.is-super-admin { background: linear-gradient(135deg, #f59e0b, #b45309); color: #fff; border-color: transparent; }
 
     .review-actions { display: flex; gap: 8px; align-items: center; margin-top: 14px; border-top: 1px dashed var(--border); padding-top: 12px; font-size: .83rem; flex-wrap: wrap; }
     .review-actions button, .reply-actions button {
@@ -776,6 +778,7 @@
     .replies-container { margin-top: 16px; padding-left: 18px; border-left: 2.5px solid #e2eaf3; }
     .reply-item { background: var(--surface-soft); padding: 14px 16px; border-radius: 12px; margin-bottom: 10px; font-size: .9rem; border: 1px solid #edf2f7; }
     .reply-item.is-admin-comment { border-color: #c7d2fe; background: #fafbff; }
+    .reply-item.is-super-admin-comment { border-color: #fcd34d; background: linear-gradient(155deg, #fffdf4 0%, #fffbeb 100%); }
     .reply-item.is-sub-reply { margin-left: 16px; border-left: 3px solid #bfdbfe; }
     .reply-item.highlighted { border: 2px solid var(--accent); background: #fffdf6; animation: flash 1.8s ease-out; }
     .reply-head { display: flex; justify-content: space-between; margin-bottom: 7px; font-size: .84rem; gap: 8px; }
@@ -1706,7 +1709,12 @@
       <textarea id="edit-review-content" rows="5" maxlength="3000" placeholder="Nội dung..." style="min-height:110px;"></textarea>
       <div style="margin-top:14px; background:#f0fdf4; padding:11px 13px; border-radius:10px; border:1px solid #bbf7d0;">
         <label style="display:flex; align-items:center; gap:10px; cursor:pointer; margin:0; color:#166534; font-weight:700; font-size:.86rem;">
-          <input type="checkbox" id="edit-review-as-admin" style="width:17px; height:17px; margin:0;"> Đăng với tư cách Admin (Nổi bật)
+          <input type="checkbox" id="edit-review-as-admin" style="width:17px; height:17px; margin:0;" onchange="if(!this.checked){const s=document.getElementById('edit-review-as-super');if(s)s.checked=false;}"> Đăng với tư cách Admin (Nổi bật)
+        </label>
+      </div>
+      <div id="edit-review-as-super-wrap" style="display:none; margin-top:10px; background:#fffbeb; padding:11px 13px; border-radius:10px; border:1px solid #fcd34d;">
+        <label style="display:flex; align-items:center; gap:10px; cursor:pointer; margin:0; color:#92400e; font-weight:700; font-size:.86rem;">
+          <input type="checkbox" id="edit-review-as-super" style="width:17px; height:17px; margin:0;" onchange="if(this.checked){const a=document.getElementById('edit-review-as-admin');if(a)a.checked=true;}"> <i class="fas fa-crown" style="color:#d97706;"></i> Dấu hiệu Super Admin (Vương miện vàng)
         </label>
       </div>
       <div style="display:flex; gap:10px; margin-top:20px;">
@@ -2998,6 +3006,22 @@
       }
       return compact ? "" : `<span class="role-pill user"><i class="fas fa-user"></i> Thành viên</span>`;
     }
+    function commentBoxRoleClass(item) {
+      if (item?.isSuperAdmin) return "is-super-admin-comment";
+      if (item?.isAdmin) return "is-admin-comment";
+      return "";
+    }
+    function commentAvatarHTML(item, authorName, small = false) {
+      const sz = small ? " sm" : "";
+      if (item?.isSuperAdmin) return `<span class="comment-avatar${sz} is-super-admin" aria-hidden="true"><i class="fas fa-crown"></i></span>`;
+      if (item?.isAdmin) return `<span class="comment-avatar${sz} is-admin" aria-hidden="true"><i class="fas fa-shield-halved"></i></span>`;
+      return `<span class="comment-avatar${sz}" aria-hidden="true">${escapeHtml(initialsOf(authorName))}</span>`;
+    }
+    function commentRoleBadgeHTML(item) {
+      if (item?.isSuperAdmin) return `<span class="super-admin-badge"><i class="fas fa-crown"></i> SUPER ADMIN</span>`;
+      if (item?.isAdmin) return `<span class="admin-badge">ADMIN</span>`;
+      return "";
+    }
     function canAccessAdminTab(tabId) {
       if (!isCurrentAdmin()) return false;
       if (isSuperAdmin()) return true;
@@ -3055,13 +3079,14 @@
     function canModerateComment(item) {
       if (!item || !hasAdminPerm("moderate_comments")) return false;
       if (isSuperAdmin()) return true;
-      if (item.isAdmin && !isMine(item)) return false;
+      if ((item.isAdmin || item.isSuperAdmin) && !isMine(item)) return false;
       if (!isMine(item) && isProtectedPrivilegedUserId(item.userId)) return false;
       return true;
     }
     function canWarnCommentAuthor(item) {
       if (!item || !item.userId || item.userId === currentUser?.id) return false;
       if (!hasAdminPerm("moderate_comments") || !hasAdminPerm("manage_users")) return false;
+      if (item.isSuperAdmin) return false;
       if (isSuperAdmin()) {
         const inTeam = ADMIN_TEAM_CACHE.find(x => x.id === item.userId);
         if (inTeam?.role === "super_admin") return false;
@@ -3176,6 +3201,7 @@
                 userId: rep.user_id,
                 author: rep.author,
                 isAdmin: rep.is_admin,
+                isSuperAdmin: Boolean(rep.is_super_admin),
                 content: rep.content,
                 parentReplyId: rep.parent_reply_id || null,
                 replyToUserId: rep.reply_to_user_id || null,
@@ -3202,6 +3228,7 @@
               targetId: r.target_id,
               author: r.author,
               isAdmin: r.is_admin,
+              isSuperAdmin: Boolean(r.is_super_admin),
               rating: r.rating,
               content: r.content,
               createdAt: r.created_at,
@@ -4129,11 +4156,11 @@
             const authorName = r.author || "Thành viên";
             const link = r.targetType === "lecturer" ? `#/lecturer/${encodeURIComponent(r.targetId)}?reviewId=${r.id}` : `#/major/${encodeURIComponent(r.targetId)}?reviewId=${r.id}`;
             return `
-              <a href="${link}" class="review ${r.isAdmin ? "is-admin-comment" : ""}" style="display:block; color:inherit; margin-bottom:0;">
+              <a href="${link}" class="review ${commentBoxRoleClass(r)}" style="display:block; color:inherit; margin-bottom:0;">
                 <div class="review-head">
                   <span class="review-author review-author-wrap">
-                    <span class="comment-avatar sm ${r.isAdmin ? "is-admin" : ""}" aria-hidden="true">${r.isAdmin ? '<i class="fas fa-shield-halved"></i>' : escapeHtml(initialsOf(authorName))}</span>
-                    <span>${escapeHtml(authorName)} ${r.isAdmin ? '<span class="admin-badge">ADMIN</span>' : ""} đã đánh giá <b>${r.targetType === "lecturer" ? "GV" : "Ngành"} ${escapeHtml(targetName)}</b></span>
+                    ${commentAvatarHTML(r, authorName, true)}
+                    <span>${escapeHtml(authorName)} ${commentRoleBadgeHTML(r)} đã đánh giá <b>${r.targetType === "lecturer" ? "GV" : "Ngành"} ${escapeHtml(targetName)}</b></span>
                   </span>
                   <span>${starsHTML(r.rating)} <small style="color:var(--muted); margin-left:5px;" title="${exactTime(r.createdAt)}">${timeAgo(r.createdAt)}</small></span>
                 </div>
@@ -5688,10 +5715,12 @@
     function reviewSectionHTML(type, targetId, title, highlightReviewId = null, highlightReplyId = null) {
       const allReviews = getReviewsFor(type, targetId);
       const reviews = getFilteredSortedReviews(type, targetId);
+      const isSuper = isSuperAdmin();
       const isAdmin = hasAdminPerm("moderate_comments");
       const locked = Boolean(currentUser && isAccountLocked() && !isCurrentAdmin());
       const isOpen = Boolean(REVIEW_VIEW_STATE.composerOpen && currentUser && !locked);
-      const avatarText = currentUser ? (isAdmin ? '<i class="fas fa-shield-halved"></i>' : escapeHtml(initialsOf(myDisplayName()))) : '<i class="fas fa-pen"></i>';
+      const avatarClass = isSuper ? "is-super-admin" : (isAdmin ? "is-admin" : "");
+      const avatarText = currentUser ? (isSuper ? '<i class="fas fa-crown"></i>' : (isAdmin ? '<i class="fas fa-shield-halved"></i>' : escapeHtml(initialsOf(myDisplayName())))) : '<i class="fas fa-pen"></i>';
       return `
         <div class="section-title fade-up"><h2><i class="fas fa-comment-dots"></i> ${escapeHtml(title)} (${allReviews.length})</h2></div>
         ${locked
@@ -5699,7 +5728,7 @@
           : `
           <div id="reviewComposerTrigger" class="review-composer-trigger fade-up" style="display:${isOpen ? "none" : "flex"};" role="button" tabindex="0" onclick="openReviewComposer()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openReviewComposer();}">
             <div class="review-composer-left">
-              <span class="comment-avatar ${isAdmin ? "is-admin" : ""}" aria-hidden="true">${avatarText}</span>
+              <span class="comment-avatar ${avatarClass}" aria-hidden="true">${avatarText}</span>
               <div class="review-composer-prompt">
                 <b>${currentUser ? `Viết đánh giá với tên ${escapeHtml(myDisplayName())}` : "Chia sẻ trải nghiệm học tập của bạn"}</b>
                 <span>${currentUser ? "Bấm để chấm sao và chia sẻ cảm nhận thực tế..." : "Đăng nhập để chấm sao và gửi đánh giá"}</span>
@@ -5713,9 +5742,9 @@
               <button type="button" class="auth-close" onclick="closeReviewComposer()" aria-label="Thu gọn khung đánh giá" title="Thu gọn">&times;</button>
             </div>
             ${isAdmin ? `
-            <div style="margin-bottom:14px; background:#f0fdf4; padding:11px 13px; border-radius:10px; border:1px solid #bbf7d0;">
-              <label style="display:flex; align-items:center; gap:10px; cursor:pointer; margin:0; color:#166534; font-weight:700; font-size:.86rem;">
-                <input type="checkbox" id="rv-as-admin" style="width:17px; height:17px; margin:0;"> Đăng với tư cách Admin (Nổi bật)
+            <div style="margin-bottom:14px; background:${isSuper ? "#fffbeb" : "#f0fdf4"}; padding:11px 13px; border-radius:10px; border:1px solid ${isSuper ? "#fcd34d" : "#bbf7d0"};">
+              <label style="display:flex; align-items:center; gap:10px; cursor:pointer; margin:0; color:${isSuper ? "#92400e" : "#166534"}; font-weight:700; font-size:.86rem;">
+                <input type="checkbox" id="rv-as-admin" style="width:17px; height:17px; margin:0;"> ${isSuper ? '<i class="fas fa-crown" style="color:#d97706;"></i> Đăng với tư cách Super Admin (Nổi bật)' : "Đăng với tư cách Admin (Nổi bật)"}
               </label>
             </div>` : ""}
             <label style="margin-top:0;">Chấm điểm</label>
@@ -5777,11 +5806,11 @@
       const isHighlighted = r.id === highlightReviewId && !highlightReplyId;
       const authorName = r.author || "Thành viên";
       return `
-        <div class="review ${isHighlighted ? "highlighted" : ""} ${r.isAdmin ? "is-admin-comment" : ""}" id="review-${escapeHtml(r.id)}">
+        <div class="review ${isHighlighted ? "highlighted" : ""} ${commentBoxRoleClass(r)}" id="review-${escapeHtml(r.id)}">
           <div class="review-head">
             <span class="review-author review-author-wrap">
-              <span class="comment-avatar ${r.isAdmin ? "is-admin" : ""}" aria-hidden="true">${r.isAdmin ? '<i class="fas fa-shield-halved"></i>' : escapeHtml(initialsOf(authorName))}</span>
-              <span>${escapeHtml(authorName)} ${mine ? '<span class="own-badge">Bạn</span>' : ""} ${r.isAdmin ? '<span class="admin-badge">ADMIN</span>' : ""}</span>
+              ${commentAvatarHTML(r, authorName, false)}
+              <span>${escapeHtml(authorName)} ${mine ? '<span class="own-badge">Bạn</span>' : ""} ${commentRoleBadgeHTML(r)}</span>
             </span>
             <span>${starsHTML(r.rating)} <small style="color:#888; margin-left:5px;" title="${exactTime(r.createdAt)}">${timeAgo(r.createdAt)}</small></span>
           </div>
@@ -5794,11 +5823,11 @@
                 const replyHighlighted = reply.id === highlightReplyId;
                 const repAuthor = reply.author || "Thành viên";
                 return `
-                <div class="reply-item ${reply.isAdmin ? "is-admin-comment" : ""} ${reply.parentReplyId ? "is-sub-reply" : ""} ${replyHighlighted ? "highlighted" : ""}" id="reply-${escapeHtml(reply.id)}">
+                <div class="reply-item ${commentBoxRoleClass(reply)} ${reply.parentReplyId ? "is-sub-reply" : ""} ${replyHighlighted ? "highlighted" : ""}" id="reply-${escapeHtml(reply.id)}">
                   <div class="reply-head">
                     <span class="reply-author review-author-wrap">
-                      <span class="comment-avatar sm ${reply.isAdmin ? "is-admin" : ""}" aria-hidden="true">${reply.isAdmin ? '<i class="fas fa-shield-halved"></i>' : escapeHtml(initialsOf(repAuthor))}</span>
-                      <span>${escapeHtml(repAuthor)}${replyMine ? '<span class="own-badge">Bạn</span>' : ""} ${reply.isAdmin ? '<span class="admin-badge">ADMIN</span>' : ""}</span>
+                      ${commentAvatarHTML(reply, repAuthor, true)}
+                      <span>${escapeHtml(repAuthor)}${replyMine ? '<span class="own-badge">Bạn</span>' : ""} ${commentRoleBadgeHTML(reply)}</span>
                     </span>
                     <span class="reply-date" title="${exactTime(reply.createdAt)}">${timeAgo(reply.createdAt)}</span>
                   </div>
@@ -5833,8 +5862,8 @@
             <div class="reply-target-bar" id="reply-target-${escapeHtml(r.id)}"></div>
             ${isAdmin ? `
             <div style="margin-bottom:10px;">
-              <label style="display:flex; align-items:center; gap:10px; cursor:pointer; font-weight:600; font-size:0.9rem; margin:0; color:#166534;">
-                <input type="checkbox" id="reply-as-admin-${escapeHtml(r.id)}" style="width:16px; height:16px; margin:0;"> Đăng với tư cách Admin (Nổi bật)
+              <label style="display:flex; align-items:center; gap:10px; cursor:pointer; font-weight:700; font-size:0.9rem; margin:0; color:${isSuper ? "#92400e" : "#166534"};">
+                <input type="checkbox" id="reply-as-admin-${escapeHtml(r.id)}" style="width:16px; height:16px; margin:0;"> ${isSuper ? '<i class="fas fa-crown" style="color:#d97706;"></i> Đăng với tư cách Super Admin (Nổi bật)' : "Đăng với tư cách Admin (Nổi bật)"}
               </label>
             </div>` : ""}
             <textarea id="reply-content-${escapeHtml(r.id)}" rows="3" maxlength="2000" ${accountLocked ? "disabled" : ""} placeholder="${accountLocked ? "Tài khoản đang bị khóa, không thể gửi phản hồi..." : "Nhập nội dung phản hồi..."}" oninput="handleReplyInputHelper(${jsArg(r.id)}, this)" style="margin-bottom:4px; padding:10px 14px; font-size:0.9rem;"></textarea>
@@ -5946,6 +5975,7 @@
       if (!currentUser) { openAuthModal("login"); setAuthMessage("Bạn cần đăng nhập để phản hồi.", "info"); return; }
       const content = document.getElementById(`reply-content-${reviewId}`).value.trim();
       const isAdminReply = hasAdminPerm("moderate_comments") && Boolean(document.getElementById(`reply-as-admin-${reviewId}`)?.checked);
+      const isSuperReply = isAdminReply && isSuperAdmin();
       if (content.length < 2 || content.length > 2000) { alert("Nội dung phản hồi cần từ 2 đến 2.000 ký tự."); return; }
       const rev = REVIEWS_CACHE.find(r => r.id === reviewId);
       const badWord = containsForbiddenWord(content);
@@ -5959,12 +5989,13 @@
       if (btn?.disabled) return;
       if (btn) btn.disabled = true;
       try {
-        const displayAuthor = isAdminReply ? "Quản trị viên" : myDisplayName();
+        const displayAuthor = isSuperReply ? "Super Admin" : (isAdminReply ? "Quản trị viên" : myDisplayName());
         const { data: insertedReply, error } = await supabaseClient.from("review_replies").insert({
           review_id: reviewId,
           user_id: currentUser.id,
           author: displayAuthor,
           is_admin: isAdminReply,
+          is_super_admin: isSuperReply,
           content,
           parent_reply_id: target?.parentReplyId || null,
           reply_to_user_id: target?.toUserId || null,
@@ -6733,7 +6764,7 @@
         if (updated) updated.textContent = `Cập nhật lúc ${new Date(ADMIN_ACTIVITY_LAST_FETCH).toLocaleString("vi-VN")} · Đã tải ${ADMIN_ACTIVITY_CACHE.length} sự kiện gần nhất`;
       } catch (error) {
         console.error("Load Admin activity feed error:", error);
-        if (box) box.innerHTML = `<div class="admin-activity-empty">Không tải được hoạt động. Hãy chạy file <b>huit_review_rbac_admin_upgrade_v3.sql</b> trong Supabase SQL Editor. <div style="margin-top:6px;font-size:.76rem;">${escapeHtml(error?.message || "Lỗi không xác định")}</div></div>`;
+        if (box) box.innerHTML = `<div class="admin-activity-empty">Không tải được hoạt động. Hãy chạy file <b>huit_review_fix_super_admin_final.sql</b> trong Supabase SQL Editor. <div style="margin-top:6px;font-size:.76rem;">${escapeHtml(error?.message || "Lỗi không xác định")}</div></div>`;
       }
     }
 
@@ -6757,7 +6788,7 @@
       } catch (error) {
         console.error("Load per-user activity error:", error);
         ADMIN_USER_ACTIVITY_CACHE = [];
-        box.innerHTML = `<div class="admin-activity-empty">Chỉ Super Admin mới xem được nhật ký của Quản trị viên khác, hoặc hãy chạy file <b>huit_review_rbac_admin_upgrade_v3.sql</b>. <div style="font-size:.76rem;margin-top:6px;">${escapeHtml(error?.message || "Lỗi không xác định")}</div></div>`;
+        box.innerHTML = `<div class="admin-activity-empty">Chỉ Super Admin mới xem được nhật ký của Quản trị viên khác, hoặc hãy chạy file <b>huit_review_fix_super_admin_final.sql</b>. <div style="font-size:.76rem;margin-top:6px;">${escapeHtml(error?.message || "Lỗi không xác định")}</div></div>`;
       }
     }
 
@@ -6919,9 +6950,11 @@
         showToast("Chỉ Super Admin mới có quyền kiểm duyệt hoặc xóa bài viết của Quản trị viên khác.", "error");
         return;
       }
-      const isTargetAdminPost = Boolean(targetItem?.isAdmin);
-      if (isWarnMode && isTargetAdminPost && !isSuperAdmin()) {
-        showToast("Chỉ Super Admin mới có quyền cảnh cáo nội dung của Quản trị viên khác.", "error");
+      const canWarnTarget = targetItem
+        ? canWarnCommentAuthor(targetItem)
+        : Boolean(userId && userId !== currentUser?.id && hasAdminPerm("manage_users") && (isSuperAdmin() || !isProtectedPrivilegedUserId(userId)));
+      if (isWarnMode && !canWarnTarget) {
+        showToast("Không thể cảnh cáo tác giả của nội dung này.", "error");
         return;
       }
       ADMIN_QUICK_WARNING_TARGET = {
@@ -6933,7 +6966,7 @@
         displayName: displayName || "Thành viên",
         excerpt: excerpt || "",
         reportId: reportId || "",
-        isTargetAdminPost,
+        canWarnTarget,
         targetType: rev?.targetType || null,
         targetId: rev?.targetId || null
       };
@@ -6964,7 +6997,7 @@
       if (chipsBox) chipsBox.innerHTML = renderReasonChipsHTML(ADMIN_COMMENT_PRESET_REASONS);
       resetReasonInput("adminQuickWarningChips", "adminQuickWarningReason");
 
-      const canWarn = Boolean(userId && userId !== currentUser?.id && hasAdminPerm("manage_users") && (isSuperAdmin() || !isTargetAdminPost));
+      const canWarn = canWarnTarget;
       if (alsoWarnWrap && alsoWarnCheck) {
         alsoWarnWrap.style.display = (!isWarnMode && canWarn) ? "flex" : "none";
         alsoWarnCheck.checked = false;
@@ -6981,7 +7014,7 @@
     window.adminSubmitQuickWarning = async function() {
       if (!supabaseClient || !hasAdminPerm("moderate_comments") || !ADMIN_QUICK_WARNING_TARGET) return;
       const target = ADMIN_QUICK_WARNING_TARGET;
-      const shouldWarn = hasAdminPerm("manage_users") && (
+      const shouldWarn = Boolean(target.canWarnTarget) && hasAdminPerm("manage_users") && (
         target.mode === "warn_and_delete"
         || Boolean(document.getElementById("adminQuickWarningAlsoWarn")?.checked && target.userId && target.userId !== currentUser?.id)
       );
@@ -7057,11 +7090,11 @@
 
         await Promise.all([syncFromSupabase("reviews"), syncFromSupabase("moderation")]);
         if (shouldWarn && warnResult) {
-          alert(warnResult.locked
+          showToast(warnResult.locked
             ? `Đã xóa nội dung và gửi cảnh cáo thứ ${warnResult.warning_count}/4. Tài khoản đã tự động bị khóa.`
-            : `Đã xóa nội dung và gửi cảnh cáo cho ${target.displayName} (${warnResult.warning_count ?? "?"}/4 cảnh cáo).`);
+            : `Đã xóa nội dung và gửi cảnh cáo cho ${target.displayName} (${warnResult.warning_count ?? "?"}/4 cảnh cáo).`, "success");
         } else {
-          alert("Đã xóa nội dung và ghi nhận lý do vào nhật ký quản trị.");
+          showToast("Đã xóa nội dung và ghi nhận lý do vào nhật ký quản trị.", "success");
         }
 
         if (document.getElementById("admin-activity-feed")) loadAdminActivityFeed();
@@ -7069,7 +7102,7 @@
         rerender();
       } catch (error) {
         console.error("Comment moderation error:", error);
-        alert("Không thể hoàn tất thao tác: " + supabaseErrorText(error));
+        showToast("Không thể hoàn tất thao tác: " + supabaseErrorText(error), "error");
       } finally {
         if (button) { button.disabled = false; button.innerHTML = origHtml || '<i class="fas fa-gavel"></i> Xác nhận'; }
       }
@@ -7352,7 +7385,7 @@
       } catch (err) {
         console.error("Load admin team error:", err);
         if (box) {
-          box.innerHTML = `<div class="admin-activity-empty"><i class="fas fa-database" style="font-size:1.6rem;margin-bottom:8px;color:#cbd5e1;"></i><div>Chưa tải được danh sách đội ngũ Admin. Hãy chạy file <b>huit_review_rbac_admin_upgrade_v3.sql</b> trong Supabase SQL Editor.</div><div style="margin-top:6px;font-size:.76rem;">${escapeHtml(err?.message || "Lỗi không xác định")}</div></div>`;
+          box.innerHTML = `<div class="admin-activity-empty"><i class="fas fa-database" style="font-size:1.6rem;margin-bottom:8px;color:#cbd5e1;"></i><div>Chưa tải được danh sách đội ngũ Admin. Hãy chạy file <b>huit_review_fix_super_admin_final.sql</b> trong Supabase SQL Editor.</div><div style="margin-top:6px;font-size:.76rem;">${escapeHtml(err?.message || "Lỗi không xác định")}</div></div>`;
         }
       }
     }
@@ -8357,6 +8390,10 @@
       document.getElementById("edit-review-author").value = r.author || "";
       document.getElementById("edit-review-content").value = r.content;
       document.getElementById("edit-review-as-admin").checked = !!r.isAdmin;
+      const superWrap = document.getElementById("edit-review-as-super-wrap");
+      const superChk = document.getElementById("edit-review-as-super");
+      if (superWrap) superWrap.style.display = isSuperAdmin() ? "block" : "none";
+      if (superChk) superChk.checked = !!r.isSuperAdmin;
       setEditRating(r.rating || 5);
       document.getElementById("editReviewModal").classList.add("active");
     };
@@ -8370,17 +8407,19 @@
       }
       const author = document.getElementById("edit-review-author").value.trim();
       const content = document.getElementById("edit-review-content").value.trim();
-      const isAdminReview = document.getElementById("edit-review-as-admin").checked;
+      const isSuperReview = isSuperAdmin() && Boolean(document.getElementById("edit-review-as-super")?.checked);
+      const isAdminReview = isSuperReview || document.getElementById("edit-review-as-admin").checked;
       if (content.length < 10 || content.length > 3000) { alert("Nội dung phải dài từ 10 đến 3.000 ký tự!"); return; }
       const btn = document.getElementById("edit-review-save-btn");
       if (btn?.disabled) return;
       if (btn) btn.disabled = true;
       try {
         const { data, error } = await supabaseClient.from("reviews").update({
-          author: isAdminReview ? "Quản trị viên" : (author || "Thành viên"),
+          author: isSuperReview ? "Super Admin" : (isAdminReview ? "Quản trị viên" : (author || "Thành viên")),
           content,
           rating: editReviewRating,
           is_admin: isAdminReview,
+          is_super_admin: isSuperReview,
           edited_at: new Date().toISOString()
         }).eq("id", id).select("id");
         if (error) { alert("Lỗi cập nhật: " + supabaseErrorText(error)); return; }
@@ -8654,6 +8693,7 @@
         const btn = form.querySelector("button[type='submit']");
         const content = form.querySelector("#rv-content").value.trim();
         const isAdminPost = hasAdminPerm("moderate_comments") && Boolean(form.querySelector("#rv-as-admin")?.checked);
+        const isSuperPost = isAdminPost && isSuperAdmin();
         const rating = parseInt(form.querySelector(".star-input")?.dataset.rating || "5", 10);
         if (content.length < 10 || content.length > 3000) { alert("Nội dung đánh giá cần từ 10 đến 3.000 ký tự."); return; }
         const badWord = containsForbiddenWord(content);
@@ -8669,8 +8709,9 @@
             user_id: currentUser.id,
             target_type: form.dataset.type,
             target_id: form.dataset.id,
-            author: isAdminPost ? "Quản trị viên" : myDisplayName(),
+            author: isSuperPost ? "Super Admin" : (isAdminPost ? "Quản trị viên" : myDisplayName()),
             is_admin: isAdminPost,
+            is_super_admin: isSuperPost,
             rating,
             content
           });
