@@ -59,6 +59,7 @@
       font-feature-settings: "cv02", "cv03", "cv04", "cv11";
       -webkit-font-smoothing: antialiased;
     }
+    body.modal-open { overflow: hidden; }
     a { color: var(--primary); text-decoration: none; transition: color .24s var(--ease-gentle); }
     a:hover { color: var(--primary-dark); }
     button { font-family: inherit; }
@@ -87,9 +88,9 @@
     @keyframes panelReveal { from { opacity: 0; transform: translate3d(0, 10px, 0) scale(.994); } to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); } }
     @keyframes panelSlideFromRight { from { opacity: 0; transform: translate3d(22px, 0, 0); } to { opacity: 1; transform: translate3d(0, 0, 0); } }
     @keyframes panelSlideFromLeft { from { opacity: 0; transform: translate3d(-22px, 0, 0); } to { opacity: 1; transform: translate3d(0, 0, 0); } }
-    @keyframes pageEnterUp { from { opacity: 0; transform: translate3d(0, 16px, 0) scale(.994); } to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); } }
-    @keyframes pageEnterRight { from { opacity: 0; transform: translate3d(24px, 0, 0); } to { opacity: 1; transform: translate3d(0, 0, 0); } }
-    @keyframes pageEnterLeft { from { opacity: 0; transform: translate3d(-24px, 0, 0); } to { opacity: 1; transform: translate3d(0, 0, 0); } }
+    @keyframes pageEnterUp { from { opacity: 0; transform: translate3d(0, 10px, 0); } to { opacity: 1; transform: translate3d(0, 0, 0); } }
+    @keyframes pageEnterRight { from { opacity: 0; transform: translate3d(14px, 0, 0); } to { opacity: 1; transform: translate3d(0, 0, 0); } }
+    @keyframes pageEnterLeft { from { opacity: 0; transform: translate3d(-14px, 0, 0); } to { opacity: 1; transform: translate3d(0, 0, 0); } }
     @keyframes fieldReveal { from { opacity: 0; transform: translate3d(0, -6px, 0); } to { opacity: 1; transform: translate3d(0, 0, 0); } }
     @keyframes clickRipple { to { transform: translate(-50%, -50%) scale(1); opacity: 0; } }
     @keyframes likePop { 0% { transform: scale(1); } 38% { transform: scale(1.36) rotate(-13deg); } 72% { transform: scale(.92) rotate(4deg); } 100% { transform: scale(1) rotate(0); } }
@@ -97,24 +98,21 @@
     @keyframes chipPop { 0% { transform: scale(.65); } 60% { transform: scale(1.18); } 100% { transform: scale(1); } }
     @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
     @keyframes flash { 0% { background-color: #fef3c7; } 100% { background-color: #fffdf6; } }
-    .fade-up { animation: fadeInUp .46s var(--ease-gentle) both; }
-    #app.is-in-place .fade-up,
-    #app.is-page-transitioning .fade-up { animation: none !important; }
-    .panel-reveal { animation: panelReveal .36s var(--ease-gentle) both; }
-    .panel-slide-right { animation: panelSlideFromRight .36s var(--ease-gentle) both; }
-    .panel-slide-left { animation: panelSlideFromLeft .36s var(--ease-gentle) both; }
+    /* Chỉ chạy .fade-up ở lần tải đầu tiên; các lần chuyển mục dùng duy nhất 1 lớp hiệu ứng trên main#app để không bao giờ nháy lại */
+    #app.is-first-load .fade-up { animation: fadeInUp .38s var(--ease-gentle) both; }
+    .panel-reveal { animation: panelReveal .30s var(--ease-gentle) both; }
+    .panel-slide-right { animation: panelSlideFromRight .30s var(--ease-gentle) both; }
+    .panel-slide-left { animation: panelSlideFromLeft .30s var(--ease-gentle) both; }
 
-    /* Smooth 2-Phase Page Container Transitions */
-    main#app {
-      will-change: opacity, transform;
-      transition: opacity .15s ease-out, transform .15s ease-out;
-    }
-    main#app.page-leave-left { opacity: 0; transform: translate3d(-16px, 0, 0); pointer-events: none; }
-    main#app.page-leave-right { opacity: 0; transform: translate3d(16px, 0, 0); pointer-events: none; }
-    main#app.page-leave-up { opacity: 0; transform: translate3d(0, -8px, 0) scale(.995); pointer-events: none; }
-    main#app.page-enter-up { animation: pageEnterUp .40s var(--ease-gentle) both; }
-    main#app.page-enter-right { animation: pageEnterRight .38s var(--ease-gentle) both; }
-    main#app.page-enter-left { animation: pageEnterLeft .38s var(--ease-gentle) both; }
+    /* Smooth Single-Layer Page Transitions (không bị nháy 2 lần hay nháy trắng giữa 2 pha) */
+    main#app { will-change: opacity, transform; }
+    main#app.is-leaving { transition: opacity .09s ease-out, transform .09s ease-out; pointer-events: none; }
+    main#app.page-leave-left { opacity: 0; transform: translate3d(-10px, 0, 0); }
+    main#app.page-leave-right { opacity: 0; transform: translate3d(10px, 0, 0); }
+    main#app.page-leave-up { opacity: 0; transform: translate3d(0, -6px, 0); }
+    main#app.page-enter-up { animation: pageEnterUp .28s var(--ease-gentle) both; }
+    main#app.page-enter-right { animation: pageEnterRight .26s var(--ease-gentle) both; }
+    main#app.page-enter-left { animation: pageEnterLeft .26s var(--ease-gentle) both; }
 
     /* Newly appended cards when clicking "Xem thêm" */
     .card.card-batch-enter { animation: fadeInUp .42s var(--ease-gentle) both; }
@@ -133,17 +131,13 @@
       transition: width .34s var(--ease-gentle);
     }
 
-    /* Subtle staggered card glide on fresh route views */
-    #app:not(.is-in-place) .grid > .card { animation: fadeInUp .44s var(--ease-gentle) both; }
-    #app:not(.is-in-place) .grid > .card:nth-child(2) { animation-delay: 24ms; }
-    #app:not(.is-in-place) .grid > .card:nth-child(3) { animation-delay: 48ms; }
-    #app:not(.is-in-place) .grid > .card:nth-child(4) { animation-delay: 72ms; }
-    #app:not(.is-in-place) .grid > .card:nth-child(5) { animation-delay: 96ms; }
-    #app:not(.is-in-place) .grid > .card:nth-child(6) { animation-delay: 120ms; }
-    #app:not(.is-in-place) .grid > .card:nth-child(7) { animation-delay: 144ms; }
-    #app:not(.is-in-place) .grid > .card:nth-child(8) { animation-delay: 168ms; }
-    #app:not(.is-in-place) .grid > .card:nth-child(9) { animation-delay: 192ms; }
-    #app:not(.is-in-place) .grid > .card:nth-child(10) { animation-delay: 216ms; }
+    /* Chỉ chạy staggered glide nhẹ ở lần tải đầu tiên, tránh chồng hiệu ứng gây nháy khi chuyển mục */
+    #app.is-first-load .grid > .card { animation: fadeInUp .36s var(--ease-gentle) both; }
+    #app.is-first-load .grid > .card:nth-child(2) { animation-delay: 20ms; }
+    #app.is-first-load .grid > .card:nth-child(3) { animation-delay: 40ms; }
+    #app.is-first-load .grid > .card:nth-child(4) { animation-delay: 60ms; }
+    #app.is-first-load .grid > .card:nth-child(5) { animation-delay: 80ms; }
+    #app.is-first-load .grid > .card:nth-child(6) { animation-delay: 100ms; }
 
     /* Tactile Click Ripple Wave (lightweight, surface-aware) */
     .has-ripple { position: relative; overflow: hidden; }
@@ -198,7 +192,23 @@
     .main-nav:not(.has-pill) a.active { background: var(--primary-soft); }
     .main-nav a:hover i, .main-nav a.active i { color: var(--primary); }
 
-    .search-box { position: relative; min-width: 218px; max-width: 268px; }
+    .search-box {
+      position: relative; width: 248px; flex: 0 0 248px;
+      transition: flex-basis .34s var(--ease-gentle), width .34s var(--ease-gentle), opacity .24s ease, margin .34s var(--ease-gentle);
+    }
+    @media (min-width: 1001px) {
+      body.is-home-top .site-header .search-box {
+        width: 0; flex-basis: 0; min-width: 0; opacity: 0; pointer-events: none; overflow: hidden; margin: 0 -6px;
+      }
+    }
+    .mobile-search-btn {
+      display: none; width: 38px; height: 38px; border-radius: 50%;
+      border: 1px solid var(--border-strong); background: #fff; color: var(--primary-dark);
+      cursor: pointer; align-items: center; justify-content: center; font-size: .9rem;
+      flex-shrink: 0; transition: all .22s var(--ease-gentle);
+    }
+    .mobile-search-btn:active { transform: scale(.92); }
+    .mobile-search-btn.active { background: var(--primary-soft); border-color: #b7d1eb; color: var(--primary); }
     .search-box input[type="search"] {
       width: 100%; height: 40px; padding: 0 36px 0 42px;
       border: 1px solid var(--border); border-radius: 999px;
@@ -239,6 +249,11 @@
     .search-result-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .search-star { flex-shrink: 0; color: var(--accent); font-weight: 700; font-size: .8rem; display: inline-flex; align-items: center; gap: 4px; }
     .search-star i { margin-right: 0 !important; color: var(--accent) !important; }
+    .search-group-label {
+      padding: 8px 14px 5px; font-size: .7rem; font-weight: 800; letter-spacing: .06em;
+      text-transform: uppercase; color: #7c92a8; background: #f8fafd;
+      border-bottom: 1px solid #eef3f8; display: flex; align-items: center; gap: 6px;
+    }
 
     /* ===== AUTH ACTIONS & SLEEK ACCOUNT PILL DROPDOWN ===== */
     .auth-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
@@ -370,7 +385,7 @@
     .skeleton-card { height: 148px; }
     .loading-box { text-align: center; padding: 44px 20px; color: var(--muted); font-size: .95rem; }
 
-    /* ===== NOTICE BANNER & HERO ===== */
+    /* ===== NOTICE BANNER, NOTICES PAGE & HERO ===== */
     .notice-banner {
       background: linear-gradient(135deg, #fffcf2 0%, #fff6d9 100%);
       border: 1px solid #f7df9d; border-left: 4px solid var(--accent);
@@ -378,9 +393,70 @@
       display: flex; align-items: flex-start; gap: 14px;
       box-shadow: 0 3px 12px rgba(245, 158, 11, 0.08);
     }
-    .notice-banner i { color: #d97706; font-size: 1.25rem; margin-top: 2px; flex-shrink: 0; }
+    .notice-banner > i { color: #d97706; font-size: 1.25rem; margin-top: 3px; flex-shrink: 0; }
+    .notice-content { flex: 1; min-width: 0; }
+    .notice-banner-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
+    .notice-banner-tag {
+      display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px; border-radius: 999px;
+      background: rgba(245, 158, 11, 0.18); color: #92400e; font-size: .7rem; font-weight: 800; letter-spacing: .02em;
+    }
+    .notice-banner-time { font-size: .75rem; color: #b45309; font-weight: 600; }
     .notice-content h4 { margin: 0 0 3px; color: #92400e; font-size: .98rem; font-weight: 700; }
-    .notice-content p { margin: 0; font-size: .9rem; color: #a16207; }
+    .notice-content p { margin: 0; font-size: .9rem; color: #a16207; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .notice-banner-text {
+      display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .notice-banner-link {
+      flex-shrink: 0; align-self: center;
+      display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px;
+      background: #fff; border: 1px solid #f5d076; color: #92400e; font-size: .81rem; font-weight: 700;
+      white-space: nowrap; box-shadow: 0 2px 6px rgba(180, 83, 9, 0.07);
+      transition: background .22s var(--ease-gentle), border-color .22s ease, transform .22s var(--ease-gentle), color .22s ease;
+    }
+    .notice-banner-link:hover { background: #fef3c7; border-color: #eab308; color: #78350f; transform: translateX(2px); }
+    .notice-banner-link i { font-size: .74rem; color: inherit; margin: 0; }
+
+    /* Dedicated Admin Notices Page (#/notices) */
+    .notices-wrap { max-width: 820px; margin: 12px auto; }
+    .notices-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 18px; }
+    .notices-head h1 { margin: 0 0 6px; font-size: clamp(1.42rem, 2.6vw, 1.78rem); display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .notices-head p { margin: 0; color: var(--muted); font-size: .93rem; }
+    .notices-toolbar {
+      display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 10px;
+      margin: 0 0 22px; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius);
+      background: #fff; box-shadow: var(--shadow);
+    }
+    .notices-toolbar .catalog-result-count { min-width: 126px; }
+    .notices-list { display: flex; flex-direction: column; gap: 15px; }
+    .notice-card {
+      position: relative; overflow: hidden;
+      background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 22px 24px; box-shadow: var(--shadow);
+      transition: border-color .24s ease, box-shadow .26s var(--ease-gentle), transform .26s var(--ease-gentle);
+    }
+    .notice-card:hover { border-color: #c5daef; box-shadow: 0 8px 24px rgba(15, 39, 71, 0.065); }
+    .notice-card.is-latest {
+      border-color: #f7d98b;
+      background: linear-gradient(155deg, #fffdf5 0%, #ffffff 55%);
+    }
+    .notice-card.is-latest::before {
+      content: ''; position: absolute; top: 0; left: 0; width: 4.5px; height: 100%;
+      background: linear-gradient(180deg, var(--accent), #f97316);
+    }
+    .notice-card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 11px; }
+    .notice-card-badges { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .notice-latest-pill {
+      display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 999px;
+      background: var(--accent-soft); border: 1px solid #fcd34d; color: #92400e;
+      font-size: .72rem; font-weight: 800;
+    }
+    .notice-card-time { display: inline-flex; align-items: center; gap: 6px; font-size: .8rem; color: var(--muted); font-weight: 600; }
+    .notice-card-title { margin: 0 0 10px; font-size: 1.14rem; font-weight: 800; color: var(--primary-dark); line-height: 1.38; }
+    .notice-card-body { color: var(--text-soft); font-size: .95rem; line-height: 1.72; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .notice-card-foot {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+      margin-top: 15px; padding-top: 12px; border-top: 1px dashed var(--border);
+    }
 
     .hero {
       position: relative; z-index: 15;
@@ -450,9 +526,15 @@
       display: flex; flex-direction: column;
       transition: transform .34s var(--ease-gentle), box-shadow .34s var(--ease-gentle), border-color .28s ease;
     }
-    .card:hover { transform: translateY(-4px); border-color: #b5d2ee; box-shadow: var(--shadow-hover); }
-    .card:active { transform: translateY(-1px) scale(.992); }
-    .card:hover .card-avatar { transform: scale(1.06); }
+    .card:active { transform: scale(.992); }
+    @media (hover: hover) and (pointer: fine) {
+      .card:hover { transform: translateY(-4px); border-color: #b5d2ee; box-shadow: var(--shadow-hover); }
+      .card:hover .card-avatar { transform: scale(1.06); }
+    }
+    .home-review-excerpt {
+      font-size: .96rem; color: var(--text-soft); margin: 0;
+      display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+    }
     .card h3 { margin: 0 0 8px; font-size: 1.06rem; display: flex; align-items: flex-start; gap: 9px; color: var(--primary-dark); font-weight: 700; line-height: 1.35; }
     .card h3 i { color: var(--primary); margin-top: 3px; flex-shrink: 0; }
     .card .meta { font-size: .84rem; color: var(--muted); display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
@@ -483,7 +565,7 @@
       color: var(--primary-dark); font: 700 .9rem 'Inter', sans-serif; cursor: pointer;
       box-shadow: var(--shadow-xs); transition: all .2s var(--ease);
     }
-    .btn-load-more:hover { border-color: var(--primary-light); background: var(--primary-soft); color: var(--primary); transform: translateY(-2px); }
+
 
     /* ===== DETAIL HEADER, BREADCRUMB & BADGES ===== */
     .breadcrumb { font-size: .86rem; color: var(--muted); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-weight: 500; }
@@ -552,16 +634,25 @@
       position: relative; overflow: hidden;
       display: inline-flex; align-items: center; gap: 8px;
       background: var(--primary); color: #fff; border: none;
-      padding: 12px 24px; border-radius: 999px; font-size: .91rem; font-weight: 700;
-      cursor: pointer; margin-top: 20px; transition: all .26s var(--ease-gentle);
+      padding: 11px 22px; border-radius: 999px; font-size: .9rem; font-weight: 700;
+      cursor: pointer; margin: 0; transition: all .26s var(--ease-gentle);
       box-shadow: 0 4px 12px rgba(10, 94, 168, 0.16);
     }
-    .btn:hover { background: var(--primary-dark); transform: translateY(-2px); color: #fff; box-shadow: 0 8px 20px rgba(10, 94, 168, 0.22); }
+    .admin-box form > button[type="submit"].btn,
+    .report-form > button[type="submit"].btn { margin-top: 18px; }
+    @media (hover: hover) and (pointer: fine) {
+      .btn:hover { background: var(--primary-dark); transform: translateY(-2px); color: #fff; box-shadow: 0 8px 20px rgba(10, 94, 168, 0.22); }
+      .btn-load-more:hover { border-color: var(--primary-light); background: var(--primary-soft); color: var(--primary); transform: translateY(-2px); }
+      .review-composer-trigger:hover { border-color: #b5d2ee; box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+      .hub-tab-btn:hover { border-color: #b5d2ee; background: #f9fcff; transform: translateY(-2px); }
+      .admin-kpi-card:hover { transform: translateY(-2px); border-color: #bfd6ec; box-shadow: var(--shadow-hover); }
+      .admin-kpi-card:hover::after { transform: translateX(3px); color: var(--primary); }
+    }
     .btn:active { transform: translateY(0) scale(.975); }
     .btn:disabled { opacity: .6; cursor: not-allowed; transform: none !important; }
-    .btn-report { background: #fff; color: var(--danger); border: 1px solid #fecaca; padding: 9px 18px; font-size: .86rem; margin-top: 0; box-shadow: none; }
+    .btn-report { background: #fff; color: var(--danger); border: 1px solid #fecaca; padding: 9px 18px; font-size: .86rem; box-shadow: none; }
     .btn-report:hover { background: var(--danger); border-color: var(--danger); color: #fff; box-shadow: none; }
-    .btn-sm { padding: 8px 14px; font-size: .8rem; margin-top: 0; border-radius: 10px; box-shadow: none; }
+    .btn-sm { padding: 8px 14px; font-size: .8rem; border-radius: 10px; box-shadow: none; }
     .btn-del { background: var(--danger); color: #fff; box-shadow: none; }
     .btn-del:hover { background: #b91c1c; }
     .btn-approve { background: var(--success); color: #fff; box-shadow: none; }
@@ -579,7 +670,7 @@
       padding: 16px 20px; margin: 16px 0 22px; box-shadow: var(--shadow);
       cursor: pointer; transition: border-color .26s var(--ease-gentle), box-shadow .28s var(--ease-gentle), transform .26s var(--ease-gentle);
     }
-    .review-composer-trigger:hover { border-color: #b5d2ee; box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+
     .review-composer-trigger:active { transform: translateY(0) scale(.99); }
     .review-composer-left { display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1; }
     .review-composer-prompt { color: var(--muted); font-size: .92rem; font-weight: 500; }
@@ -760,7 +851,7 @@
       background: #fff; cursor: pointer; transition: all .26s var(--ease-gentle);
       display: flex; flex-direction: column; gap: 5px;
     }
-    .hub-tab-btn:hover { border-color: #b5d2ee; background: #f9fcff; transform: translateY(-2px); }
+
     .hub-tab-btn:active { transform: translateY(0) scale(.98); }
     .hub-tab-btn.active { border-color: var(--primary); background: linear-gradient(145deg, #eff6ff, #fff); box-shadow: 0 6px 20px rgba(10, 94, 168, 0.10); }
     .hub-tab-title { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: .94rem; color: var(--primary-dark); }
@@ -811,14 +902,12 @@
 
     .admin-kpi-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 13px; }
     .admin-kpi-card {
-      position: relative; overflow: hidden; text-align: left; display: flex; align-items: center; gap: 14px; padding: 16px 18px;
+      position: relative; overflow: hidden; text-align: left; display: flex; align-items: center; gap: 14px; padding: 16px 34px 16px 18px;
       background: #fff; border: 1px solid var(--border); border-radius: 17px; cursor: pointer;
       box-shadow: var(--shadow); transition: all .28s var(--ease-gentle);
     }
     .admin-kpi-card:active { transform: translateY(0) scale(.982); }
     .admin-kpi-card::after { content: '\f061'; font-family: 'Font Awesome 6 Free'; font-weight: 900; position: absolute; right: 14px; top: 14px; font-size: .7rem; color: #cbd5e1; transition: transform .2s var(--ease), color .2s; }
-    .admin-kpi-card:hover { transform: translateY(-2px); border-color: #bfd6ec; box-shadow: var(--shadow-hover); }
-    .admin-kpi-card:hover::after { transform: translateX(3px); color: var(--primary); }
     .admin-kpi-card.is-alert { border-color: #fecaca; background: linear-gradient(180deg, #fff 0%, #fff8f8 100%); }
     .admin-kpi-card.is-warn { border-color: #fde68a; background: linear-gradient(180deg, #fff 0%, #fffcf2 100%); }
     .admin-kpi-icon { flex: 0 0 44px; width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
@@ -1163,12 +1252,116 @@
     .app-toast.error i { color: var(--danger); }
     .app-toast.info i { color: var(--primary); }
 
+
+    /* ===== STAR LABEL, TEXTAREA COUNTER & GENTLE PRE-WARNING ===== */
+    .star-input-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .star-sentiment-pill {
+      display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px;
+      border-radius: 999px; background: var(--accent-soft); border: 1px solid #fde68a;
+      color: #92400e; font-size: .81rem; font-weight: 700;
+      transition: background .22s ease, color .22s ease, border-color .22s ease;
+    }
+    .star-sentiment-pill.low { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
+    .star-sentiment-pill.mid { background: #fff8e6; border-color: #fde68a; color: #92400e; }
+    .star-sentiment-pill.high { background: #f0fdf4; border-color: #bbf7d0; color: #166534; }
+    .textarea-meta-bar {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+      margin-top: 6px; font-size: .76rem; color: var(--muted); font-variant-numeric: tabular-nums;
+    }
+    .textarea-count { margin-left: auto; font-weight: 600; transition: color .2s ease; }
+    .textarea-count.ok { color: var(--success); }
+    .textarea-count.near-max { color: var(--accent); }
+    .textarea-soft-warn {
+      display: none; align-items: flex-start; gap: 8px; margin-top: 8px; padding: 9px 12px;
+      border-radius: 10px; background: #fffbeb; border: 1px solid #fcd34d;
+      color: #92400e; font-size: .8rem; line-height: 1.48; font-weight: 600;
+      animation: fieldReveal .24s var(--ease-gentle);
+    }
+    .textarea-soft-warn.visible { display: flex; }
+    .textarea-soft-warn i { color: #d97706; margin-top: 2px; flex-shrink: 0; }
+
+    /* ===== SIGNUP CAREFUL NOTICE ===== */
+    .auth-signup-notice {
+      display: flex; align-items: flex-start; gap: 10px;
+      margin: 12px 0 4px; padding: 11px 13px; border-radius: 12px;
+      background: #fffbeb; border: 1px solid #fde68a; color: #854d0e;
+      font-size: .8rem; line-height: 1.55;
+      animation: fieldReveal .28s var(--ease-gentle);
+    }
+    .auth-signup-notice[hidden] { display: none !important; }
+    .auth-signup-notice i { color: #d97706; font-size: .95rem; margin-top: 2px; flex-shrink: 0; }
+    .auth-signup-notice strong { color: #713f12; }
+    .auth-signup-notice ul { margin: 4px 0 0; padding-left: 16px; }
+    .auth-signup-notice li + li { margin-top: 2px; }
+
+    /* ===== ADMIN COLLAPSIBLE REPLY & USER SUB-TABS ===== */
+    .admin-reply-toggle-wrap { margin-top: 10px; }
+    .admin-reply-collapse { display: none; }
+    .user-panel-tabs {
+      display: flex; gap: 6px; flex-wrap: wrap; margin: 14px 0;
+      padding: 4px; border-radius: 12px; background: #e8f0f8; border: 1px solid #dce6f2;
+    }
+    .user-panel-tab {
+      flex: 1 1 130px; border: 0; background: transparent; color: #475d75;
+      padding: 8px 12px; border-radius: 9px; font: 700 .81rem 'Inter', sans-serif;
+      cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+      transition: all .22s var(--ease-gentle);
+    }
+    .user-panel-tab:hover:not(.active) { color: var(--primary-dark); background: rgba(255,255,255,.55); }
+    .user-panel-tab.active { background: #fff; color: var(--primary-dark); box-shadow: 0 2px 8px rgba(15, 42, 72, .08); }
+    .user-panel-pane { display: none; }
+    .user-panel-pane.active { display: block; animation: panelReveal .28s var(--ease-gentle); }
+
+    /* ===== MY REVIEWS MODAL (D4) ===== */
+    .my-reviews-summary {
+      display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 0 0 16px;
+    }
+    .my-reviews-stat {
+      padding: 12px; border-radius: 13px; background: var(--surface-soft);
+      border: 1px solid var(--border); text-align: center;
+    }
+    .my-reviews-stat strong { display: block; font-size: 1.18rem; font-weight: 800; color: var(--primary-dark); line-height: 1.15; font-variant-numeric: tabular-nums; }
+    .my-reviews-stat span { display: block; font-size: .74rem; color: var(--muted); font-weight: 600; margin-top: 3px; }
+    .my-reviews-stat.warn strong { color: #b91c1c; }
+    .my-reviews-list { display: grid; gap: 10px; max-height: 52vh; overflow-y: auto; padding-right: 2px; }
+    .my-review-row {
+      display: block; padding: 13px 15px; border-radius: 13px;
+      border: 1px solid var(--border); background: #fff; color: var(--text);
+      transition: border-color .2s ease, background .2s ease;
+    }
+    .my-review-row:hover { border-color: #b5d2ee; background: #f8fbff; color: var(--text); }
+    .my-review-row-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; font-size: .85rem; }
+    .my-review-row-target { font-weight: 800; color: var(--primary-dark); }
+    .my-review-row-text {
+      font-size: .87rem; color: var(--text-soft); margin: 0 0 7px;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .my-review-row-foot { display: flex; align-items: center; gap: 12px; font-size: .76rem; color: var(--muted); }
+
     /* ===== RESPONSIVE ===== */
-    @media (max-width: 1100px) {
-      .main-nav a { padding: 7px 10px; font-size: .84rem; }
-      .search-box { min-width: 185px; max-width: 225px; }
+    @media (max-width: 1180px) {
+      .main-nav a { padding: 7px 10px; font-size: .84rem; gap: 6px; }
+      .search-box { width: 195px; flex-basis: 195px; }
       .catalog-toolbar { grid-template-columns: minmax(240px, 1fr) minmax(200px, 1fr); }
       .catalog-toolbar .catalog-result-count { justify-self: start; }
+    }
+    @media (max-width: 1000px) {
+      .header-inner { flex-wrap: wrap; gap: 8px; padding: 9px 0; }
+      .mobile-search-btn { display: inline-flex; margin-left: auto; }
+      .auth-actions { margin-left: 0; }
+      .main-nav {
+        order: 3; width: 100%; padding: 2px 0; flex-wrap: nowrap;
+        overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch;
+      }
+      .main-nav::-webkit-scrollbar { display: none; }
+      .main-nav a { flex-shrink: 0; padding: 7px 11px; font-size: .83rem; }
+      .search-box {
+        order: 4; flex: 0 0 100%; width: 100%; max-width: none;
+        display: none; animation: fieldReveal .22s var(--ease-gentle);
+      }
+      .search-box.mobile-open { display: block; }
+      .notif-panel { position: fixed; left: 14px; right: 14px; top: 64px; width: auto; max-width: none; }
+      .my-reviews-summary { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     }
     @media (max-width: 960px) {
       .admin-kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -1179,13 +1372,6 @@
       .admin-tab.active { box-shadow: none; border-color: var(--primary); }
       .admin-add-grid { grid-template-columns: minmax(0, 1fr); }
     }
-    @media (max-width: 900px) {
-      .header-inner { flex-wrap: wrap; gap: 10px; }
-      .auth-actions { margin-left: auto; }
-      .main-nav { order: 3; width: 100%; padding-left: 0; flex-wrap: wrap; }
-      .search-box { order: 4; min-width: 0; max-width: none; width: 100%; }
-      .notif-panel { position: fixed; left: 14px; right: 14px; top: 64px; width: auto; max-width: none; }
-    }
     @media (max-width: 760px) {
       .hub-tabs, .activity-scope-bar { grid-template-columns: 1fr; }
       .activity-mini-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -1195,8 +1381,11 @@
     }
     @media (max-width: 650px) {
       .hero-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .catalog-toolbar { grid-template-columns: minmax(0, 1fr); padding: 12px; }
+      .catalog-toolbar, .notices-toolbar { grid-template-columns: minmax(0, 1fr); padding: 12px; }
       .catalog-result-count { width: 100%; min-width: 0; }
+      .notice-banner { flex-wrap: wrap; padding: 14px 16px; }
+      .notice-banner-link { width: 100%; justify-content: center; margin-top: 4px; }
+      .notice-card { padding: 18px; }
       .home-intro-grid { grid-template-columns: 1fr; }
       .rating-summary { grid-template-columns: 1fr; gap: 16px; padding: 18px; }
       .rating-score-box { border-right: 0; border-bottom: 1px solid var(--border); padding-right: 0; padding-bottom: 14px; }
@@ -1233,14 +1422,18 @@
         <a href="#/"><i class="fas fa-home"></i> Trang chủ</a>
         <a href="#/majors"><i class="fas fa-graduation-cap"></i> Ngành học</a>
         <a href="#/lecturers"><i class="fas fa-chalkboard-teacher"></i> Giảng viên</a>
+        <a href="#/notices"><i class="fas fa-bullhorn"></i> Thông báo</a>
         <a href="#/support"><i class="fas fa-life-ring"></i> Hỗ trợ &amp; Góp ý</a>
       </nav>
-      <div class="search-box">
+      <div class="search-box" id="headerSearchBox">
         <i class="fas fa-search search-icon"></i>
         <input type="search" id="globalSearch" placeholder="Tìm ngành, giảng viên..." autocomplete="off" />
         <span class="search-kbd" aria-hidden="true">/</span>
         <div id="searchResults" class="search-results"></div>
       </div>
+      <button type="button" id="mobileSearchBtn" class="mobile-search-btn" onclick="toggleMobileSearch()" aria-label="Mở tìm kiếm" aria-expanded="false" title="Tìm kiếm">
+        <i class="fas fa-search"></i>
+      </button>
       <div id="authActions" class="auth-actions" aria-live="polite"></div>
     </div>
   </header>
@@ -1259,11 +1452,6 @@
   <footer class="site-footer">
     <div class="container">
       <p style="margin:0;"><i class="fas fa-graduation-cap" style="color:var(--accent);"></i> © 2026 HUIT Review — Nền tảng đánh giá cộng đồng độc lập.</p>
-      <p style="margin:8px 0 0;display:flex;justify-content:center;gap:16px;flex-wrap:wrap;font-size:.86rem;">
-        <a href="#/support?tab=report-info"><i class="fas fa-flag"></i> Phản ánh thông tin sai</a>
-        <a href="#/support?tab=suggest"><i class="fas fa-lightbulb"></i> Góp ý cải thiện</a>
-        <a href="#/support?tab=account"><i class="fas fa-life-ring"></i> Hỗ trợ tài khoản</a>
-      </p>
     </div>
   </footer>
 
@@ -1393,6 +1581,16 @@
         <button type="button" id="authLoginTab" class="active" onclick="setAuthMode('login')">Đăng nhập</button>
         <button type="button" id="authSignupTab" onclick="setAuthMode('signup')">Tạo tài khoản</button>
       </div>
+      <div id="authSignupNotice" class="auth-signup-notice" hidden>
+        <i class="fas fa-circle-info" aria-hidden="true"></i>
+        <div>
+          <strong>Lưu ý nhỏ trước khi tạo tài khoản:</strong>
+          <ul>
+            <li><b>Suy nghĩ kỹ Tên hiển thị:</b> tên này sẽ gắn cố định với các đánh giá, phản hồi của bạn và hiện chưa hỗ trợ tự đổi sau khi tạo.</li>
+            <li><b>Ghi nhớ &amp; lưu kỹ Mật khẩu:</b> vì không dùng email/SĐT thật nên không có khôi phục tự động — hãy lưu mật khẩu ở nơi an toàn ngay khi đăng ký.</li>
+          </ul>
+        </div>
+      </div>
       <form id="authForm" novalidate>
         <div class="auth-field">
           <label for="authUsername">Tên đăng nhập</label>
@@ -1445,6 +1643,11 @@
       </div>
       <label>Nội dung</label>
       <textarea id="myEditContent" rows="5" maxlength="3000" style="min-height:110px;"></textarea>
+      <div class="textarea-meta-bar">
+        <span id="myEditMinHint">Tối thiểu 10 ký tự</span>
+        <span id="myEditCount" class="textarea-count">0 / 3.000</span>
+      </div>
+      <div id="myEditSoftWarn" class="textarea-soft-warn" role="status"><i class="fas fa-triangle-exclamation"></i><span>Nội dung có thể chứa từ ngữ chưa phù hợp với quy tắc cộng đồng — vui lòng điều chỉnh trước khi lưu.</span></div>
       <div style="display:flex; gap:10px; margin-top:20px;">
         <button id="myEditSaveBtn" class="btn" onclick="saveMyEdit()" style="margin:0; flex:1; justify-content:center;">Lưu thay đổi</button>
         <button class="btn btn-neutral" style="margin:0; flex:0 0 110px; justify-content:center;" onclick="closeModal('myEditModal')">Hủy</button>
@@ -1496,6 +1699,17 @@
     </div>
   </div>
 
+  <!-- Modal: Đánh giá của tôi -->
+  <div class="modal-overlay" id="myReviewsModal" role="dialog" aria-modal="true" aria-labelledby="myReviewsTitle">
+    <div class="modal-box" style="max-width:600px;">
+      <div class="modal-head-bar">
+        <h3 id="myReviewsTitle"><i class="fas fa-star" style="color:var(--accent)"></i> Đánh giá của tôi</h3>
+        <button type="button" class="auth-close" aria-label="Đóng" onclick="closeModal('myReviewsModal')">&times;</button>
+      </div>
+      <div id="myReviewsBody"></div>
+    </div>
+  </div>
+
   <datalist id="degree-list">
     <option value="Thạc sĩ">
     <option value="Tiến sĩ">
@@ -1537,6 +1751,7 @@
     const FACULTIES_WITHOUT_MAJORS = new Set(["kllct", "kgdtcqp"]);
     const FACULTIES_WITH_MAJORS = FACULTIES.filter(f => !FACULTIES_WITHOUT_MAJORS.has(f.id));
     const FACULTY_BY_ID = Object.fromEntries(FACULTIES.map(f => [f.id, f]));
+    const FACULTY_INDEX_BY_ID = Object.fromEntries(FACULTIES.map((f, i) => [f.id, i]));
     // Bản đồ mã ngành -> khoa (được nạp tự động từ bảng major_records trên Supabase)
     let MAJOR_FACULTY = {};
     let CATALOG_SYNCED = false;
@@ -1568,7 +1783,9 @@
     let ADMIN_USER_RESULTS = [];
     let ADMIN_SELECTED_USER = null;
     let ADMIN_ACTIVITY_CACHE = [];
+    let ADMIN_ACTIVITY_LAST_FETCH = 0;
     let ADMIN_USER_ACTIVITY_CACHE = [];
+    let ADMIN_USER_PANEL_TAB = "mod";
     let ADMIN_ACTIVITY_FILTER = { scope: "all", group: "all", search: "" };
     let ADMIN_USER_ACTIVITY_FILTER = { scope: "all", group: "all", search: "" };
     let ADMIN_ACTIVITY_CHANNEL = null;
@@ -1620,21 +1837,152 @@
     let adminCatalogFilterTimer = null;
     let adminUserSearchInFlight = false;
     const ADMIN_CATALOG_FILTER = { search: "", kind: "all", faculty: "" };
+    let noticeFilterTimer = null;
+    const NOTICE_FILTERS = { search: "", sort: "newest" };
     const CATALOG_FILTERS = {
       lecturers: { search: "", faculty: "", sort: "default", limit: 36 },
       majors: { search: "", faculty: "", sort: "default" }
     };
+    function getNoticesSorted(order = "newest") {
+      return [...DB.notices].sort((a, b) => {
+        const ta = Date.parse(a?.createdAt || "") || 0;
+        const tb = Date.parse(b?.createdAt || "") || 0;
+        if (ta !== tb) return order === "oldest" ? ta - tb : tb - ta;
+        return order === "oldest"
+          ? String(a?.id || "").localeCompare(String(b?.id || ""))
+          : String(b?.id || "").localeCompare(String(a?.id || ""));
+      });
+    }
 
     const REVIEW_VIEW_STATE = { targetKey: "", sort: "newest", star: 0, composerOpen: false };
     let REVIEW_STATS_MAP = new Map();
+    const VI_COLLATOR = (typeof Intl !== "undefined" && Intl.Collator)
+      ? new Intl.Collator("vi", { sensitivity: "accent" })
+      : null;
+    function compareViText(a, b) {
+      const sa = String(a ?? "");
+      const sb = String(b ?? "");
+      return VI_COLLATOR ? VI_COLLATOR.compare(sa, sb) : sa.localeCompare(sb, "vi", { sensitivity: "accent" });
+    }
+    function splitNameParts(name) {
+      return String(name || "").trim().split(/\s+/).filter(Boolean);
+    }
+    // Sắp xếp họ tên chuẩn Việt Nam (A-Z): xét Tên (từ cuối cùng) trước, sau đó xét Họ -> Tên đệm (từ trước ra sau)
+    function compareVietnameseName(a, b) {
+      const nameA = typeof a === "string" ? a : (a?.name || "");
+      const nameB = typeof b === "string" ? b : (b?.name || "");
+      const pa = (a && typeof a === "object" && a._nameParts) ? a._nameParts : splitNameParts(nameA);
+      const pb = (b && typeof b === "object" && b._nameParts) ? b._nameParts : splitNameParts(nameB);
+      if (!pa.length || !pb.length) return compareViText(nameA, nameB);
+
+      // 1. So sánh Tên (từ cuối cùng)
+      const cmpLast = compareViText(pa[pa.length - 1], pb[pb.length - 1]);
+      if (cmpLast !== 0) return cmpLast;
+
+      // 2. Nếu trùng Tên, so sánh Họ -> Tên đệm từ trước ra sau
+      const prefixLenA = pa.length - 1;
+      const prefixLenB = pb.length - 1;
+      const minPrefix = Math.min(prefixLenA, prefixLenB);
+      for (let i = 0; i < minPrefix; i++) {
+        const cmp = compareViText(pa[i], pb[i]);
+        if (cmp !== 0) return cmp;
+      }
+      if (prefixLenA !== prefixLenB) return prefixLenA - prefixLenB;
+      return compareViText(nameA, nameB);
+    }
+    // Chấm điểm mức độ khớp tên khi tìm kiếm (điểm càng nhỏ ưu tiên càng cao):
+    // 1) Ưu tiên từ cuối cùng trong họ tên trước (khớp đúng > bắt đầu bằng > chứa)
+    // 2) Sau đó xét các từ còn lại theo thứ tự từ trước ra sau (word 0 -> 1 -> 2...)
+    function scoreVietnameseNameSearch(itemOrName, rawQuery, normalizedQuery) {
+      const q = normalizedQuery !== undefined ? normalizedQuery : normalizeSearch(rawQuery);
+      if (!q) return 0;
+      const isObj = itemOrName && typeof itemOrName === "object";
+      const fullName = isObj ? String(itemOrName.name || "") : String(itemOrName || "");
+      const normName = (isObj && itemOrName._searchKey) ? itemOrName._searchKey : normalizeSearch(fullName);
+      if (!normName.includes(q)) return Infinity;
+
+      const words = (isObj && itemOrName._normWords) ? itemOrName._normWords : normName.split(/\s+/).filter(Boolean);
+      if (!words.length) return Infinity;
+
+      const rawLower = String(rawQuery || "").trim().toLowerCase();
+      const hasAccents = Boolean(rawLower && rawLower !== q);
+      const accentPenalty = (hasAccents && !fullName.toLowerCase().includes(rawLower)) ? 0.25 : 0;
+
+      // Trường hợp tìm 1 từ (VD: "an", "minh", "huy")
+      if (!q.includes(" ")) {
+        const lastIdx = words.length - 1;
+        const lastWord = words[lastIdx];
+        // 1. Ưu tiên từ cuối cùng (Tên): khớp đúng nguyên từ -> bắt đầu bằng từ khóa
+        if (lastWord === q) return 0 + accentPenalty;
+        if (lastWord.startsWith(q)) return 1 + accentPenalty;
+
+        // 2. Các từ còn lại theo thứ tự từ trước ra sau: khớp đúng nguyên từ -> bắt đầu bằng từ khóa
+        for (let i = 0; i < lastIdx; i++) {
+          if (words[i] === q) return 10 + i + accentPenalty;
+        }
+        for (let i = 0; i < lastIdx; i++) {
+          if (words[i].startsWith(q)) return 30 + i + accentPenalty;
+        }
+
+        // 3. Khớp chứa bên trong âm tiết (VD: "an" trong "Toàn", "Trần"): vẫn ưu tiên từ cuối trước rồi từ trước ra sau
+        if (lastWord.includes(q)) return 45 + accentPenalty;
+        for (let i = 0; i < lastIdx; i++) {
+          if (words[i].includes(q)) return 50 + i + accentPenalty;
+        }
+        return 80 + accentPenalty;
+      }
+
+      // Trường hợp tìm nhiều từ (VD: "van an", "minh anh", "nguyen van")
+      const qWords = q.split(/\s+/).filter(Boolean);
+      if (normName === q) return -1 + accentPenalty;
+      if (normName.endsWith(" " + q)) return 0 + accentPenalty;
+      if (words.length >= qWords.length) {
+        const startTail = words.length - qWords.length;
+        let tailMatch = true;
+        for (let k = 0; k < qWords.length - 1; k++) {
+          if (words[startTail + k] !== qWords[k]) { tailMatch = false; break; }
+        }
+        if (tailMatch && words[words.length - 1].startsWith(qWords[qWords.length - 1])) {
+          return 1 + accentPenalty;
+        }
+      }
+      if (normName.startsWith(q + " ")) return 10 + accentPenalty;
+      if (normName.startsWith(q)) return 11 + accentPenalty;
+      const boundaryPos = normName.indexOf(" " + q);
+      if (boundaryPos >= 0) return 20 + boundaryPos + accentPenalty;
+      return 50 + Math.max(0, normName.indexOf(q)) + accentPenalty;
+    }
+    function scoreMajorSearch(major, rawQuery, normalizedQuery) {
+      const q = normalizedQuery !== undefined ? normalizedQuery : normalizeSearch(rawQuery);
+      if (!q) return 0;
+      const codeNorm = normalizeSearch(major.code || major.id || "");
+      const nameNorm = major._nameNorm || normalizeSearch(major.name || "");
+      if (!nameNorm.includes(q) && !codeNorm.includes(q)) return Infinity;
+      if (codeNorm === q) return 0;
+      if (nameNorm === q) return 1;
+      if (nameNorm.startsWith(q)) return 2;
+      const words = nameNorm.split(/\s+/).filter(Boolean);
+      for (let i = 0; i < words.length; i++) {
+        if (words[i] === q) return 5 + i;
+      }
+      for (let i = 0; i < words.length; i++) {
+        if (words[i].startsWith(q)) return 15 + i;
+      }
+      const pos = nameNorm.indexOf(q);
+      if (pos >= 0) return 30 + pos;
+      return 60 + Math.max(0, codeNorm.indexOf(q));
+    }
     function rebuildSearchIndex() {
-      for (const l of DB.lecturers) {
-        const facName = facultyForLecturer(l)?.name || "";
-        l._searchKey = normalizeSearch(`${l.name} ${facName}`);
+      for (const list of [DB.lecturers, DB.pendingLecturers]) {
+        for (const l of list) {
+          l._nameParts = splitNameParts(l.name);
+          l._searchKey = normalizeSearch(l.name);
+          l._normWords = l._searchKey.split(/\s+/).filter(Boolean);
+        }
       }
       for (const m of DB.majors) {
-        const facName = FACULTY_BY_ID[MAJOR_FACULTY[m.code || m.id]]?.name || "";
-        m._searchKey = normalizeSearch(`${m.name} ${m.code || m.id} ${facName}`);
+        m._nameNorm = normalizeSearch(m.name);
+        m._searchKey = normalizeSearch(`${m.name} ${m.code || m.id}`);
       }
     }
     function rebuildReviewStats() {
@@ -1643,7 +1991,7 @@
         const key = `${r.targetType}:${r.targetId}`;
         let entry = map.get(key);
         if (!entry) {
-          entry = { count: 0, sum: 0, avg: null, reviews: [] };
+          entry = { count: 0, sum: 0, avg: null, latestAt: "", reviews: [] };
           map.set(key, entry);
         }
         entry.count += 1;
@@ -1653,11 +2001,12 @@
       for (const entry of map.values()) {
         entry.avg = entry.count ? (entry.sum / entry.count) : null;
         entry.reviews.sort((a, b) => b.createdAt.localeCompare(a.createdAt) || (b.likes || 0) - (a.likes || 0));
+        entry.latestAt = entry.reviews[0]?.createdAt || "";
       }
       REVIEW_STATS_MAP = map;
     }
     function getReviewStats(type, targetId) {
-      return REVIEW_STATS_MAP.get(`${type}:${targetId}`) || { count: 0, sum: 0, avg: null, reviews: [] };
+      return REVIEW_STATS_MAP.get(`${type}:${targetId}`) || { count: 0, sum: 0, avg: null, latestAt: "", reviews: [] };
     }
     function getReviews() { return REVIEWS_CACHE; }
     function getReviewCount(type, targetId) { return getReviewStats(type, targetId).count; }
@@ -1673,21 +2022,52 @@
         list.sort((a, b) => (b.rating || 0) - (a.rating || 0) || b.createdAt.localeCompare(a.createdAt));
       } else if (REVIEW_VIEW_STATE.sort === "rating_asc") {
         list.sort((a, b) => (a.rating || 0) - (b.rating || 0) || b.createdAt.localeCompare(a.createdAt));
+      } else if (REVIEW_VIEW_STATE.sort === "oldest") {
+        list.sort((a, b) => a.createdAt.localeCompare(b.createdAt));
       } else {
         list.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
       }
       return list;
     }
+    function updateReviewListInPlace() {
+      const wrap = document.getElementById("reviewListWrap");
+      const [type, targetId] = String(REVIEW_VIEW_STATE.targetKey || "").split(":");
+      if (!wrap || !type || !targetId) { rerender(); return; }
+      const allReviews = getReviewsFor(type, targetId);
+      const reviews = getFilteredSortedReviews(type, targetId);
+      const isAdmin = isCurrentAdmin();
+
+      // Cập nhật trạng thái active trên thanh phân bổ sao
+      document.querySelectorAll(".rating-bar-row[data-star]").forEach(btn => {
+        const active = Number(btn.dataset.star) === REVIEW_VIEW_STATE.star;
+        btn.classList.toggle("active", active);
+        btn.setAttribute("aria-pressed", active ? "true" : "false");
+      });
+      const clearBtn = document.getElementById("ratingFilterClearBtn");
+      if (clearBtn) clearBtn.style.display = REVIEW_VIEW_STATE.star ? "inline" : "none";
+
+      // Cập nhật thanh đếm & chip lọc
+      const toolbarLeft = document.getElementById("reviewToolbarLeft");
+      if (toolbarLeft) {
+        toolbarLeft.innerHTML = `<span>Hiển thị <b>${reviews.length}</b> / ${allReviews.length} đánh giá</span>${REVIEW_VIEW_STATE.star ? `<span class="review-filter-chip"><i class="fas fa-star"></i> Lọc ${REVIEW_VIEW_STATE.star} sao <button type="button" onclick="toggleReviewStarFilter(0)" aria-label="Bỏ lọc sao">&times;</button></span>` : ""}`;
+      }
+
+      // Cập nhật cục bộ danh sách bình luận (không mất nội dung đang gõ trong khung viết)
+      wrap.innerHTML = reviews.length
+        ? reviews.map(r => reviewCardHTML(r, isAdmin, null, null)).join("")
+        : (allReviews.length
+          ? `<div class="empty-state" style="padding:36px 20px;"><i class="far fa-star"></i><p>Không có đánh giá nào ở mức ${REVIEW_VIEW_STATE.star} sao.</p><button type="button" class="btn btn-sm" onclick="toggleReviewStarFilter(0)">Xem tất cả đánh giá</button></div>`
+          : `<div class="empty-state"><i class="far fa-comment-dots"></i><p>Chưa có đánh giá nào. Hãy là người đầu tiên chia sẻ!</p></div>`);
+      triggerSubtlePanelGlide(wrap);
+    }
     window.toggleReviewStarFilter = function(star) {
       const n = Number(star) || 0;
       REVIEW_VIEW_STATE.star = (REVIEW_VIEW_STATE.star === n) ? 0 : n;
-      rerender();
-      triggerSubtlePanelGlide(document.getElementById("reviewListWrap"));
+      updateReviewListInPlace();
     };
     window.setReviewSortOrder = function(sortVal) {
-      REVIEW_VIEW_STATE.sort = ["newest", "helpful", "rating_desc", "rating_asc"].includes(sortVal) ? sortVal : "newest";
-      rerender();
-      triggerSubtlePanelGlide(document.getElementById("reviewListWrap"));
+      REVIEW_VIEW_STATE.sort = ["newest", "oldest", "helpful", "rating_desc", "rating_asc"].includes(sortVal) ? sortVal : "newest";
+      updateReviewListInPlace();
     };
     function orderRepliesThreaded(replies) {
       if (!Array.isArray(replies) || replies.length <= 1) return replies || [];
@@ -1736,7 +2116,7 @@
         const pct = total ? Math.round((cnt / total) * 100) : 0;
         const active = REVIEW_VIEW_STATE.star === star;
         return `
-          <button type="button" class="rating-bar-row is-filterable ${active ? "active" : ""}" onclick="toggleReviewStarFilter(${star})" aria-pressed="${active ? "true" : "false"}" title="Bấm để lọc đánh giá ${star} sao">
+          <button type="button" class="rating-bar-row is-filterable ${active ? "active" : ""}" data-star="${star}" onclick="toggleReviewStarFilter(${star})" aria-pressed="${active ? "true" : "false"}" title="Bấm để lọc đánh giá ${star} sao">
             <span class="rating-bar-label">${star} <i class="fas fa-star"></i></span>
             <span class="rating-bar-track"><span class="rating-bar-fill" style="width:${pct}%"></span></span>
             <span class="rating-bar-pct">${pct}% (${cnt})</span>
@@ -1753,7 +2133,7 @@
             ${rows}
             <div class="rating-filter-hint">
               <span><i class="fas fa-filter"></i> Bấm vào từng thanh sao để lọc nhanh đánh giá</span>
-              ${REVIEW_VIEW_STATE.star ? `<button type="button" class="inline-link-btn" onclick="toggleReviewStarFilter(0)">Hiện tất cả</button>` : ""}
+              <button type="button" id="ratingFilterClearBtn" class="inline-link-btn" style="display:${REVIEW_VIEW_STATE.star ? "inline" : "none"};" onclick="toggleReviewStarFilter(0)">Hiện tất cả</button>
             </div>
           </div>
         </section>`;
@@ -1781,6 +2161,7 @@
         .replace(/đ/g, "d")
         .replace(/Đ/g, "d")
         .toLowerCase()
+        .replace(/\s+/g, " ")
         .trim();
     }
     function timeAgo(iso) {
@@ -2088,7 +2469,7 @@
         ".btn", ".auth-btn", ".hero .cta", ".hero .cta-secondary", ".btn-load-more",
         ".main-nav a", ".account-pill", ".hub-tab-btn", ".admin-kpi-card",
         ".admin-tab", ".activity-scope-btn", ".admin-catalog-seg", ".activity-filter-pill",
-        ".admin-filter-pill", ".rating-bar-row", ".reason-chip", ".card", ".review-composer-trigger"
+        ".admin-filter-pill", ".rating-bar-row", ".reason-chip", ".review-composer-trigger"
       ].join(", ");
 
       document.addEventListener("pointerdown", (e) => {
@@ -2122,8 +2503,72 @@
         resizeRaf = requestAnimationFrame(() => {
           syncMainNavPill(true);
           syncSegmentedPills(true);
+          syncHomeTopHeaderState();
         });
       }, { passive: true });
+
+      // Tự động khóa cuộn nền khi có bất kỳ hộp thoại nào đang mở
+      const syncModalLock = () => {
+        const hasOpen = Boolean(document.querySelector(".modal-overlay.active"));
+        document.body.classList.toggle("modal-open", hasOpen);
+      };
+      const modalObs = new MutationObserver(syncModalLock);
+      document.querySelectorAll(".modal-overlay").forEach(m => {
+        modalObs.observe(m, { attributes: true, attributeFilter: ["class"] });
+      });
+      syncModalLock();
+    }
+
+    function syncHomeTopHeaderState() {
+      const hash = window.location.hash.replace(/^#/, "") || "/";
+      const path = hash.split("?")[0];
+      const isHome = path === "/" || path === "";
+      const atTop = window.scrollY < 220;
+      document.body.classList.toggle("is-home-top", isHome && atTop);
+    }
+
+    window.toggleMobileSearch = function(forceOpen = null) {
+      const box = document.getElementById("headerSearchBox");
+      const btn = document.getElementById("mobileSearchBtn");
+      const input = document.getElementById("globalSearch");
+      if (!box || !btn) return;
+      const next = forceOpen === null ? !box.classList.contains("mobile-open") : Boolean(forceOpen);
+      box.classList.toggle("mobile-open", next);
+      btn.classList.toggle("active", next);
+      btn.setAttribute("aria-expanded", next ? "true" : "false");
+      if (next) setTimeout(() => input?.focus(), 40);
+      else document.getElementById("searchResults")?.classList.remove("active");
+    };
+
+    // Bộ đếm ký tự & nhắc nhẹ ngôn từ cộng đồng (tuyệt đối không lộ từ khóa cấm)
+    const STAR_SENTIMENT_LABELS = {
+      1: { text: "Chưa hài lòng", tone: "low" },
+      2: { text: "Cần cải thiện", tone: "low" },
+      3: { text: "Bình thường", tone: "mid" },
+      4: { text: "Khá tốt", tone: "high" },
+      5: { text: "Rất hài lòng", tone: "high" }
+    };
+    function bindTextareaHelper(textarea, countEl, warnEl, minLen = 10, maxLen = 3000) {
+      if (!textarea || textarea.dataset.helperBound) return;
+      textarea.dataset.helperBound = "1";
+      let warnTimer = null;
+      const update = () => {
+        const len = textarea.value.trim().length;
+        if (countEl) {
+          countEl.textContent = `${len.toLocaleString("vi-VN")} / ${maxLen.toLocaleString("vi-VN")}`;
+          countEl.classList.toggle("ok", len >= minLen && len <= maxLen * 0.92);
+          countEl.classList.toggle("near-max", len > maxLen * 0.92);
+        }
+        if (warnEl) {
+          clearTimeout(warnTimer);
+          warnTimer = setTimeout(() => {
+            const risky = len >= 2 && Boolean(containsForbiddenWord(textarea.value));
+            warnEl.classList.toggle("visible", risky);
+          }, 160);
+        }
+      };
+      textarea.addEventListener("input", update);
+      update();
     }
 
     function renderReasonChipsHTML(reasons, toneClass = "") {
@@ -2172,12 +2617,14 @@
         window.setTimeout(() => node.remove(), 260);
       }, duration);
     }
-    // Chuyển thông báo alert() sang toast mềm mại; mọi thao tác xóa/cảnh cáo dùng modal appConfirm().
+    // Dự phòng nếu còn lời gọi alert(); ưu tiên bắt từ khóa lỗi trước để tránh nhầm màu
     window.alert = function(message) {
       const text = String(message ?? "");
-      const type = /(đã (gửi|lưu|xóa|duyệt|thêm|đăng)|thành công|cảm ơn|đã ghi nhận)/i.test(text)
-        ? "success"
-        : /(lỗi|không |thất bại|chưa |bị chặn|không tìm|không được)/i.test(text) ? "error" : "info";
+      const type = /(lỗi|thất bại|không thể|không |chưa |bị chặn|bị khóa|quá ngắn|không hợp lệ|không tìm)/i.test(text)
+        ? "error"
+        : /(đã (gửi|lưu|xóa|duyệt|thêm|đăng|gỡ|khóa|mở khóa)|thành công|cảm ơn|đã ghi nhận)/i.test(text)
+          ? "success"
+          : "info";
       showToast(text, type);
     };
 
@@ -2199,12 +2646,12 @@
     async function checkedDelete(query, label, allowZero = false, selectColumn = "id", quiet = false) {
       const { data, error } = await query.select(selectColumn);
       if (error) {
-        if (!quiet) alert(`${label} thất bại: ${supabaseErrorText(error)}`);
+        if (!quiet) showToast(`${label} thất bại: ${supabaseErrorText(error)}`, "error");
         return { ok: false, count: 0, error };
       }
       const count = Array.isArray(data) ? data.length : 0;
       if (!allowZero && count === 0) {
-        if (!quiet) alert(`${label} không thực hiện được: Supabase trả về 0 dòng bị tác động. Hãy kiểm tra RLS, quyền DELETE và điều kiện ID.`);
+        if (!quiet) showToast(`${label} không thực hiện được: Supabase trả về 0 dòng bị tác động. Hãy kiểm tra RLS, quyền DELETE và điều kiện ID.`, "error");
         return { ok: false, count: 0, error: null };
       }
       return { ok: true, count, error: null };
@@ -2343,7 +2790,7 @@
           addTask("majors", fetchAllTableRows("major_records", "*"));
         }
         if (wantNotices) {
-          addTask("notices", supabaseClient.from("notices").select("*").order("created_at", { ascending: true }));
+          addTask("notices", supabaseClient.from("notices").select("*").order("created_at", { ascending: false }));
         }
         if (wantWords) {
           addTask("words", supabaseClient.from("forbidden_words").select("word"));
@@ -2433,7 +2880,8 @@
               } else if (rec.status === "approved") {
                 approvedList.push({
                   id: rec.id, name: rec.name, degree: rec.degree,
-                  facultyId: rec.faculty_id, sourceType: rec.source_type || "admin"
+                  facultyId: rec.faculty_id, sourceType: rec.source_type || "admin",
+                  createdAt: rec.created_at || ""
                 });
               }
             });
@@ -2447,7 +2895,7 @@
             (resMap.majors.data || []).forEach(rec => {
               if (rec.status === "deleted") return;
               const code = rec.code || rec.id;
-              majorsList.push({ id: rec.id, code, name: rec.name });
+              majorsList.push({ id: rec.id, code, name: rec.name, createdAt: rec.created_at || "" });
               if (rec.faculty_id) nextFacMap[code] = rec.faculty_id;
             });
             DB.majors = majorsList;
@@ -2604,8 +3052,7 @@
               <small>${username ? `@${escapeHtml(username)}` : ""}${warnCount > 0 ? ` · ${warnCount}/4 cảnh cáo` : ""}</small>
             </div>
             ${isAdmin ? `<a href="#/admin" class="account-dropdown-item admin-link" onclick="closeAccountMenu()" role="menuitem"><i class="fas fa-gauge-high"></i> Bảng quản trị Admin</a>` : ""}
-            <a href="#/add-lecturer" class="account-dropdown-item" onclick="closeAccountMenu()" role="menuitem"><i class="fas fa-user-plus"></i> Đề xuất giảng viên</a>
-            <a href="#/support" class="account-dropdown-item" onclick="closeAccountMenu()" role="menuitem"><i class="fas fa-life-ring"></i> Hỗ trợ &amp; Góp ý</a>
+            <button type="button" class="account-dropdown-item" onclick="closeAccountMenu();openMyReviewsModal();" role="menuitem"><i class="fas fa-star"></i> Đánh giá của tôi</button>
             <div class="account-dropdown-divider"></div>
             <button type="button" class="account-dropdown-item danger" onclick="closeAccountMenu();logoutUser();" role="menuitem"><i class="fas fa-sign-out-alt"></i> Đăng xuất</button>
           </div>
@@ -2657,6 +3104,9 @@
       document.getElementById("authDescription").textContent = signup
         ? "Đăng ký tài khoản và chọn tên sẽ hiển thị khi bình luận. Không cần email thật."
         : "Nhập tên đăng nhập và mật khẩu của bạn.";
+
+      const signupNotice = document.getElementById("authSignupNotice");
+      if (signupNotice) signupNotice.hidden = !signup;
 
       const displayWrap = document.getElementById("authDisplayNameWrap");
       const displayInput = document.getElementById("authDisplayName");
@@ -3103,9 +3553,53 @@
       document.getElementById("myEditReplyId").value = replyId || "";
       document.getElementById("myEditTitle").textContent = kind === "reply" ? "Sửa phản hồi của bạn" : "Sửa bình luận của bạn";
       document.getElementById("myEditRatingWrap").style.display = kind === "reply" ? "none" : "block";
-      document.getElementById("myEditContent").value = item.content;
+      const editArea = document.getElementById("myEditContent");
+      editArea.value = item.content;
+      const maxLen = kind === "reply" ? 2000 : 3000;
+      const minLen = kind === "reply" ? 2 : 10;
+      editArea.maxLength = maxLen;
+      const hintEl = document.getElementById("myEditMinHint");
+      if (hintEl) hintEl.textContent = `Tối thiểu ${minLen} ký tự`;
+      delete editArea.dataset.helperBound;
+      bindTextareaHelper(editArea, document.getElementById("myEditCount"), document.getElementById("myEditSoftWarn"), minLen, maxLen);
       if (kind === "review") setMyEditRating(item.rating || 5);
       document.getElementById("myEditModal").classList.add("active");
+    };
+
+    window.openMyReviewsModal = function() {
+      if (!currentUser) { openAuthModal("login"); return; }
+      const body = document.getElementById("myReviewsBody");
+      if (!body) return;
+      const mine = REVIEWS_CACHE.filter(r => r.userId === currentUser.id)
+        .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+      const totalLikes = mine.reduce((s, r) => s + Number(r.likes || 0), 0);
+      const warnCount = Number(currentProfile?.warning_count || 0);
+      const listHtml = mine.length ? `<div class="my-reviews-list">${mine.map(r => {
+        const isLect = r.targetType === "lecturer";
+        const target = isLect ? getLecturer(r.targetId) : getMajor(r.targetId);
+        const label = `${isLect ? "GV" : "Ngành"} ${target ? target.name : r.targetId}`;
+        const href = `#/${isLect ? "lecturer" : "major"}/${encodeURIComponent(r.targetId)}?reviewId=${encodeURIComponent(r.id)}`;
+        return `<a class="my-review-row" href="${href}" onclick="closeModal('myReviewsModal')">
+          <div class="my-review-row-head">
+            <span class="my-review-row-target"><i class="fas ${isLect ? "fa-user-tie" : "fa-book"}" style="color:var(--primary);margin-right:6px;"></i>${escapeHtml(label)}</span>
+            <span>${starsHTML(r.rating)}</span>
+          </div>
+          <p class="my-review-row-text">${escapeHtml(r.content)}</p>
+          <div class="my-review-row-foot">
+            <span><i class="far fa-clock"></i> ${timeAgo(r.createdAt)}</span>
+            <span><i class="fas fa-thumbs-up"></i> ${Number(r.likes || 0)} hữu ích</span>
+            <span><i class="fas fa-reply"></i> ${r.replies.length} phản hồi</span>
+          </div>
+        </a>`;
+      }).join("")}</div>` : `<div class="empty-state" style="padding:32px 18px;"><i class="far fa-comment-dots" style="font-size:2.3rem;"></i><p style="margin:0 0 12px;font-size:.93rem;">Bạn chưa viết đánh giá nào.</p><a href="#/lecturers" class="btn btn-sm" onclick="closeModal('myReviewsModal')">Khám phá giảng viên</a></div>`;
+      body.innerHTML = `
+        <div class="my-reviews-summary">
+          <div class="my-reviews-stat"><strong>${mine.length}</strong><span>Đánh giá đã viết</span></div>
+          <div class="my-reviews-stat"><strong>${totalLikes}</strong><span>Lượt hữu ích nhận</span></div>
+          <div class="my-reviews-stat ${warnCount > 0 ? "warn" : ""}"><strong>${warnCount}/4</strong><span>Cảnh cáo tài khoản</span></div>
+        </div>
+        ${listHtml}`;
+      document.getElementById("myReviewsModal")?.classList.add("active");
     };
     window.saveMyEdit = async function() {
       if (!ensureAccountActive() || !supabaseClient) return;
@@ -3211,7 +3705,8 @@
         .sort((a, b) => b.count - a.count)
         .slice(0, 4);
 
-      const latestNotice = DB.notices.length > 0 ? DB.notices[DB.notices.length - 1] : null;
+      const sortedNotices = getNoticesSorted("newest");
+      const latestNotice = sortedNotices[0] || null;
       const catalogEmptyNotice = (CATALOG_SYNCED && DB.lecturers.length === 0 && DB.majors.length === 0)
         ? `<div class="notice-banner" style="border-left-color:var(--primary);background:#eff6ff;border-color:#bfdbfe;">
             <i class="fas fa-database" style="color:var(--primary);"></i>
@@ -3225,12 +3720,17 @@
       return `
         ${catalogEmptyNotice}
         ${latestNotice ? `
-        <div class="notice-banner">
-          <i class="fas fa-bullhorn"></i>
+        <div class="notice-banner fade-up">
+          <i class="fas fa-bullhorn" aria-hidden="true"></i>
           <div class="notice-content">
+            <div class="notice-banner-meta">
+              <span class="notice-banner-tag"><i class="fas fa-bolt" style="font-size:.66rem;"></i> Thông báo mới nhất</span>
+              ${latestNotice.createdAt ? `<span class="notice-banner-time" title="${exactTime(latestNotice.createdAt)}">${timeAgo(latestNotice.createdAt)}</span>` : ""}
+            </div>
             <h4>${escapeHtml(latestNotice.title)}</h4>
-            <p>${escapeHtml(latestNotice.content)}</p>
+            <p class="notice-banner-text">${escapeHtml(latestNotice.content)}</p>
           </div>
+          <a href="#/notices" class="notice-banner-link">${sortedNotices.length > 1 ? `Xem tất cả (${sortedNotices.length})` : "Xem chi tiết"} <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
         </div>` : ""}
 
         <section class="hero fade-up">
@@ -3238,7 +3738,7 @@
           <p>Không gian cộng đồng độc lập để tham khảo giảng viên, ngành học và chia sẻ trải nghiệm học tập thực tế tại HUIT.</p>
           <div class="hero-search" role="search">
             <i class="fas fa-search hero-search-icon" aria-hidden="true"></i>
-            <input type="search" id="heroSearch" placeholder="Tìm nhanh tên giảng viên, khoa hoặc ngành học..." autocomplete="off" />
+            <input type="search" id="heroSearch" placeholder="Tìm nhanh tên giảng viên hoặc ngành học..." autocomplete="off" />
             <div id="heroSearchResults" class="search-results"></div>
           </div>
           <div class="hero-actions">
@@ -3281,7 +3781,7 @@
                   </span>
                   <span>${starsHTML(r.rating)} <small style="color:var(--muted); margin-left:5px;" title="${exactTime(r.createdAt)}">${timeAgo(r.createdAt)}</small></span>
                 </div>
-                <p style="font-size:.98rem; color:var(--text-soft); margin:0;">${escapeHtml(r.content)}</p>
+                <p class="home-review-excerpt">${escapeHtml(r.content)}</p>
                 <div style="font-size:.85rem; color:var(--primary); margin-top:12px; font-weight:600; display:flex; align-items:center; gap:6px;"><i class="fas fa-arrow-right"></i> Xem chi tiết &amp; phản hồi</div>
               </a>`;
           }).join("") : `
@@ -3361,15 +3861,40 @@
       if (sort !== "default") {
         const sorted = [...filtered].sort((a, b) => {
           if (sort === "rating_desc") {
-            return (avgRating("major", b.id) || 0) - (avgRating("major", a.id) || 0)
-              || getReviewCount("major", b.id) - getReviewCount("major", a.id)
-              || a.name.localeCompare(b.name, "vi");
+            const ra = avgRating("major", a.id), rb = avgRating("major", b.id);
+            if ((ra !== null) !== (rb !== null)) return rb !== null ? 1 : -1;
+            if (ra !== null && rb !== null && ra !== rb) return rb - ra;
+            return getReviewCount("major", b.id) - getReviewCount("major", a.id)
+              || compareViText(a.name, b.name);
+          }
+          if (sort === "rating_asc") {
+            const ra = avgRating("major", a.id), rb = avgRating("major", b.id);
+            if ((ra !== null) !== (rb !== null)) return ra !== null ? -1 : 1;
+            if (ra !== null && rb !== null && ra !== rb) return ra - rb;
+            return getReviewCount("major", b.id) - getReviewCount("major", a.id)
+              || compareViText(a.name, b.name);
           }
           if (sort === "reviews_desc") {
             return getReviewCount("major", b.id) - getReviewCount("major", a.id)
-              || (avgRating("major", b.id) || 0) - (avgRating("major", a.id) || 0);
+              || (avgRating("major", b.id) || 0) - (avgRating("major", a.id) || 0)
+              || compareViText(a.name, b.name);
           }
-          return a.name.localeCompare(b.name, "vi");
+          if (sort === "latest_review") {
+            const ta = getReviewStats("major", a.id).latestAt || "";
+            const tb = getReviewStats("major", b.id).latestAt || "";
+            if (Boolean(ta) !== Boolean(tb)) return ta ? -1 : 1;
+            if (ta !== tb) return tb.localeCompare(ta);
+            return compareViText(a.name, b.name);
+          }
+          if (sort === "newest") {
+            const ca = a.createdAt || "", cb = b.createdAt || "";
+            if (ca !== cb) return cb.localeCompare(ca);
+            return compareViText(a.name, b.name);
+          }
+          if (sort === "name_desc") {
+            return compareViText(b.name, a.name);
+          }
+          return compareViText(a.name, b.name);
         });
         return {
           count: sorted.length,
@@ -3417,18 +3942,22 @@
           </div>
           <div class="catalog-inline-field">
             <label for="filterMajorFaculty"><i class="fas fa-filter" aria-hidden="true"></i> Khoa</label>
-            <select id="filterMajorFaculty" onchange="filterMajorCards()">
+            <select id="filterMajorFaculty" onchange="filterMajorCards(true)">
               <option value="" ${!CATALOG_FILTERS.majors.faculty ? "selected" : ""}>Tất cả khoa</option>
               ${facultiesWithMajors.map(f => `<option value="${f.id}" ${CATALOG_FILTERS.majors.faculty === f.id ? "selected" : ""}>${escapeHtml(f.name)}</option>`).join("")}
             </select>
           </div>
           <div class="catalog-inline-field">
             <label for="sortMajor"><i class="fas fa-arrow-down-wide-short" aria-hidden="true"></i> Sắp xếp</label>
-            <select id="sortMajor" onchange="filterMajorCards()">
+            <select id="sortMajor" onchange="filterMajorCards(true)">
               <option value="default" ${CATALOG_FILTERS.majors.sort === "default" ? "selected" : ""}>Theo khoa (mặc định)</option>
               <option value="rating_desc" ${CATALOG_FILTERS.majors.sort === "rating_desc" ? "selected" : ""}>Điểm sao cao nhất</option>
+              <option value="rating_asc" ${CATALOG_FILTERS.majors.sort === "rating_asc" ? "selected" : ""}>Điểm sao thấp nhất</option>
               <option value="reviews_desc" ${CATALOG_FILTERS.majors.sort === "reviews_desc" ? "selected" : ""}>Nhiều đánh giá nhất</option>
-              <option value="name_asc" ${CATALOG_FILTERS.majors.sort === "name_asc" ? "selected" : ""}>Tên ngành (A - Z)</option>
+              <option value="latest_review" ${CATALOG_FILTERS.majors.sort === "latest_review" ? "selected" : ""}>Đánh giá mới nhất</option>
+              <option value="newest" ${CATALOG_FILTERS.majors.sort === "newest" ? "selected" : ""}>Mới thêm gần đây</option>
+              <option value="name_asc" ${CATALOG_FILTERS.majors.sort === "name_asc" ? "selected" : ""}>Tên ngành (A → Z)</option>
+              <option value="name_desc" ${CATALOG_FILTERS.majors.sort === "name_desc" ? "selected" : ""}>Tên ngành (Z → A)</option>
             </select>
           </div>
           <span id="majorResultCount" class="catalog-result-count" aria-live="polite"><i class="fas fa-list-ol" aria-hidden="true"></i> ${initial.count} / ${total} ngành</span>
@@ -3478,7 +4007,7 @@
     function viewFaculty(id) {
       const f = FACULTY_BY_ID[id];
       if (!f) return `<div class="empty-state">Không tìm thấy khoa.</div>`;
-      const facultyLecturers = DB.lecturers.filter(l => facultyForLecturer(l)?.id === id).sort((a, b) => a.name.localeCompare(b.name, "vi"));
+      const facultyLecturers = DB.lecturers.filter(l => facultyForLecturer(l)?.id === id).sort(compareVietnameseName);
       return `
         <div class="breadcrumb fade-up"><a href="#/lecturers">Giảng viên</a> <i class="fas fa-chevron-right" style="font-size:.7rem;color:#cbd5e1"></i> ${escapeHtml(f.name)}</div>
         <div class="faculty-page-head fade-up"><div><h1><i class="fas fa-building-columns"></i> ${escapeHtml(f.name)}</h1></div></div>
@@ -3526,28 +4055,63 @@
     function getFilteredSortedLecturers() {
       const { search, faculty, sort } = CATALOG_FILTERS.lecturers;
       const q = normalizeSearch(search);
-      const list = DB.lecturers.filter(l => {
-        const byFac = !faculty || facultyForLecturer(l)?.id === faculty;
-        const byQ = !q || (l._searchKey || normalizeSearch(`${l.name} ${facultyForLecturer(l)?.name || ""}`)).includes(q);
-        return byFac && byQ;
-      });
-      if (sort === "rating_desc") {
-        list.sort((a, b) => (avgRating("lecturer", b.id) || 0) - (avgRating("lecturer", a.id) || 0)
-          || getReviewCount("lecturer", b.id) - getReviewCount("lecturer", a.id)
-          || a.name.localeCompare(b.name, "vi"));
-      } else if (sort === "reviews_desc") {
-        list.sort((a, b) => getReviewCount("lecturer", b.id) - getReviewCount("lecturer", a.id)
-          || (avgRating("lecturer", b.id) || 0) - (avgRating("lecturer", a.id) || 0));
-      } else if (sort === "name_asc") {
-        list.sort((a, b) => a.name.localeCompare(b.name, "vi"));
-      } else {
-        list.sort((a, b) => {
-          const ai = FACULTIES.findIndex(f => f.id === facultyForLecturer(a)?.id);
-          const bi = FACULTIES.findIndex(f => f.id === facultyForLecturer(b)?.id);
-          return (ai < 0 ? 999 : ai) - (bi < 0 ? 999 : bi) || a.name.localeCompare(b.name, "vi");
-        });
+      const scored = [];
+      for (const l of DB.lecturers) {
+        if (faculty && facultyForLecturer(l)?.id !== faculty) continue;
+        const score = q ? scoreVietnameseNameSearch(l, search, q) : 0;
+        if (score === Infinity) continue;
+        scored.push({ l, score });
       }
-      return list;
+      scored.sort((ea, eb) => {
+        const a = ea.l, b = eb.l;
+        if (sort === "rating_desc") {
+          const ra = avgRating("lecturer", a.id), rb = avgRating("lecturer", b.id);
+          if ((ra !== null) !== (rb !== null)) return rb !== null ? 1 : -1;
+          if (ra !== null && rb !== null && ra !== rb) return rb - ra;
+          return getReviewCount("lecturer", b.id) - getReviewCount("lecturer", a.id)
+            || ea.score - eb.score
+            || compareVietnameseName(a, b);
+        }
+        if (sort === "rating_asc") {
+          const ra = avgRating("lecturer", a.id), rb = avgRating("lecturer", b.id);
+          if ((ra !== null) !== (rb !== null)) return ra !== null ? -1 : 1;
+          if (ra !== null && rb !== null && ra !== rb) return ra - rb;
+          return getReviewCount("lecturer", b.id) - getReviewCount("lecturer", a.id)
+            || ea.score - eb.score
+            || compareVietnameseName(a, b);
+        }
+        if (sort === "reviews_desc") {
+          return getReviewCount("lecturer", b.id) - getReviewCount("lecturer", a.id)
+            || (avgRating("lecturer", b.id) || 0) - (avgRating("lecturer", a.id) || 0)
+            || ea.score - eb.score
+            || compareVietnameseName(a, b);
+        }
+        if (sort === "latest_review") {
+          const ta = getReviewStats("lecturer", a.id).latestAt || "";
+          const tb = getReviewStats("lecturer", b.id).latestAt || "";
+          if (Boolean(ta) !== Boolean(tb)) return ta ? -1 : 1;
+          if (ta !== tb) return tb.localeCompare(ta);
+          return ea.score - eb.score || compareVietnameseName(a, b);
+        }
+        if (sort === "newest") {
+          const ca = a.createdAt || "", cb = b.createdAt || "";
+          if (ca !== cb) return cb.localeCompare(ca);
+          return ea.score - eb.score || compareVietnameseName(a, b);
+        }
+        if (sort === "name_asc") {
+          return compareVietnameseName(a, b);
+        }
+        if (sort === "name_desc") {
+          return compareVietnameseName(b, a);
+        }
+        // Mặc định: nếu đang gõ tìm kiếm thì ưu tiên khớp từ cuối trước rồi từ trước ra sau;
+        // nếu không tìm kiếm thì xếp theo khoa rồi tên A-Z chuẩn Việt Nam (Tên -> Họ -> Tên đệm)
+        if (q && ea.score !== eb.score) return ea.score - eb.score;
+        const ai = FACULTY_INDEX_BY_ID[a.facultyId] ?? 999;
+        const bi = FACULTY_INDEX_BY_ID[b.facultyId] ?? 999;
+        return ai - bi || compareVietnameseName(a, b);
+      });
+      return scored.map(x => x.l);
     }
 
     function viewLecturers() {
@@ -3574,8 +4138,12 @@
             <select id="sortLecturer" onchange="filterAndSortLecturers(true)">
               <option value="default" ${CATALOG_FILTERS.lecturers.sort === "default" ? "selected" : ""}>Theo khoa (A–Z)</option>
               <option value="rating_desc" ${CATALOG_FILTERS.lecturers.sort === "rating_desc" ? "selected" : ""}>Điểm sao cao nhất</option>
+              <option value="rating_asc" ${CATALOG_FILTERS.lecturers.sort === "rating_asc" ? "selected" : ""}>Điểm sao thấp nhất</option>
               <option value="reviews_desc" ${CATALOG_FILTERS.lecturers.sort === "reviews_desc" ? "selected" : ""}>Nhiều đánh giá nhất</option>
-              <option value="name_asc" ${CATALOG_FILTERS.lecturers.sort === "name_asc" ? "selected" : ""}>Tên (A - Z)</option>
+              <option value="latest_review" ${CATALOG_FILTERS.lecturers.sort === "latest_review" ? "selected" : ""}>Đánh giá mới nhất</option>
+              <option value="newest" ${CATALOG_FILTERS.lecturers.sort === "newest" ? "selected" : ""}>Mới thêm gần đây</option>
+              <option value="name_asc" ${CATALOG_FILTERS.lecturers.sort === "name_asc" ? "selected" : ""}>Tên (A → Z)</option>
+              <option value="name_desc" ${CATALOG_FILTERS.lecturers.sort === "name_desc" ? "selected" : ""}>Tên (Z → A)</option>
             </select>
           </div>
           <span id="resultCount" class="catalog-result-count" aria-live="polite"><i class="fas fa-users" aria-hidden="true"></i> ${total} giảng viên</span>
@@ -3613,7 +4181,7 @@
           <div style="margin-top:20px; display:flex; gap:10px; flex-wrap:wrap;">
             <a href="${reportHref}" class="btn btn-report" style="margin:0;"><i class="fas fa-flag"></i> Báo cáo thông tin sai</a>
             ${isAdmin && isPending ? `
-            <button type="button" onclick="approveLecturer(${jsArg(l.id)})" class="btn btn-approve" style="margin:0;padding:10px 20px;font-size:.9rem;"><i class="fas fa-check"></i> Duyệt giảng viên</button>
+            <button type="button" onclick="approveLecturer(${jsArg(l.id)}, this)" class="btn btn-approve" style="padding:10px 20px;font-size:.9rem;"><i class="fas fa-check"></i> Duyệt giảng viên</button>
             <button type="button" onclick="rejectLecturer(${jsArg(l.id)})" class="btn btn-del" style="margin:0;padding:10px 20px;font-size:.9rem;"><i class="fas fa-times"></i> Từ chối</button>
             ` : ""}
             ${isAdmin && !isPending ? `
@@ -3626,6 +4194,140 @@
         ${reviewSectionHTML("lecturer", id, `Đánh giá GV ${l.name}`, highlightReviewId, highlightReplyId)}
       `;
     }
+
+    /* ================= MỤC THÔNG BÁO TỪ QUẢN TRỊ VIÊN (#/notices) ================= */
+    function renderNoticesListHTML(rawQuery = "", sortOrder = "newest") {
+      const newestList = getNoticesSorted("newest");
+      const latestId = newestList[0]?.id || null;
+      const ordered = sortOrder === "oldest" ? getNoticesSorted("oldest") : newestList;
+      const q = normalizeSearch(rawQuery);
+      const filtered = q
+        ? ordered.filter(n => normalizeSearch(`${n.title || ""} ${n.content || ""}`).includes(q))
+        : ordered;
+
+      if (!ordered.length) {
+        return {
+          count: 0,
+          html: `<div class="empty-state">
+            <i class="fas fa-bullhorn"></i>
+            <p>Hiện chưa có thông báo nào từ Quản trị viên.</p>
+            <a href="#/" class="btn btn-sm">Về trang chủ</a>
+          </div>`
+        };
+      }
+      if (!filtered.length) {
+        return {
+          count: 0,
+          html: `<div class="empty-state">
+            <i class="fas fa-magnifying-glass"></i>
+            <p>Không tìm thấy thông báo phù hợp với từ khóa “${escapeHtml(rawQuery.trim())}”.</p>
+            <button type="button" class="btn btn-sm" onclick="resetNoticeFilters()">Xem tất cả thông báo</button>
+          </div>`
+        };
+      }
+
+      const isAdmin = isCurrentAdmin();
+      const html = `<div class="notices-list">${filtered.map(n => {
+        const isLatest = n.id === latestId;
+        return `
+        <article class="notice-card ${isLatest ? "is-latest" : ""}" id="notice-item-${escapeHtml(n.id)}">
+          <div class="notice-card-head">
+            <div class="notice-card-badges">
+              <span class="admin-badge" style="margin-left:0;">ADMIN</span>
+              ${isLatest ? `<span class="notice-latest-pill"><i class="fas fa-bullhorn"></i> Mới nhất · Đang hiện ở Trang chủ</span>` : ""}
+            </div>
+            ${n.createdAt ? `<time class="notice-card-time" datetime="${escapeHtml(n.createdAt)}" title="${exactTime(n.createdAt)}"><i class="far fa-clock" aria-hidden="true"></i> ${timeAgo(n.createdAt)} · ${exactTime(n.createdAt)}</time>` : ""}
+          </div>
+          <h2 class="notice-card-title">${escapeHtml(n.title)}</h2>
+          <div class="notice-card-body">${escapeHtml(n.content)}</div>
+          ${isAdmin ? `
+          <div class="notice-card-foot">
+            <span style="font-size:.78rem;color:var(--muted);"><i class="fas fa-shield-halved"></i> Thao tác Quản trị viên</span>
+            <button type="button" class="btn btn-sm btn-del" onclick="adminDeleteNotice(${jsArg(n.id)})"><i class="fas fa-trash"></i> Xóa thông báo</button>
+          </div>` : ""}
+        </article>`;
+      }).join("")}</div>`;
+
+      return { count: filtered.length, html };
+    }
+
+    function viewNotices() {
+      const total = DB.notices.length;
+      const isAdmin = isCurrentAdmin();
+      const initial = renderNoticesListHTML(NOTICE_FILTERS.search, NOTICE_FILTERS.sort);
+      return `
+        <div class="breadcrumb fade-up"><a href="#/">Trang chủ</a> <i class="fas fa-chevron-right" style="font-size:.7rem;color:#cbd5e1;"></i> Thông báo từ Admin</div>
+        <div class="notices-wrap fade-up">
+          <div class="notices-head">
+            <div>
+              <h1><i class="fas fa-bullhorn" style="color:var(--accent)"></i> Thông báo từ Quản trị viên <span class="badge" style="margin:0;background:var(--primary-soft);color:var(--primary);font-size:.82rem;">${total} thông báo</span></h1>
+              <p>Toàn bộ thông báo chính thức được sắp xếp từ mới nhất đến cũ nhất. Thông báo mới nhất đồng thời hiển thị nổi bật trên Trang chủ.</p>
+            </div>
+            ${isAdmin ? `<button type="button" class="btn btn-sm" onclick="openAdminNoticesTab()"><i class="fas fa-plus"></i> Đăng / Quản lý thông báo</button>` : ""}
+          </div>
+
+          ${total > 0 ? `
+          <div class="notices-toolbar" role="search">
+            <div class="catalog-search-field">
+              <i class="fas fa-search" aria-hidden="true"></i>
+              <input type="search" id="noticeSearch" aria-label="Tìm thông báo" placeholder="Tìm theo tiêu đề hoặc nội dung thông báo..." value="${escapeHtml(NOTICE_FILTERS.search)}" oninput="filterNotices()" />
+            </div>
+            <div class="catalog-inline-field">
+              <label for="noticeSort"><i class="fas fa-arrow-down-wide-short" aria-hidden="true"></i> Sắp xếp</label>
+              <select id="noticeSort" onchange="filterNotices(true)">
+                <option value="newest" ${NOTICE_FILTERS.sort === "newest" ? "selected" : ""}>Mới nhất → Cũ nhất</option>
+                <option value="oldest" ${NOTICE_FILTERS.sort === "oldest" ? "selected" : ""}>Cũ nhất → Mới nhất</option>
+              </select>
+            </div>
+            <span id="noticeResultCount" class="catalog-result-count" aria-live="polite"><i class="fas fa-list-ul" aria-hidden="true"></i> ${initial.count} / ${total} thông báo</span>
+          </div>` : ""}
+
+          <div id="noticesListContainer">${initial.html}</div>
+        </div>
+      `;
+    }
+
+    function applyNoticeFilters() {
+      const rawQuery = document.getElementById("noticeSearch")?.value || "";
+      const sortOrder = document.getElementById("noticeSort")?.value || "newest";
+      NOTICE_FILTERS.search = rawQuery;
+      NOTICE_FILTERS.sort = sortOrder === "oldest" ? "oldest" : "newest";
+      const res = renderNoticesListHTML(rawQuery, NOTICE_FILTERS.sort);
+      const container = document.getElementById("noticesListContainer");
+      if (container) {
+        const template = document.createElement("template");
+        template.innerHTML = res.html;
+        container.replaceChildren(template.content);
+        triggerSubtlePanelGlide(container);
+      }
+      const label = document.getElementById("noticeResultCount");
+      if (label) label.innerHTML = `<i class="fas fa-list-ul" aria-hidden="true"></i> ${res.count} / ${DB.notices.length} thông báo`;
+    }
+    window.filterNotices = function(immediate = false) {
+      NOTICE_FILTERS.search = document.getElementById("noticeSearch")?.value || "";
+      NOTICE_FILTERS.sort = document.getElementById("noticeSort")?.value === "oldest" ? "oldest" : "newest";
+      clearTimeout(noticeFilterTimer);
+      if (immediate) { applyNoticeFilters(); return; }
+      noticeFilterTimer = setTimeout(applyNoticeFilters, 120);
+    };
+    window.resetNoticeFilters = function() {
+      NOTICE_FILTERS.search = "";
+      NOTICE_FILTERS.sort = "newest";
+      const input = document.getElementById("noticeSearch");
+      const sortEl = document.getElementById("noticeSort");
+      if (input) input.value = "";
+      if (sortEl) sortEl.value = "newest";
+      applyNoticeFilters();
+    };
+    window.openAdminNoticesTab = function() {
+      if (!isCurrentAdmin()) return;
+      activeAdminTab = "tab-notices";
+      if (window.location.hash === "#/admin") {
+        switchTab("tab-notices");
+      } else {
+        window.location.hash = "#/admin";
+      }
+    };
 
     /* ================= TRUNG TÂM HỖ TRỢ & GÓP Ý HỢP NHẤT ================= */
     function viewSupportCenter(defaultTab = "report-info") {
@@ -3816,12 +4518,20 @@
             <hr style="margin: 25px 0; border: none; border-top: 1px dashed var(--border);">
             <h3 style="font-size:1.1rem; margin-bottom:15px;"><i class="fas fa-star" style="color:var(--accent)"></i> Đánh giá đầu tiên</h3>
             <label>Chấm điểm</label>
-            <div class="star-input" data-rating="5">
-              <span data-v="1"><i class="fas fa-star"></i></span><span data-v="2"><i class="fas fa-star"></i></span>
-              <span data-v="3"><i class="fas fa-star"></i></span><span data-v="4"><i class="fas fa-star"></i></span><span data-v="5"><i class="fas fa-star"></i></span>
+            <div class="star-input-row">
+              <div class="star-input" data-rating="5">
+                <span data-v="1"><i class="fas fa-star"></i></span><span data-v="2"><i class="fas fa-star"></i></span>
+                <span data-v="3"><i class="fas fa-star"></i></span><span data-v="4"><i class="fas fa-star"></i></span><span data-v="5"><i class="fas fa-star"></i></span>
+              </div>
+              <span class="star-sentiment-pill high" data-star-label>5★ · Rất hài lòng</span>
             </div>
             <label>Nội dung đánh giá (*)</label>
             <textarea id="new-lect-review" required minlength="10" maxlength="3000" placeholder="Chia sẻ trải nghiệm học tập của bạn..."></textarea>
+            <div class="textarea-meta-bar">
+              <span>Tối thiểu 10 ký tự</span>
+              <span id="new-lect-review-count" class="textarea-count">0 / 3.000</span>
+            </div>
+            <div id="new-lect-review-warn" class="textarea-soft-warn" role="status"><i class="fas fa-triangle-exclamation"></i><span>Nội dung có thể chứa từ ngữ chưa phù hợp với quy tắc cộng đồng — vui lòng điều chỉnh trước khi gửi.</span></div>
             <button type="submit" class="btn" style="width:100%; justify-content:center;">Gửi Đánh Giá &amp; Đề Xuất</button>
           </form>
         </div>
@@ -3967,7 +4677,7 @@
                       <h3 id="activity-center-heading"><i class="fas fa-tower-broadcast" style="color:var(--primary)"></i> Trung tâm giám sát hoạt động <span class="live-dot-badge">Trực tiếp</span></h3>
                       <p id="activity-center-subtitle">Theo dõi toàn diện mọi hoạt động của người dùng và nhật ký thao tác của đội ngũ Quản trị viên theo thời gian thực.</p>
                     </div>
-                    <button type="button" class="btn btn-sm" style="margin:0;" onclick="loadAdminActivityFeed()"><i class="fas fa-rotate"></i> Làm mới</button>
+                    <button type="button" class="btn btn-sm" onclick="loadAdminActivityFeed(true)"><i class="fas fa-rotate"></i> Làm mới</button>
                   </div>
 
                   <div class="activity-mini-stats" aria-label="Thống kê nhanh nhật ký">
@@ -4060,7 +4770,7 @@
                         ${revs[0] ? `<div style="color:var(--muted);font-size:.88rem;margin-top:6px;">Đánh giá kèm theo (${revs[0].rating}★): “${escapeHtml(revs[0].content)}”</div>` : ""}
                       </div>
                       <div style="display:flex;gap:8px;">
-                        <button type="button" class="btn btn-sm btn-approve" onclick="approveLecturer(${jsArg(l.id)})"><i class="fas fa-check"></i> Duyệt</button>
+                        <button type="button" class="btn btn-sm btn-approve" onclick="approveLecturer(${jsArg(l.id)}, this)"><i class="fas fa-check"></i> Duyệt</button>
                         <button type="button" class="btn btn-sm btn-del" onclick="rejectLecturer(${jsArg(l.id)})"><i class="fas fa-times"></i> Từ chối</button>
                       </div>
                     </div>`;
@@ -4102,7 +4812,7 @@
                           </a>` : `<div style="font-size:.9rem;margin-top:8px;color:var(--muted);"><i>(Nội dung bị báo cáo đã bị xóa)</i></div>`}
                         <div style="margin-top:6px;"><small style="color:var(--muted);">${exactTime(rep.createdAt)}</small></div>
                         ${adminSentResponsesHTML("report", rep.id)}
-                        ${rep.userId ? `<div class="admin-public-reply"><label for="admin-response-report-${escapeHtml(rep.id)}">Phản hồi gửi đến người báo cáo</label><textarea id="admin-response-report-${escapeHtml(rep.id)}" rows="2" maxlength="3000" placeholder="Viết kết quả xử lý gửi đến chuông thông báo của người báo cáo..."></textarea><button type="button" class="btn btn-sm btn-approve" style="margin-top:10px;" onclick="adminSendResponse('report',${jsArg(rep.id)})"><i class="fas fa-paper-plane"></i> Gửi phản hồi &amp; thông báo</button></div>` : `<p class="auth-help">Báo cáo này chưa gắn tài khoản người gửi nên không thể gửi thông báo chuông.</p>`}
+                        ${rep.userId ? `<div class="admin-reply-toggle-wrap"><button type="button" class="btn btn-sm btn-neutral" onclick="toggleAdminReplyBox('admin-reply-box-report-${escapeHtml(rep.id)}', this)"><i class="fas fa-reply"></i> Viết phản hồi cho người báo cáo</button></div><div id="admin-reply-box-report-${escapeHtml(rep.id)}" class="admin-public-reply admin-reply-collapse"><label for="admin-response-report-${escapeHtml(rep.id)}">Phản hồi gửi đến người báo cáo</label><textarea id="admin-response-report-${escapeHtml(rep.id)}" rows="2" maxlength="3000" placeholder="Viết kết quả xử lý gửi đến chuông thông báo của người báo cáo..."></textarea><button type="button" class="btn btn-sm btn-approve" style="margin-top:10px;" onclick="adminSendResponse('report',${jsArg(rep.id)})"><i class="fas fa-paper-plane"></i> Gửi phản hồi &amp; thông báo</button></div>` : `<p class="auth-help">Báo cáo này chưa gắn tài khoản người gửi nên không thể gửi thông báo chuông.</p>`}
                       </div>
                       <div style="display:flex;gap:8px;flex-wrap:wrap;">
                         ${linkObj && reportedText ? `<a class="btn btn-sm" href="${linkObj.href}"><i class="fas fa-arrow-up-right-from-square"></i> Xem chỗ đó</a>` : ""}
@@ -4113,7 +4823,7 @@
                         <button type="button" class="btn btn-sm" style="background:#94a3b8;" onclick="dismissReport(${jsArg(rep.id)})">Bỏ qua / Đóng</button>
                       </div>
                     </div>`;
-                  }).join("") : `<div class="empty-state" style="padding:36px 20px;"><i class="fas fa-shield-check" style="font-size:2.6rem;color:#bbf7d0;"></i><p style="margin:0;">Không có báo cáo vi phạm nào.</p></div>`}
+                  }).join("") : `<div class="empty-state" style="padding:36px 20px;"><i class="fas fa-circle-check" style="font-size:2.6rem;color:#bbf7d0;"></i><p style="margin:0;">Không có báo cáo vi phạm nào.</p></div>`}
                 </div>
               </div>
 
@@ -4153,7 +4863,7 @@
                           </a>` : `<p style="margin:10px 0 6px;white-space:pre-wrap;">${escapeHtml(fb.content)}</p>`}
                         <div style="margin-top:6px;"><small style="color:var(--muted);">${exactTime(fb.createdAt)}</small></div>
                         ${adminSentResponsesHTML("feedback", fb.id)}
-                        ${fb.userId ? `<div class="admin-public-reply"><label for="admin-response-feedback-${escapeHtml(fb.id)}">Phản hồi gửi đến người gửi</label><textarea id="admin-response-feedback-${escapeHtml(fb.id)}" rows="2" maxlength="3000" placeholder="Viết phản hồi, thông báo đã sửa hoặc lời cảm ơn..."></textarea><button type="button" class="btn btn-sm btn-approve" style="margin-top:10px;" onclick="adminSendResponse('feedback',${jsArg(fb.id)})"><i class="fas fa-paper-plane"></i> Gửi phản hồi &amp; thông báo</button></div>` : `<p class="auth-help">Mục này không có tài khoản người gửi để nhận thông báo.</p>`}
+                        ${fb.userId ? `<div class="admin-reply-toggle-wrap"><button type="button" class="btn btn-sm btn-neutral" onclick="toggleAdminReplyBox('admin-reply-box-feedback-${escapeHtml(fb.id)}', this)"><i class="fas fa-reply"></i> Viết phản hồi cho người gửi</button></div><div id="admin-reply-box-feedback-${escapeHtml(fb.id)}" class="admin-public-reply admin-reply-collapse"><label for="admin-response-feedback-${escapeHtml(fb.id)}">Phản hồi gửi đến người gửi</label><textarea id="admin-response-feedback-${escapeHtml(fb.id)}" rows="2" maxlength="3000" placeholder="Viết phản hồi, thông báo đã sửa hoặc lời cảm ơn..."></textarea><button type="button" class="btn btn-sm btn-approve" style="margin-top:10px;" onclick="adminSendResponse('feedback',${jsArg(fb.id)})"><i class="fas fa-paper-plane"></i> Gửi phản hồi &amp; thông báo</button></div>` : `<p class="auth-help">Mục này không có tài khoản người gửi để nhận thông báo.</p>`}
                       </div>
                       <div style="display:flex;gap:8px;flex-wrap:wrap;">
                         ${targetLink ? `<a class="btn btn-sm" href="${targetLink.href}"><i class="fas fa-arrow-up-right-from-square"></i> Mở trang</a>` : ""}
@@ -4186,7 +4896,7 @@
                         <label for="support-note-${escapeHtml(t.id)}" style="margin-top:12px;">Ghi chú xử lý nội bộ (chỉ Admin nhìn thấy)</label>
                         <textarea id="support-note-${escapeHtml(t.id)}" rows="2" maxlength="1000" placeholder="Ghi chú xác minh / cách xử lý nội bộ...">${escapeHtml(t.adminNote)}</textarea>
                         ${adminSentResponsesHTML("support", t.id)}
-                        ${t.userId ? `<div class="admin-public-reply"><label for="admin-response-support-${escapeHtml(t.id)}">Phản hồi gửi đến chuông thông báo của người dùng</label><textarea id="admin-response-support-${escapeHtml(t.id)}" rows="2" maxlength="3000" placeholder="Viết hướng dẫn hoặc kết quả xử lý..."></textarea><button type="button" class="btn btn-sm btn-approve" style="margin-top:10px;" onclick="adminSendResponse('support',${jsArg(t.id)})"><i class="fas fa-paper-plane"></i> Gửi phản hồi &amp; thông báo</button></div>` : `<div class="admin-public-reply"><b>Chưa liên kết tài khoản HUIT Review.</b><p class="auth-help" style="margin-top:4px;">Yêu cầu này được gửi khi chưa đăng nhập. Hãy liên hệ qua kênh liên hệ ở trên để hỗ trợ trực tiếp.</p></div>`}
+                        ${t.userId ? `<div class="admin-reply-toggle-wrap"><button type="button" class="btn btn-sm btn-neutral" onclick="toggleAdminReplyBox('admin-reply-box-support-${escapeHtml(t.id)}', this)"><i class="fas fa-reply"></i> Viết phản hồi qua chuông</button></div><div id="admin-reply-box-support-${escapeHtml(t.id)}" class="admin-public-reply admin-reply-collapse"><label for="admin-response-support-${escapeHtml(t.id)}">Phản hồi gửi đến chuông thông báo của người dùng</label><textarea id="admin-response-support-${escapeHtml(t.id)}" rows="2" maxlength="3000" placeholder="Viết hướng dẫn hoặc kết quả xử lý..."></textarea><button type="button" class="btn btn-sm btn-approve" style="margin-top:10px;" onclick="adminSendResponse('support',${jsArg(t.id)})"><i class="fas fa-paper-plane"></i> Gửi phản hồi &amp; thông báo</button></div>` : `<div class="admin-public-reply"><b>Chưa liên kết tài khoản HUIT Review.</b><p class="auth-help" style="margin-top:4px;">Yêu cầu này được gửi khi chưa đăng nhập. Hãy liên hệ qua kênh liên hệ ở trên để hỗ trợ trực tiếp.</p></div>`}
                       </div>
                       <div style="display:flex;flex-direction:column;gap:8px;min-width:165px;">
                         <select id="support-status-${escapeHtml(t.id)}" aria-label="Trạng thái yêu cầu hỗ trợ" style="padding:9px 12px;">
@@ -4194,7 +4904,7 @@
                           <option value="processing" ${t.status === "processing" ? "selected" : ""}>Đang xử lý</option>
                           <option value="resolved" ${t.status === "resolved" ? "selected" : ""}>Đã xử lý</option>
                         </select>
-                        <button type="button" class="btn btn-sm btn-approve" style="justify-content:center;" onclick="adminSaveSupportTicket(${jsArg(t.id)})"><i class="fas fa-save"></i> Lưu trạng thái</button>
+                        <button type="button" class="btn btn-sm btn-approve" style="justify-content:center;" onclick="adminSaveSupportTicket(${jsArg(t.id)}, this)"><i class="fas fa-save"></i> Lưu trạng thái</button>
                         <button type="button" class="btn btn-sm btn-del" style="justify-content:center;" onclick="adminDeleteSupportTicket(${jsArg(t.id)})"><i class="fas fa-trash"></i> Xóa yêu cầu</button>
                       </div>
                     </div>
@@ -4206,9 +4916,10 @@
                 <div class="admin-box">
                   <div class="admin-panel-head">
                     <div>
-                      <h3><i class="fas fa-bullhorn" style="color:var(--accent)"></i> Thông báo nổi bật trên Trang chủ</h3>
-                      <p>Thông báo mới nhất sẽ hiển thị ở banner đầu trang chủ cho mọi người dùng.</p>
+                      <h3><i class="fas fa-bullhorn" style="color:var(--accent)"></i> Thông báo từ Quản trị viên (${DB.notices.length})</h3>
+                      <p>Thông báo mới nhất tự động nổi bật trên Trang chủ; toàn bộ danh sách hiển thị từ mới đến cũ tại mục <b>Thông báo</b>.</p>
                     </div>
+                    <a href="#/notices" class="btn btn-sm btn-neutral"><i class="fas fa-arrow-up-right-from-square"></i> Xem mục Thông báo</a>
                   </div>
                   <form id="adminAddNoticeForm">
                     <label style="margin-top:0;">Tiêu đề</label>
@@ -4218,12 +4929,22 @@
                     <button type="submit" class="btn"><i class="fas fa-bullhorn"></i> Đăng thông báo</button>
                   </form>
                 </div>
-                ${DB.notices.length ? DB.notices.map(n => `
-                  <div class="admin-item">
-                    <div style="flex:1;min-width:220px;"><b>${escapeHtml(n.title)}</b><p style="margin:4px 0 0;color:var(--muted);">${escapeHtml(n.content)}</p></div>
+                ${(() => {
+                  const orderedNotices = getNoticesSorted("newest");
+                  if (!orderedNotices.length) return `<div class="empty-state" style="padding:30px 20px;"><p style="margin:0;">Chưa có thông báo nào được đăng.</p></div>`;
+                  return orderedNotices.map((n, idx) => `
+                  <div class="admin-item" style="align-items:flex-start;">
+                    <div style="flex:1;min-width:220px;">
+                      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px;">
+                        <b>${escapeHtml(n.title)}</b>
+                        ${idx === 0 ? `<span class="notice-latest-pill"><i class="fas fa-star"></i> Đang hiện trên Trang chủ</span>` : ""}
+                      </div>
+                      <p style="margin:4px 0 6px;color:var(--muted);white-space:pre-wrap;overflow-wrap:anywhere;">${escapeHtml(n.content)}</p>
+                      ${n.createdAt ? `<small style="color:#8a9bb0;"><i class="far fa-clock"></i> ${exactTime(n.createdAt)} (${timeAgo(n.createdAt)})</small>` : ""}
+                    </div>
                     <button type="button" class="btn btn-sm btn-del" onclick="adminDeleteNotice(${jsArg(n.id)})"><i class="fas fa-trash"></i> Xóa</button>
-                  </div>
-                `).join("") : `<div class="empty-state" style="padding:30px 20px;"><p style="margin:0;">Chưa có thông báo nào được đăng.</p></div>`}
+                  </div>`).join("");
+                })()}
               </div>
 
               <div id="tab-words" class="admin-content ${isTab("tab-words")}">
@@ -4343,6 +5064,7 @@
       const origHtml = btn ? btn.innerHTML : "";
       if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang đồng bộ...'; }
       try {
+        ADMIN_ACTIVITY_LAST_FETCH = 0;
         await syncFromSupabase();
         route({ preserveScroll: true });
         showToast("Đã cập nhật dữ liệu mới nhất từ Supabase.", "success");
@@ -4400,18 +5122,22 @@
 
       const query = normalizeSearch(rawQuery);
       const pendingIds = new Set(DB.pendingLecturers.map(p => p.id));
-      const lecturers = [...DB.lecturers, ...DB.pendingLecturers].map(l => ({
-        ...l, _kind: "lecturer", _pending: pendingIds.has(l.id),
-        _search: normalizeSearch([l.name, l.degree, l.id, FACULTY_BY_ID[l.facultyId]?.name || ""].join(" "))
-      })).filter(l => (!facultyId || l.facultyId === facultyId) && (!query || l._search.includes(query)));
+      const lecturers = [...DB.lecturers, ...DB.pendingLecturers].map(l => {
+        const nameScore = query ? scoreVietnameseNameSearch(l, rawQuery, query) : 0;
+        const extraSearch = normalizeSearch([l.degree, l.id, FACULTY_BY_ID[l.facultyId]?.name || ""].join(" "));
+        const matchScore = !query ? 0 : (nameScore < Infinity ? nameScore : (extraSearch.includes(query) ? 200 : Infinity));
+        return { ...l, _kind: "lecturer", _pending: pendingIds.has(l.id), _matchScore: matchScore };
+      }).filter(l => (!facultyId || l.facultyId === facultyId) && l._matchScore < Infinity)
+        .sort((a, b) => a._matchScore - b._matchScore || Number(b._pending) - Number(a._pending) || compareVietnameseName(a, b));
 
       const majors = DB.majors.map(m => {
         const fid = MAJOR_FACULTY[m.code || m.id] || "";
-        return {
-          ...m, _kind: "major", _facultyId: fid,
-          _search: normalizeSearch([m.name, m.code, m.id, FACULTY_BY_ID[fid]?.name || ""].join(" "))
-        };
-      }).filter(m => (!facultyId || m._facultyId === facultyId) && (!query || m._search.includes(query)));
+        const majorScore = query ? scoreMajorSearch(m, rawQuery, query) : 0;
+        const facMatch = query && normalizeSearch(FACULTY_BY_ID[fid]?.name || "").includes(query);
+        const matchScore = !query ? 0 : (majorScore < Infinity ? majorScore : (facMatch ? 200 : Infinity));
+        return { ...m, _kind: "major", _facultyId: fid, _matchScore: matchScore };
+      }).filter(m => (!facultyId || m._facultyId === facultyId) && m._matchScore < Infinity)
+        .sort((a, b) => a._matchScore - b._matchScore || compareViText(a.name, b.name));
 
       const limit = (query || facultyId) ? 100 : 25;
       let shownCount = 0;
@@ -4447,7 +5173,7 @@
             <div class="admin-catalog-row-actions">
               <a class="btn btn-sm btn-ghost" href="#/lecturer/${encodeURIComponent(l.id)}"><i class="fas fa-arrow-up-right-from-square"></i> Xem</a>
               <button type="button" class="btn btn-sm" onclick="openEditLecturerModal(${jsArg(l.id)})"><i class="fas fa-pen"></i> Sửa</button>
-              ${l._pending ? `<button type="button" class="btn btn-sm btn-approve" onclick="approveLecturer(${jsArg(l.id)})"><i class="fas fa-check"></i> Duyệt</button><button type="button" class="btn btn-sm btn-del" onclick="rejectLecturer(${jsArg(l.id)})"><i class="fas fa-times"></i> Từ chối</button>` : ""}
+              ${l._pending ? `<button type="button" class="btn btn-sm btn-approve" onclick="approveLecturer(${jsArg(l.id)}, this)"><i class="fas fa-check"></i> Duyệt</button><button type="button" class="btn btn-sm btn-del" onclick="rejectLecturer(${jsArg(l.id)})"><i class="fas fa-times"></i> Từ chối</button>` : ""}
               <button type="button" class="btn btn-sm btn-del" onclick="adminDeleteLecturer(${jsArg(l.id)})"><i class="fas fa-trash"></i> Xóa</button>
             </div>
           </div>`;
@@ -4577,20 +5303,28 @@
               </label>
             </div>` : ""}
             <label style="margin-top:0;">Chấm điểm</label>
-            <div class="star-input" data-rating="5">
-              <span data-v="1"><i class="fas fa-star"></i></span><span data-v="2"><i class="fas fa-star"></i></span>
-              <span data-v="3"><i class="fas fa-star"></i></span><span data-v="4"><i class="fas fa-star"></i></span><span data-v="5"><i class="fas fa-star"></i></span>
+            <div class="star-input-row">
+              <div class="star-input" data-rating="5">
+                <span data-v="1"><i class="fas fa-star"></i></span><span data-v="2"><i class="fas fa-star"></i></span>
+                <span data-v="3"><i class="fas fa-star"></i></span><span data-v="4"><i class="fas fa-star"></i></span><span data-v="5"><i class="fas fa-star"></i></span>
+              </div>
+              <span class="star-sentiment-pill high" data-star-label>5★ · Rất hài lòng</span>
             </div>
             <label>Nội dung đánh giá</label>
             <textarea id="rv-content" required minlength="10" maxlength="3000" rows="4" placeholder="Chia sẻ cảm nhận thực tế, khách quan về giảng dạy, cách chấm điểm hoặc môn học..."></textarea>
+            <div class="textarea-meta-bar">
+              <span>Tối thiểu 10 ký tự</span>
+              <span id="rv-content-count" class="textarea-count">0 / 3.000</span>
+            </div>
+            <div id="rv-content-warn" class="textarea-soft-warn" role="status"><i class="fas fa-triangle-exclamation"></i><span>Nội dung có thể chứa từ ngữ chưa phù hợp với quy tắc cộng đồng — vui lòng điều chỉnh trước khi gửi.</span></div>
             <div style="display:flex;gap:10px;align-items:center;margin-top:16px;">
-              <button type="submit" class="btn" style="margin:0;"><i class="fas fa-paper-plane"></i> Gửi đánh giá</button>
-              <button type="button" class="btn btn-neutral" style="margin:0;" onclick="closeReviewComposer()">Thu gọn</button>
+              <button type="submit" class="btn"><i class="fas fa-paper-plane"></i> Gửi đánh giá</button>
+              <button type="button" class="btn btn-neutral" onclick="closeReviewComposer()">Thu gọn</button>
             </div>
           </form>`}
         ${allReviews.length ? `
         <div class="review-toolbar fade-up">
-          <div class="review-toolbar-left">
+          <div class="review-toolbar-left" id="reviewToolbarLeft">
             <span>Hiển thị <b>${reviews.length}</b> / ${allReviews.length} đánh giá</span>
             ${REVIEW_VIEW_STATE.star ? `<span class="review-filter-chip"><i class="fas fa-star"></i> Lọc ${REVIEW_VIEW_STATE.star} sao <button type="button" onclick="toggleReviewStarFilter(0)" aria-label="Bỏ lọc sao">&times;</button></span>` : ""}
           </div>
@@ -4598,6 +5332,7 @@
             <span><i class="fas fa-arrow-down-wide-short"></i> Sắp xếp:</span>
             <select class="review-sort-select" aria-label="Sắp xếp đánh giá" onchange="setReviewSortOrder(this.value)">
               <option value="newest" ${REVIEW_VIEW_STATE.sort === "newest" ? "selected" : ""}>Mới nhất</option>
+              <option value="oldest" ${REVIEW_VIEW_STATE.sort === "oldest" ? "selected" : ""}>Cũ nhất</option>
               <option value="helpful" ${REVIEW_VIEW_STATE.sort === "helpful" ? "selected" : ""}>Hữu ích nhất</option>
               <option value="rating_desc" ${REVIEW_VIEW_STATE.sort === "rating_desc" ? "selected" : ""}>Điểm cao → thấp</option>
               <option value="rating_asc" ${REVIEW_VIEW_STATE.sort === "rating_asc" ? "selected" : ""}>Điểm thấp → cao</option>
@@ -4683,7 +5418,12 @@
                 <input type="checkbox" id="reply-as-admin-${escapeHtml(r.id)}" style="width:16px; height:16px; margin:0;"> Đăng với tư cách Admin (Nổi bật)
               </label>
             </div>` : ""}
-            <textarea id="reply-content-${escapeHtml(r.id)}" rows="3" maxlength="2000" ${(currentUser && isAccountLocked() && !isAdmin) ? "disabled" : ""} placeholder="${(currentUser && isAccountLocked() && !isAdmin) ? "Tài khoản đang bị khóa, không thể gửi phản hồi..." : "Nhập nội dung phản hồi..."}" style="margin-bottom:12px; padding:10px 14px; font-size:0.9rem;"></textarea>
+            <textarea id="reply-content-${escapeHtml(r.id)}" rows="3" maxlength="2000" ${(currentUser && isAccountLocked() && !isAdmin) ? "disabled" : ""} placeholder="${(currentUser && isAccountLocked() && !isAdmin) ? "Tài khoản đang bị khóa, không thể gửi phản hồi..." : "Nhập nội dung phản hồi..."}" oninput="handleReplyInputHelper(${jsArg(r.id)}, this)" style="margin-bottom:4px; padding:10px 14px; font-size:0.9rem;"></textarea>
+            <div class="textarea-meta-bar" style="margin-top:2px;margin-bottom:8px;">
+              <span>Tối thiểu 2 ký tự</span>
+              <span id="reply-count-${escapeHtml(r.id)}" class="textarea-count">0 / 2.000</span>
+            </div>
+            <div id="reply-warn-${escapeHtml(r.id)}" class="textarea-soft-warn" style="margin-top:0;margin-bottom:10px;" role="status"><i class="fas fa-triangle-exclamation"></i><span>Nội dung có thể chứa từ ngữ chưa phù hợp với quy tắc cộng đồng — vui lòng điều chỉnh trước khi gửi.</span></div>
             <div style="display:flex; gap:12px;">
               <button type="button" id="reply-btn-${escapeHtml(r.id)}" class="btn btn-sm" ${(currentUser && isAccountLocked() && !isAdmin) ? "disabled" : ""} onclick="submitReply(${jsArg(r.id)})" style="background:var(--primary);"><i class="fas fa-paper-plane"></i> Gửi phản hồi</button>
               <button type="button" class="btn btn-sm" style="background:#e2e8f0; color:#334155; box-shadow:none;" onclick="closeReplyForm(${jsArg(r.id)})">Hủy</button>
@@ -4693,6 +5433,38 @@
     }
 
     /* ================= ACTIONS (TƯƠNG TÁC SUPABASE) ================= */
+    window.toggleAdminReplyBox = function(boxId, btn) {
+      const box = document.getElementById(boxId);
+      if (!box) return;
+      const isHidden = getComputedStyle(box).display === "none";
+      if (isHidden) {
+        smoothExpand(box, "block", () => box.querySelector("textarea")?.focus());
+        if (btn) btn.innerHTML = '<i class="fas fa-chevron-up"></i> Ẩn khung phản hồi';
+      } else {
+        smoothCollapse(box);
+        if (btn) btn.innerHTML = '<i class="fas fa-reply"></i> Viết phản hồi';
+      }
+    };
+
+    const replyWarnTimers = {};
+    window.handleReplyInputHelper = function(reviewId, area) {
+      if (!area) return;
+      const len = area.value.trim().length;
+      const cnt = document.getElementById(`reply-count-${reviewId}`);
+      if (cnt) {
+        cnt.textContent = `${len.toLocaleString("vi-VN")} / 2.000`;
+        cnt.classList.toggle("ok", len >= 2 && len <= 1850);
+        cnt.classList.toggle("near-max", len > 1850);
+      }
+      const warn = document.getElementById(`reply-warn-${reviewId}`);
+      if (warn) {
+        clearTimeout(replyWarnTimers[reviewId]);
+        replyWarnTimers[reviewId] = setTimeout(() => {
+          warn.classList.toggle("visible", len >= 2 && Boolean(containsForbiddenWord(area.value)));
+        }, 160);
+      }
+    };
+
     window.clearReplyTarget = function(reviewId) {
       delete replyTargetMap[reviewId];
       const tagBox = document.getElementById(`reply-target-${reviewId}`);
@@ -5239,7 +6011,9 @@
     }
 
     function adminActivityCanOpenTarget(item) {
-      if (!["lecturer", "major"].includes(item?.target_type) || !item?.target_id) return false;
+      if (!item?.target_type) return false;
+      if (item.target_type === "notice" && item.activity_type !== "admin_notice_deleted") return true;
+      if (!["lecturer", "major"].includes(item.target_type) || !item?.target_id) return false;
       if (["admin_lecturer_deleted", "admin_lecturer_rejected", "admin_major_deleted"].includes(item?.activity_type)) return false;
       return item.target_type === "lecturer" ? Boolean(getLecturer(item.target_id)) : Boolean(getMajor(item.target_id));
     }
@@ -5473,17 +6247,25 @@
       paintAdminActivityFeed();
     };
 
-    async function loadAdminActivityFeed() {
+    async function loadAdminActivityFeed(force = false) {
       const box = document.getElementById("admin-activity-feed");
       if (!supabaseClient || !isCurrentAdmin()) return;
+      const isFresh = ADMIN_ACTIVITY_CACHE.length > 0 && (Date.now() - ADMIN_ACTIVITY_LAST_FETCH < 20000);
+      if (!force && isFresh) {
+        paintAdminActivityFeed();
+        const updated = document.getElementById("admin-activity-updated");
+        if (updated) updated.textContent = `Đang dùng bộ nhớ đệm (cập nhật lúc ${new Date(ADMIN_ACTIVITY_LAST_FETCH).toLocaleTimeString("vi-VN")}) · ${ADMIN_ACTIVITY_CACHE.length} sự kiện`;
+        return;
+      }
       if (box && !ADMIN_ACTIVITY_CACHE.length) box.innerHTML = `<div class="loading-box" style="padding:20px;"><i class="fas fa-spinner fa-spin"></i> Đang cập nhật...</div>`;
       try {
         const { data, error } = await supabaseClient.rpc("admin_get_activity_feed", { p_limit: 250 });
         if (error) throw error;
         ADMIN_ACTIVITY_CACHE = Array.isArray(data) ? data : [];
+        ADMIN_ACTIVITY_LAST_FETCH = Date.now();
         paintAdminActivityFeed();
         const updated = document.getElementById("admin-activity-updated");
-        if (updated) updated.textContent = `Cập nhật lúc ${new Date().toLocaleString("vi-VN")} · Đã tải ${ADMIN_ACTIVITY_CACHE.length} sự kiện gần nhất`;
+        if (updated) updated.textContent = `Cập nhật lúc ${new Date(ADMIN_ACTIVITY_LAST_FETCH).toLocaleString("vi-VN")} · Đã tải ${ADMIN_ACTIVITY_CACHE.length} sự kiện gần nhất`;
       } catch (error) {
         console.error("Load Admin activity feed error:", error);
         if (box) box.innerHTML = `<div class="admin-activity-empty">Không tải được hoạt động. Hãy chạy file <b>huit_review_v4_admin_activity.sql</b> trong Supabase SQL Editor. <div style="margin-top:6px;font-size:.76rem;">${escapeHtml(error?.message || "Lỗi không xác định")}</div></div>`;
@@ -5506,9 +6288,34 @@
       }
     }
 
+    function renderAdminUserResultsList() {
+      const resultsBox = document.getElementById("admin-user-results");
+      if (!resultsBox) return;
+      if (!ADMIN_USER_RESULTS.length) {
+        resultsBox.innerHTML = `<div class="empty-state" style="padding:24px;"><p style="margin:0;font-size:.9rem;">Nhập ít nhất 2 ký tự để tìm tài khoản.</p></div>`;
+        return;
+      }
+      resultsBox.innerHTML = ADMIN_USER_RESULTS.map(u => `
+        <div class="user-admin-result ${ADMIN_SELECTED_USER?.id === u.id ? "selected" : ""}">
+          <div class="user-admin-result-main">
+            <div class="user-admin-avatar" aria-hidden="true">${escapeHtml(String(u.username || "U").charAt(0))}</div>
+            <div class="user-admin-identity">
+              <button type="button" class="user-admin-open-profile" onclick="adminSelectUser(${jsArg(u.id)})">@${escapeHtml(u.username || "")} <i class="fas fa-arrow-up-right-from-square" style="font-size:.68rem;"></i></button>
+              <span class="user-admin-display-name">${escapeHtml(u.display_name || "Chưa có tên hiển thị")}</span>
+              <div class="user-admin-result-meta">
+                <span class="user-state-pill ${u.account_status === "locked" ? "locked" : "active"}"><i class="fas ${u.account_status === "locked" ? "fa-lock" : "fa-check-circle"}"></i> ${u.account_status === "locked" ? "Đang khóa" : "Hoạt động"}</span>
+                <span class="user-admin-warning-count"><i class="fas fa-triangle-exclamation"></i> ${Number(u.warning_count || 0)}/4 cảnh cáo</span>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="btn btn-sm user-admin-select-btn" onclick="adminSelectUser(${jsArg(u.id)})"><i class="fas fa-user-gear"></i> Quản lý <i class="fas fa-arrow-right" style="font-size:.72rem;margin-left:2px;"></i></button>
+        </div>`).join("");
+    }
+
     window.adminOpenUserActivity = async function(userId, username, displayName = "", warningCount = 0, accountStatus = "active", lockReason = "") {
       if (!isCurrentAdmin() || !userId) return;
       activeAdminTab = "tab-users";
+      ADMIN_USER_PANEL_TAB = "history";
       syncAdminSidebarActive("tab-users");
       document.querySelectorAll(".admin-content").forEach(c => c.classList.toggle("active", c.id === "tab-users"));
       const field = document.getElementById("admin-user-search");
@@ -5523,14 +6330,10 @@
       };
       ADMIN_USER_RESULTS = [ADMIN_SELECTED_USER];
       ADMIN_USER_ACTIVITY_FILTER = { scope: "all", group: "all", search: "" };
-      const resultsBox = document.getElementById("admin-user-results");
-      if (resultsBox) resultsBox.innerHTML = `
-        <div class="user-admin-result selected">
-          <div class="user-admin-result-main"><div class="user-admin-avatar">${escapeHtml(String(ADMIN_SELECTED_USER.username || "U").charAt(0))}</div><div class="user-admin-identity"><button type="button" class="user-admin-open-profile" onclick="adminSelectUser(${jsArg(userId)})">@${escapeHtml(ADMIN_SELECTED_USER.username)}</button><span class="user-admin-display-name">${escapeHtml(ADMIN_SELECTED_USER.display_name)}</span><div class="user-admin-result-meta"><span class="user-state-pill ${ADMIN_SELECTED_USER.account_status === "locked" ? "locked" : "active"}">${ADMIN_SELECTED_USER.account_status === "locked" ? "Đang khóa" : "Hoạt động"}</span><span class="user-admin-warning-count">${ADMIN_SELECTED_USER.warning_count}/4 cảnh cáo</span></div></div></div>
-          <button type="button" class="btn btn-sm user-admin-select-btn" onclick="adminSelectUser(${jsArg(userId)})">Mở hồ sơ</button>
-        </div>`;
+      renderAdminUserResultsList();
       setAdminUserSearchMessage(`Đang xem hoạt động của @${ADMIN_SELECTED_USER.username}.`, "success");
       renderAdminSelectedUserPanel();
+      // Chỉ gọi tải lịch sử & hoạt động 1 lần duy nhất
       loadAdminUserHistory(userId);
       loadAdminUserActivity(userId);
       if (supabaseClient && username && !username.startsWith("tài khoản")) {
@@ -5538,16 +6341,25 @@
           const { data } = await supabaseClient.rpc("admin_search_users", { p_query: String(username).trim().toLowerCase() });
           const latest = Array.isArray(data) ? data.find(u => u.id === userId) : null;
           if (latest && ADMIN_SELECTED_USER?.id === userId) {
+            const changed = latest.warning_count !== ADMIN_SELECTED_USER.warning_count
+              || latest.account_status !== ADMIN_SELECTED_USER.account_status
+              || latest.lock_reason !== ADMIN_SELECTED_USER.lock_reason
+              || latest.display_name !== ADMIN_SELECTED_USER.display_name;
             ADMIN_SELECTED_USER = latest;
             ADMIN_USER_RESULTS = [latest];
-            if (resultsBox) resultsBox.innerHTML = `
-              <div class="user-admin-result selected">
-                <div class="user-admin-result-main"><div class="user-admin-avatar">${escapeHtml(String(latest.username || "U").charAt(0))}</div><div class="user-admin-identity"><button type="button" class="user-admin-open-profile" onclick="adminSelectUser(${jsArg(userId)})">@${escapeHtml(latest.username || "")}</button><span class="user-admin-display-name">${escapeHtml(latest.display_name || "Chưa có tên hiển thị")}</span><div class="user-admin-result-meta"><span class="user-state-pill ${latest.account_status === "locked" ? "locked" : "active"}">${latest.account_status === "locked" ? "Đang khóa" : "Hoạt động"}</span><span class="user-admin-warning-count">${Number(latest.warning_count || 0)}/4 cảnh cáo</span></div></div></div>
-                <button type="button" class="btn btn-sm user-admin-select-btn" onclick="adminSelectUser(${jsArg(userId)})">Mở hồ sơ</button>
-              </div>`;
-            renderAdminSelectedUserPanel();
-            loadAdminUserHistory(userId);
-            loadAdminUserActivity(userId);
+            renderAdminUserResultsList();
+            if (changed) {
+              const statusPill = document.getElementById("selected-user-status-pill");
+              const warnMeta = document.getElementById("selected-user-warn-meta");
+              const isLocked = latest.account_status === "locked";
+              if (statusPill) {
+                statusPill.className = `user-state-pill ${isLocked ? "locked" : "active"}`;
+                statusPill.textContent = isLocked ? "ĐANG BỊ KHÓA" : "ĐANG HOẠT ĐỘNG";
+              }
+              if (warnMeta) {
+                warnMeta.innerHTML = `<b style="color:var(--primary-dark);font-size:1rem;">${Number(latest.warning_count || 0)}/4 cảnh cáo</b>${isLocked && latest.lock_reason ? `<span>Lý do khóa: ${escapeHtml(latest.lock_reason)}</span>` : ""}`;
+              }
+            }
           }
         } catch (err) {
           console.warn("Silent refresh user profile skipped:", err);
@@ -5556,7 +6368,9 @@
     };
 
     window.adminOpenActivityTarget = function(targetType, targetId, reviewId, replyId) {
-      if (!isCurrentAdmin() || !targetId) return;
+      if (!isCurrentAdmin()) return;
+      if (targetType === "notice") { window.location.hash = "#/notices"; return; }
+      if (!targetId) return;
       const targetPath = targetType === "lecturer" ? "lecturer" : (targetType === "major" ? "major" : "");
       if (!targetPath) return;
       const params = new URLSearchParams();
@@ -5576,7 +6390,8 @@
         .on("postgres_changes", { event: "INSERT", schema: "public", table: "admin_activity_events" }, payload => {
           const userId = payload?.new?.user_id;
           const actorId = payload?.new?.performed_by;
-          if (document.getElementById("admin-activity-feed")) loadAdminActivityFeed();
+          ADMIN_ACTIVITY_LAST_FETCH = 0;
+          if (document.getElementById("admin-activity-feed")) loadAdminActivityFeed(true);
           if (ADMIN_SELECTED_USER?.id && (ADMIN_SELECTED_USER.id === userId || ADMIN_SELECTED_USER.id === actorId)) {
             loadAdminUserActivity(ADMIN_SELECTED_USER.id);
           }
@@ -5652,12 +6467,6 @@
       document.getElementById("adminQuickWarningModal")?.classList.add("active");
     };
 
-    // Giữ tương thích nếu có lời gọi cũ
-    window.adminOpenQuickWarning = function(userId, displayName, contentType, contentId, excerpt) {
-      const kind = contentType === "phản hồi" ? "reply" : "review";
-      const rev = kind === "review" ? REVIEWS_CACHE.find(r => r.id === contentId) : REVIEWS_CACHE.find(r => r.replies.some(x => x.id === contentId));
-      window.adminOpenCommentModeration("warn_and_delete", kind, rev?.id || contentId, kind === "reply" ? contentId : "", userId, displayName, excerpt);
-    };
 
     window.adminSubmitQuickWarning = async function() {
       if (!supabaseClient || !isCurrentAdmin() || !ADMIN_QUICK_WARNING_TARGET) return;
@@ -5783,21 +6592,8 @@
         if (error) throw error;
         ADMIN_USER_RESULTS = Array.isArray(data) ? data : [];
         setAdminUserSearchMessage(ADMIN_USER_RESULTS.length ? `Tìm thấy ${ADMIN_USER_RESULTS.length} tài khoản.` : "Không tìm thấy tài khoản phù hợp.", ADMIN_USER_RESULTS.length ? "success" : "info");
-        if (resultsBox) resultsBox.innerHTML = ADMIN_USER_RESULTS.length ? ADMIN_USER_RESULTS.map(u => `
-          <div class="user-admin-result ${ADMIN_SELECTED_USER?.id === u.id ? "selected" : ""}">
-            <div class="user-admin-result-main">
-              <div class="user-admin-avatar" aria-hidden="true">${escapeHtml(String(u.username || "U").charAt(0))}</div>
-              <div class="user-admin-identity">
-                <button type="button" class="user-admin-open-profile" onclick="adminSelectUser(${jsArg(u.id)})">@${escapeHtml(u.username || "")} <i class="fas fa-arrow-up-right-from-square" style="font-size:.68rem;"></i></button>
-                <span class="user-admin-display-name">${escapeHtml(u.display_name || "Chưa có tên hiển thị")}</span>
-                <div class="user-admin-result-meta">
-                  <span class="user-state-pill ${u.account_status === "locked" ? "locked" : "active"}"><i class="fas ${u.account_status === "locked" ? "fa-lock" : "fa-check-circle"}"></i> ${u.account_status === "locked" ? "Đang khóa" : "Hoạt động"}</span>
-                  <span class="user-admin-warning-count"><i class="fas fa-triangle-exclamation"></i> ${Number(u.warning_count || 0)}/4 cảnh cáo</span>
-                </div>
-              </div>
-            </div>
-            <button type="button" class="btn btn-sm user-admin-select-btn" onclick="adminSelectUser(${jsArg(u.id)})"><i class="fas fa-user-gear"></i> Quản lý <i class="fas fa-arrow-right" style="font-size:.72rem;margin-left:2px;"></i></button>
-          </div>`).join("") : `<div class="empty-state" style="padding:24px;"><p style="margin:0;font-size:.9rem;">Không tìm thấy người dùng.</p></div>`;
+        if (ADMIN_USER_RESULTS.length) renderAdminUserResultsList();
+        else if (resultsBox) resultsBox.innerHTML = `<div class="empty-state" style="padding:24px;"><p style="margin:0;font-size:.9rem;">Không tìm thấy người dùng.</p></div>`;
         if (ADMIN_SELECTED_USER) {
           const refreshed = ADMIN_USER_RESULTS.find(u => u.id === ADMIN_SELECTED_USER.id);
           if (refreshed) { ADMIN_SELECTED_USER = refreshed; renderAdminSelectedUserPanel(); loadAdminUserHistory(refreshed.id); loadAdminUserActivity(refreshed.id); }
@@ -5825,74 +6621,96 @@
       loadAdminUserActivity(userId);
     };
 
+    window.switchAdminUserTab = function(tab) {
+      ADMIN_USER_PANEL_TAB = ["mod", "notice", "history"].includes(tab) ? tab : "mod";
+      document.querySelectorAll(".user-panel-tab").forEach(b => b.classList.toggle("active", b.dataset.utab === ADMIN_USER_PANEL_TAB));
+      document.querySelectorAll(".user-panel-pane").forEach(p => p.classList.toggle("active", p.dataset.upane === ADMIN_USER_PANEL_TAB));
+    };
+
     function renderAdminSelectedUserPanel() {
       const panel = document.getElementById("admin-user-selected-panel");
       const u = ADMIN_SELECTED_USER;
       if (!panel) return;
       if (!u) { panel.innerHTML = ""; return; }
       const locked = u.account_status === "locked";
+      const curTab = ["mod", "notice", "history"].includes(ADMIN_USER_PANEL_TAB) ? ADMIN_USER_PANEL_TAB : "mod";
       panel.innerHTML = `
         <div class="user-admin-detail">
           <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap;">
             <div><h3><i class="fas fa-user-shield"></i> @${escapeHtml(u.username || "")}</h3><div style="color:var(--muted);font-size:.86rem;">${escapeHtml(u.display_name || "Chưa có tên hiển thị")}</div></div>
-            <span class="user-state-pill ${locked ? "locked" : "active"}">${locked ? "ĐANG BỊ KHÓA" : "ĐANG HOẠT ĐỘNG"}</span>
+            <span id="selected-user-status-pill" class="user-state-pill ${locked ? "locked" : "active"}">${locked ? "ĐANG BỊ KHÓA" : "ĐANG HOẠT ĐỘNG"}</span>
           </div>
-          <div class="user-admin-result-meta" style="margin:12px 0 6px;">
+          <div id="selected-user-warn-meta" class="user-admin-result-meta" style="margin:10px 0 4px;">
             <b style="color:var(--primary-dark);font-size:1rem;">${Number(u.warning_count || 0)}/4 cảnh cáo</b>
             ${locked && u.lock_reason ? `<span>Lý do khóa: ${escapeHtml(u.lock_reason)}</span>` : ""}
           </div>
-          <div class="admin-public-reply" style="margin-top:14px;">
-            <h3 style="font-size:1rem;margin:0 0 8px;"><i class="fas fa-bullhorn"></i> Gửi thông báo riêng</h3>
-            <label for="admin-user-notice-title">Tiêu đề</label>
-            <input id="admin-user-notice-title" type="text" maxlength="150" placeholder="VD: Cập nhật về tài khoản của bạn" />
-            <label for="admin-user-notice-message">Nội dung thông báo</label>
-            <textarea id="admin-user-notice-message" rows="3" maxlength="5000" placeholder="Viết nội dung người dùng sẽ mở chuông thông báo để đọc..."></textarea>
-            <button type="button" class="btn btn-sm btn-approve" style="margin-top:10px;" onclick="adminSendUserNotice()"><i class="fas fa-paper-plane"></i> Gửi thông báo</button>
+
+          <div class="user-panel-tabs" role="tablist" aria-label="Quản lý chi tiết tài khoản">
+            <button type="button" class="user-panel-tab ${curTab === "mod" ? "active" : ""}" data-utab="mod" onclick="switchAdminUserTab('mod')"><i class="fas fa-gavel"></i> Kiểm duyệt &amp; Khóa</button>
+            <button type="button" class="user-panel-tab ${curTab === "notice" ? "active" : ""}" data-utab="notice" onclick="switchAdminUserTab('notice')"><i class="fas fa-bullhorn"></i> Thông báo riêng</button>
+            <button type="button" class="user-panel-tab ${curTab === "history" ? "active" : ""}" data-utab="history" onclick="switchAdminUserTab('history')"><i class="fas fa-clock-rotate-left"></i> Lịch sử &amp; Hoạt động</button>
           </div>
-          <div class="admin-public-reply" style="border-color:#fecaca;background:#fffafa;">
-            <h3 style="font-size:1rem;margin:0 0 8px;color:#991b1b;"><i class="fas fa-triangle-exclamation"></i> Gửi cảnh cáo</h3>
-            <label style="margin:0 0 4px;">Chọn nhanh lý do cảnh cáo:</label>
-            <div id="admin-user-warn-chips" class="reason-chip-grid">${renderReasonChipsHTML(ADMIN_USER_WARN_PRESET_REASONS)}</div>
-            <label for="admin-user-warning-reason">Ghi chú thêm <span style="font-weight:500;color:var(--muted);">(không bắt buộc nếu đã chọn ở trên)</span></label>
-            <textarea id="admin-user-warning-reason" rows="2" maxlength="1000" placeholder="Có thể bỏ trống nếu đã bấm chọn lý do..."></textarea>
-            <button type="button" class="btn btn-sm btn-del" style="margin-top:10px;" onclick="adminWarnUser()"><i class="fas fa-gavel"></i> Gửi cảnh cáo</button>
-            <p class="auth-help" style="margin-top:8px;">Cảnh cáo thứ 4 sẽ tự động khóa tài khoản. Mỗi cảnh cáo đều được lưu trong lịch sử.</p>
-          </div>
-          <div style="margin-top:14px;">
-            <label style="margin:0 0 4px;">Chọn nhanh lý do gỡ cảnh cáo / khóa / mở khóa:</label>
-            <div id="admin-user-action-chips" class="reason-chip-grid">${renderReasonChipsHTML(ADMIN_USER_ACTION_PRESET_REASONS, "tone-blue")}</div>
-            <label for="admin-user-action-reason">Ghi chú thêm <span style="font-weight:500;color:var(--muted);">(không bắt buộc nếu đã chọn ở trên)</span></label>
-            <textarea id="admin-user-action-reason" rows="2" maxlength="1000" placeholder="Có thể bỏ trống nếu đã bấm chọn lý do..."></textarea>
-            <div class="user-admin-actions">
-              ${Number(u.warning_count || 0) > 0 ? `<button type="button" class="btn btn-sm" style="background:#64748b;" onclick="adminRemoveUserWarning()"><i class="fas fa-eraser"></i> Gỡ 1 cảnh cáo</button>` : ""}
-              ${locked
-                ? `<button type="button" class="btn btn-sm btn-approve" onclick="adminSetUserLock(false)"><i class="fas fa-lock-open"></i> Mở khóa tài khoản</button>`
-                : `<button type="button" class="btn btn-sm btn-del" onclick="adminSetUserLock(true)"><i class="fas fa-lock"></i> Khóa tài khoản</button>`}
+
+          <div class="user-panel-pane ${curTab === "mod" ? "active" : ""}" data-upane="mod">
+            <div class="admin-public-reply" style="margin-top:0;border-color:#fecaca;background:#fffafa;">
+              <h3 style="font-size:1rem;margin:0 0 8px;color:#991b1b;"><i class="fas fa-triangle-exclamation"></i> Gửi cảnh cáo</h3>
+              <label style="margin:0 0 4px;">Chọn nhanh lý do cảnh cáo:</label>
+              <div id="admin-user-warn-chips" class="reason-chip-grid">${renderReasonChipsHTML(ADMIN_USER_WARN_PRESET_REASONS)}</div>
+              <label for="admin-user-warning-reason">Ghi chú thêm <span style="font-weight:500;color:var(--muted);">(không bắt buộc nếu đã chọn ở trên)</span></label>
+              <textarea id="admin-user-warning-reason" rows="2" maxlength="1000" placeholder="Có thể bỏ trống nếu đã bấm chọn lý do..."></textarea>
+              <button type="button" class="btn btn-sm btn-del" style="margin-top:10px;" onclick="adminWarnUser(this)"><i class="fas fa-gavel"></i> Gửi cảnh cáo</button>
+              <p class="auth-help" style="margin-top:8px;">Cảnh cáo thứ 4 sẽ tự động khóa tài khoản. Mỗi cảnh cáo đều được lưu trong lịch sử.</p>
             </div>
-            <p class="auth-help">Gỡ cảnh cáo không tự mở khóa tài khoản. Khi số cảnh cáo còn dưới 4, Admin có thể thực hiện mở khóa riêng.</p>
-          </div>
-          <div class="user-admin-history"><b><i class="fas fa-scale-balanced"></i> Lịch sử cảnh cáo / quản trị</b><div id="admin-user-history" style="margin-top:6px;color:var(--muted);font-size:.84rem;">Đang tải lịch sử...</div></div>
-          <div class="user-admin-history">
-            <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px;">
-              <b><i class="fas fa-clock-rotate-left"></i> Toàn bộ lịch sử hoạt động của @${escapeHtml(u.username || "")}</b>
-              <button type="button" class="btn btn-sm" style="margin:0;" onclick="loadAdminUserActivity(${jsArg(u.id)})"><i class="fas fa-rotate"></i> Làm mới</button>
+            <div style="margin-top:14px;">
+              <label style="margin:0 0 4px;">Chọn nhanh lý do gỡ cảnh cáo / khóa / mở khóa:</label>
+              <div id="admin-user-action-chips" class="reason-chip-grid">${renderReasonChipsHTML(ADMIN_USER_ACTION_PRESET_REASONS, "tone-blue")}</div>
+              <label for="admin-user-action-reason">Ghi chú thêm <span style="font-weight:500;color:var(--muted);">(không bắt buộc nếu đã chọn ở trên)</span></label>
+              <textarea id="admin-user-action-reason" rows="2" maxlength="1000" placeholder="Có thể bỏ trống nếu đã bấm chọn lý do..."></textarea>
+              <div class="user-admin-actions">
+                ${Number(u.warning_count || 0) > 0 ? `<button type="button" class="btn btn-sm" style="background:#64748b;" onclick="adminRemoveUserWarning(this)"><i class="fas fa-eraser"></i> Gỡ 1 cảnh cáo</button>` : ""}
+                ${locked
+                  ? `<button type="button" class="btn btn-sm btn-approve" onclick="adminSetUserLock(false, this)"><i class="fas fa-lock-open"></i> Mở khóa tài khoản</button>`
+                  : `<button type="button" class="btn btn-sm btn-del" onclick="adminSetUserLock(true, this)"><i class="fas fa-lock"></i> Khóa tài khoản</button>`}
+              </div>
+              <p class="auth-help">Gỡ cảnh cáo không tự mở khóa tài khoản. Khi số cảnh cáo còn dưới 4, Admin có thể thực hiện mở khóa riêng.</p>
             </div>
-            <div class="activity-controls" style="margin-bottom:10px;">
-              <div class="activity-controls-top">
-                <div class="activity-filter-pills" id="user-activity-filter-pills">
-                  <button type="button" class="activity-filter-pill ${ADMIN_USER_ACTIVITY_FILTER.group === "all" ? "active" : ""}" data-group="all" onclick="setAdminActivityFilter('user','all')">Tất cả</button>
-                  <button type="button" class="activity-filter-pill ${ADMIN_USER_ACTIVITY_FILTER.group === "posts" ? "active" : ""}" data-group="posts" onclick="setAdminActivityFilter('user','posts')">Đăng &amp; Sửa</button>
-                  <button type="button" class="activity-filter-pill ${ADMIN_USER_ACTIVITY_FILTER.group === "deletes" ? "active" : ""}" data-group="deletes" onclick="setAdminActivityFilter('user','deletes')">Xóa</button>
-                  <button type="button" class="activity-filter-pill ${ADMIN_USER_ACTIVITY_FILTER.group === "moderation" ? "active" : ""}" data-group="moderation" onclick="setAdminActivityFilter('user','moderation')">Vi phạm &amp; Cảnh cáo</button>
-                  <button type="button" class="activity-filter-pill ${ADMIN_USER_ACTIVITY_FILTER.group === "other" ? "active" : ""}" data-group="other" onclick="setAdminActivityFilter('user','other')">Khác</button>
-                </div>
-                <div class="activity-search-mini">
-                  <i class="fas fa-search" aria-hidden="true"></i>
-                  <input type="search" value="${escapeHtml(ADMIN_USER_ACTIVITY_FILTER.search)}" placeholder="Tìm trong lịch sử..." oninput="setAdminActivitySearch('user', this.value)" autocomplete="off" />
+          </div>
+
+          <div class="user-panel-pane ${curTab === "notice" ? "active" : ""}" data-upane="notice">
+            <div class="admin-public-reply" style="margin-top:0;">
+              <h3 style="font-size:1rem;margin:0 0 8px;"><i class="fas fa-bullhorn"></i> Gửi thông báo riêng</h3>
+              <label for="admin-user-notice-title">Tiêu đề</label>
+              <input id="admin-user-notice-title" type="text" maxlength="150" placeholder="VD: Cập nhật về tài khoản của bạn" />
+              <label for="admin-user-notice-message">Nội dung thông báo</label>
+              <textarea id="admin-user-notice-message" rows="3" maxlength="5000" placeholder="Viết nội dung người dùng sẽ mở chuông thông báo để đọc..."></textarea>
+              <button type="button" class="btn btn-sm btn-approve" style="margin-top:10px;" onclick="adminSendUserNotice(this)"><i class="fas fa-paper-plane"></i> Gửi thông báo</button>
+            </div>
+          </div>
+
+          <div class="user-panel-pane ${curTab === "history" ? "active" : ""}" data-upane="history">
+            <div class="user-admin-history" style="margin-top:0;padding-top:0;border-top:0;"><b><i class="fas fa-scale-balanced"></i> Lịch sử cảnh cáo / quản trị</b><div id="admin-user-history" style="margin-top:6px;color:var(--muted);font-size:.84rem;">Đang tải lịch sử...</div></div>
+            <div class="user-admin-history">
+              <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px;">
+                <b><i class="fas fa-clock-rotate-left"></i> Toàn bộ lịch sử hoạt động của @${escapeHtml(u.username || "")}</b>
+                <button type="button" class="btn btn-sm" onclick="loadAdminUserActivity(${jsArg(u.id)})"><i class="fas fa-rotate"></i> Làm mới</button>
+              </div>
+              <div class="activity-controls" style="margin-bottom:10px;">
+                <div class="activity-controls-top">
+                  <div class="activity-filter-pills" id="user-activity-filter-pills">
+                    <button type="button" class="activity-filter-pill ${ADMIN_USER_ACTIVITY_FILTER.group === "all" ? "active" : ""}" data-group="all" onclick="setAdminActivityFilter('user','all')">Tất cả</button>
+                    <button type="button" class="activity-filter-pill ${ADMIN_USER_ACTIVITY_FILTER.group === "posts" ? "active" : ""}" data-group="posts" onclick="setAdminActivityFilter('user','posts')">Đăng &amp; Sửa</button>
+                    <button type="button" class="activity-filter-pill ${ADMIN_USER_ACTIVITY_FILTER.group === "deletes" ? "active" : ""}" data-group="deletes" onclick="setAdminActivityFilter('user','deletes')">Xóa</button>
+                    <button type="button" class="activity-filter-pill ${ADMIN_USER_ACTIVITY_FILTER.group === "moderation" ? "active" : ""}" data-group="moderation" onclick="setAdminActivityFilter('user','moderation')">Vi phạm &amp; Cảnh cáo</button>
+                    <button type="button" class="activity-filter-pill ${ADMIN_USER_ACTIVITY_FILTER.group === "other" ? "active" : ""}" data-group="other" onclick="setAdminActivityFilter('user','other')">Khác</button>
+                  </div>
+                  <div class="activity-search-mini">
+                    <i class="fas fa-search" aria-hidden="true"></i>
+                    <input type="search" value="${escapeHtml(ADMIN_USER_ACTIVITY_FILTER.search)}" placeholder="Tìm trong lịch sử..." oninput="setAdminActivitySearch('user', this.value)" autocomplete="off" />
+                  </div>
                 </div>
               </div>
+              <div id="admin-user-activity" style="margin-top:8px;"><div class="loading-box" style="padding:14px;">Đang tải hoạt động...</div></div>
             </div>
-            <div id="admin-user-activity" style="margin-top:8px;"><div class="loading-box" style="padding:14px;">Đang tải hoạt động...</div></div>
           </div>
         </div>`;
     }
@@ -5924,83 +6742,103 @@
       else if (resultsBox) resultsBox.innerHTML = "";
     }
 
-    window.adminSendUserNotice = async function() {
+    async function withButtonLock(btn, busyLabel, fn) {
+      if (btn?.disabled) return;
+      const origHtml = btn ? btn.innerHTML : "";
+      if (btn) { btn.disabled = true; btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${busyLabel}`; }
+      try { return await fn(); }
+      finally { if (btn) { btn.disabled = false; btn.innerHTML = origHtml; } }
+    }
+
+    window.adminSendUserNotice = async function(btn) {
       if (!supabaseClient || !isCurrentAdmin() || !ADMIN_SELECTED_USER) return;
       const title = document.getElementById("admin-user-notice-title")?.value.trim() || "";
       const message = document.getElementById("admin-user-notice-message")?.value.trim() || "";
-      if (title.length < 4 || title.length > 150) { alert("Tiêu đề cần từ 4 đến 150 ký tự."); return; }
-      if (message.length < 5 || message.length > 5000) { alert("Nội dung cần từ 5 đến 5.000 ký tự."); return; }
-      try {
-        const { error } = await supabaseClient.rpc("admin_send_user_notification", {
-          p_user_id: ADMIN_SELECTED_USER.id, p_type: "notice", p_title: title, p_message: message
-        });
-        if (error) throw error;
-        alert("Đã gửi thông báo. Người dùng sẽ nhận được tại biểu tượng chuông và mở ra để đọc.");
-        document.getElementById("admin-user-notice-title").value = "";
-        document.getElementById("admin-user-notice-message").value = "";
-        await refreshAdminSelectedUser();
-      } catch (error) {
-        console.error("Send user notice error:", error);
-        alert("Không gửi được thông báo: " + (error?.message || "Lỗi không xác định") + ". Hãy chạy file SQL thiết lập Supabase đi kèm.");
-      }
+      if (title.length < 4 || title.length > 150) { showToast("Tiêu đề cần từ 4 đến 150 ký tự.", "error"); return; }
+      if (message.length < 5 || message.length > 5000) { showToast("Nội dung cần từ 5 đến 5.000 ký tự.", "error"); return; }
+      await withButtonLock(btn, "Đang gửi...", async () => {
+        try {
+          const { error } = await supabaseClient.rpc("admin_send_user_notification", {
+            p_user_id: ADMIN_SELECTED_USER.id, p_type: "notice", p_title: title, p_message: message
+          });
+          if (error) throw error;
+          ADMIN_ACTIVITY_LAST_FETCH = 0;
+          showToast("Đã gửi thông báo. Người dùng sẽ nhận được tại biểu tượng chuông.", "success");
+          document.getElementById("admin-user-notice-title").value = "";
+          document.getElementById("admin-user-notice-message").value = "";
+          await refreshAdminSelectedUser();
+        } catch (error) {
+          console.error("Send user notice error:", error);
+          showToast("Không gửi được thông báo: " + (error?.message || "Lỗi không xác định"), "error");
+        }
+      });
     };
 
-    window.adminWarnUser = async function() {
+    window.adminWarnUser = async function(btn) {
       if (!supabaseClient || !isCurrentAdmin() || !ADMIN_SELECTED_USER) return;
       const reason = collectReasonInput("admin-user-warn-chips", "admin-user-warning-reason");
-      if (!reason || reason.length > 1000) { alert("Vui lòng chọn ít nhất 1 lý do có sẵn hoặc nhập ghi chú (tối đa 1.000 ký tự)."); return; }
+      if (!reason || reason.length > 1000) { showToast("Vui lòng chọn ít nhất 1 lý do có sẵn hoặc nhập ghi chú (tối đa 1.000 ký tự).", "error"); return; }
       if (!(await appConfirm(`Gửi một cảnh cáo cho @${ADMIN_SELECTED_USER.username}? Cảnh cáo thứ 4 sẽ tự động khóa tài khoản.`, { title: "Gửi cảnh cáo", confirmText: "Gửi cảnh cáo" }))) return;
-      try {
-        const { data, error } = await supabaseClient.rpc("admin_warn_user", { p_user_id: ADMIN_SELECTED_USER.id, p_reason: reason });
-        if (error) throw error;
-        const result = Array.isArray(data) ? data[0] : data;
-        resetReasonInput("admin-user-warn-chips", "admin-user-warning-reason");
-        alert(result?.locked
-          ? `Đã gửi cảnh cáo thứ ${result.warning_count}. Tài khoản đã tự động bị khóa.`
-          : `Đã gửi cảnh cáo. Người dùng hiện có ${result?.warning_count ?? "?"}/4 cảnh cáo.`);
-        await refreshAdminSelectedUser();
-      } catch (error) {
-        console.error("Warn user error:", error);
-        alert("Không gửi được cảnh cáo: " + (error?.message || "Lỗi không xác định"));
-      }
+      await withButtonLock(btn, "Đang gửi...", async () => {
+        try {
+          const { data, error } = await supabaseClient.rpc("admin_warn_user", { p_user_id: ADMIN_SELECTED_USER.id, p_reason: reason });
+          if (error) throw error;
+          const result = Array.isArray(data) ? data[0] : data;
+          ADMIN_ACTIVITY_LAST_FETCH = 0;
+          resetReasonInput("admin-user-warn-chips", "admin-user-warning-reason");
+          showToast(result?.locked
+            ? `Đã gửi cảnh cáo thứ ${result.warning_count}. Tài khoản đã tự động bị khóa.`
+            : `Đã gửi cảnh cáo. Người dùng hiện có ${result?.warning_count ?? "?"}/4 cảnh cáo.`, "success");
+          await refreshAdminSelectedUser();
+        } catch (error) {
+          console.error("Warn user error:", error);
+          showToast("Không gửi được cảnh cáo: " + (error?.message || "Lỗi không xác định"), "error");
+        }
+      });
     };
 
-    window.adminRemoveUserWarning = async function() {
+    window.adminRemoveUserWarning = async function(btn) {
       if (!supabaseClient || !isCurrentAdmin() || !ADMIN_SELECTED_USER) return;
       const reason = collectReasonInput("admin-user-action-chips", "admin-user-action-reason");
-      if (!reason || reason.length > 1000) { alert("Vui lòng chọn ít nhất 1 lý do có sẵn hoặc nhập ghi chú (tối đa 1.000 ký tự)."); return; }
+      if (!reason || reason.length > 1000) { showToast("Vui lòng chọn ít nhất 1 lý do có sẵn hoặc nhập ghi chú (tối đa 1.000 ký tự).", "error"); return; }
       if (!(await appConfirm(`Gỡ một cảnh cáo của @${ADMIN_SELECTED_USER.username}? Lịch sử cảnh cáo cũ vẫn được lưu.`, { title: "Gỡ cảnh cáo", confirmText: "Gỡ cảnh cáo", danger: false }))) return;
-      try {
-        const { data, error } = await supabaseClient.rpc("admin_remove_user_warning", { p_user_id: ADMIN_SELECTED_USER.id, p_reason: reason });
-        if (error) throw error;
-        const result = Array.isArray(data) ? data[0] : data;
-        resetReasonInput("admin-user-action-chips", "admin-user-action-reason");
-        alert(`Đã gỡ một cảnh cáo. Số cảnh cáo còn lại: ${result?.warning_count ?? "?"}.`);
-        await refreshAdminSelectedUser();
-      } catch (error) {
-        console.error("Remove warning error:", error);
-        alert("Không gỡ được cảnh cáo: " + (error?.message || "Lỗi không xác định"));
-      }
+      await withButtonLock(btn, "Đang xử lý...", async () => {
+        try {
+          const { data, error } = await supabaseClient.rpc("admin_remove_user_warning", { p_user_id: ADMIN_SELECTED_USER.id, p_reason: reason });
+          if (error) throw error;
+          const result = Array.isArray(data) ? data[0] : data;
+          ADMIN_ACTIVITY_LAST_FETCH = 0;
+          resetReasonInput("admin-user-action-chips", "admin-user-action-reason");
+          showToast(`Đã gỡ một cảnh cáo. Số cảnh cáo còn lại: ${result?.warning_count ?? "?"}.`, "success");
+          await refreshAdminSelectedUser();
+        } catch (error) {
+          console.error("Remove warning error:", error);
+          showToast("Không gỡ được cảnh cáo: " + (error?.message || "Lỗi không xác định"), "error");
+        }
+      });
     };
 
-    window.adminSetUserLock = async function(locked) {
+    window.adminSetUserLock = async function(locked, btn) {
       if (!supabaseClient || !isCurrentAdmin() || !ADMIN_SELECTED_USER) return;
       const reason = collectReasonInput("admin-user-action-chips", "admin-user-action-reason");
-      if (!reason || reason.length > 1000) { alert("Vui lòng chọn ít nhất 1 lý do có sẵn hoặc nhập ghi chú (tối đa 1.000 ký tự)."); return; }
+      if (!reason || reason.length > 1000) { showToast("Vui lòng chọn ít nhất 1 lý do có sẵn hoặc nhập ghi chú (tối đa 1.000 ký tự).", "error"); return; }
       const action = locked ? "khóa" : "mở khóa";
       if (!(await appConfirm(`Bạn chắc chắn muốn ${action} tài khoản @${ADMIN_SELECTED_USER.username}?`, { title: locked ? "Khóa tài khoản" : "Mở khóa tài khoản", confirmText: locked ? "Khóa ngay" : "Mở khóa", danger: Boolean(locked) }))) return;
-      try {
-        const { error } = await supabaseClient.rpc("admin_set_user_lock", {
-          p_user_id: ADMIN_SELECTED_USER.id, p_locked: Boolean(locked), p_reason: reason
-        });
-        if (error) throw error;
-        resetReasonInput("admin-user-action-chips", "admin-user-action-reason");
-        alert(`Đã ${action} tài khoản và gửi thông báo cho người dùng.`);
-        await refreshAdminSelectedUser();
-      } catch (error) {
-        console.error("Set user lock error:", error);
-        alert("Không thể " + action + " tài khoản: " + (error?.message || "Lỗi không xác định"));
-      }
+      await withButtonLock(btn, "Đang xử lý...", async () => {
+        try {
+          const { error } = await supabaseClient.rpc("admin_set_user_lock", {
+            p_user_id: ADMIN_SELECTED_USER.id, p_locked: Boolean(locked), p_reason: reason
+          });
+          if (error) throw error;
+          ADMIN_ACTIVITY_LAST_FETCH = 0;
+          resetReasonInput("admin-user-action-chips", "admin-user-action-reason");
+          showToast(`Đã ${action} tài khoản và gửi thông báo cho người dùng.`, "success");
+          await refreshAdminSelectedUser();
+        } catch (error) {
+          console.error("Set user lock error:", error);
+          showToast("Không thể " + action + " tài khoản: " + (error?.message || "Lỗi không xác định"), "error");
+        }
+      });
     };
 
     /* ================= ADMIN ACTIONS ================= */
@@ -6040,22 +6878,25 @@
       }
     };
 
-    window.adminSaveSupportTicket = async function(id) {
+    window.adminSaveSupportTicket = async function(id, btn) {
       if (!supabaseClient || !isCurrentAdmin()) return;
       const status = document.getElementById(`support-status-${id}`)?.value;
       const adminNote = document.getElementById(`support-note-${id}`)?.value.trim() || "";
-      if (!["new", "processing", "resolved"].includes(status)) { alert("Trạng thái không hợp lệ."); return; }
-      const payload = {
-        status,
-        admin_note: adminNote,
-        handled_by: currentUser.id,
-        handled_at: status === "resolved" ? new Date().toISOString() : null
-      };
-      const { error } = await supabaseClient.from("support_tickets").update(payload).eq("id", id);
-      if (error) { alert("Không cập nhật được yêu cầu hỗ trợ: " + error.message); return; }
-      await syncFromSupabase("moderation");
-      alert("Đã lưu trạng thái và ghi chú xử lý.");
-      route({ preserveScroll: true });
+      if (!["new", "processing", "resolved"].includes(status)) { showToast("Trạng thái không hợp lệ.", "error"); return; }
+      await withButtonLock(btn, "Đang lưu...", async () => {
+        const payload = {
+          status,
+          admin_note: adminNote,
+          handled_by: currentUser.id,
+          handled_at: status === "resolved" ? new Date().toISOString() : null
+        };
+        const { error } = await supabaseClient.from("support_tickets").update(payload).eq("id", id);
+        if (error) { showToast("Không cập nhật được yêu cầu hỗ trợ: " + error.message, "error"); return; }
+        ADMIN_ACTIVITY_LAST_FETCH = 0;
+        await syncFromSupabase("moderation");
+        showToast("Đã lưu trạng thái và ghi chú xử lý.", "success");
+        route({ preserveScroll: true });
+      });
     };
 
     window.adminDeleteSupportTicket = async function(id) {
@@ -6315,14 +7156,17 @@
       else route({ preserveScroll: true });
     };
 
-    window.approveLecturer = async function(id) {
+    window.approveLecturer = async function(id, btn) {
       if (!supabaseClient || !isCurrentAdmin()) return;
-      const { data, error } = await supabaseClient.from("lecturer_records").update({ status: "approved" }).eq("id", id).select("id");
-      if (error) { alert("Lỗi duyệt: " + supabaseErrorText(error)); return; }
-      if (!data?.length) { alert("Không duyệt được giảng viên: Supabase trả về 0 dòng bị cập nhật. Kiểm tra RLS hoặc bản ghi đã thay đổi."); return; }
-      await syncFromSupabase("catalog");
-      alert("Đã duyệt giảng viên!");
-      route({ preserveScroll: true });
+      await withButtonLock(btn, "Đang duyệt...", async () => {
+        const { data, error } = await supabaseClient.from("lecturer_records").update({ status: "approved" }).eq("id", id).select("id");
+        if (error) { showToast("Lỗi duyệt: " + supabaseErrorText(error), "error"); return; }
+        if (!data?.length) { showToast("Không duyệt được giảng viên: Supabase trả về 0 dòng bị cập nhật.", "error"); return; }
+        ADMIN_ACTIVITY_LAST_FETCH = 0;
+        await syncFromSupabase("catalog");
+        showToast("Đã duyệt giảng viên!", "success");
+        route({ preserveScroll: true });
+      });
     };
     window.rejectLecturer = async function(id) {
       if (!supabaseClient || !isCurrentAdmin() || !(await appConfirm("Từ chối và xóa vĩnh viễn đề xuất giảng viên này?", { title: "Từ chối đề xuất", confirmText: "Từ chối & Xóa" }))) return;
@@ -6364,28 +7208,7 @@
       showToast("Đã gỡ từ khóa khỏi bộ lọc.", "success");
       route({ preserveScroll: true });
     };
-    window.deleteReview = async function(reviewId, reportId) {
-      if (!supabaseClient || !isCurrentAdmin() || !(await appConfirm("Xóa đánh giá vi phạm này?", { title: "Xóa đánh giá", confirmText: "Xóa" }))) return;
-      const deleted = await checkedDelete(supabaseClient.from("reviews").delete().eq("id", reviewId), "Xóa đánh giá vi phạm");
-      if (!deleted.ok) return;
-      if (reportId) {
-        const reportDelete = await checkedDelete(supabaseClient.from("reports").delete().eq("id", reportId), "Đóng báo cáo");
-        if (!reportDelete.ok) { await Promise.all([syncFromSupabase("reviews"), syncFromSupabase("moderation")]); route({ preserveScroll: true }); return; }
-      }
-      await Promise.all([syncFromSupabase("reviews"), syncFromSupabase("moderation")]);
-      route({ preserveScroll: true });
-    };
-    window.deleteReportedReply = async function(reviewId, replyId, reportId) {
-      if (!supabaseClient || !isCurrentAdmin() || !(await appConfirm("Xóa phản hồi vi phạm này?", { title: "Xóa phản hồi", confirmText: "Xóa" }))) return;
-      const deleted = await checkedDelete(supabaseClient.from("review_replies").delete().eq("id", replyId), "Xóa phản hồi vi phạm");
-      if (!deleted.ok) return;
-      if (reportId) {
-        const reportDelete = await checkedDelete(supabaseClient.from("reports").delete().eq("id", reportId), "Đóng báo cáo");
-        if (!reportDelete.ok) { await Promise.all([syncFromSupabase("reviews"), syncFromSupabase("moderation")]); route({ preserveScroll: true }); return; }
-      }
-      await Promise.all([syncFromSupabase("reviews"), syncFromSupabase("moderation")]);
-      route({ preserveScroll: true });
-    };
+
     window.dismissReport = async function(reportId) {
       if (!supabaseClient || !isCurrentAdmin()) return;
       const deleted = await checkedDelete(supabaseClient.from("reports").delete().eq("id", reportId), "Đóng báo cáo");
@@ -6393,22 +7216,9 @@
       await syncFromSupabase("moderation");
       route({ preserveScroll: true });
     };
-    window.adminDeleteReview = async function(reviewId) {
-      if (!supabaseClient || !isCurrentAdmin() || !(await appConfirm("Xóa đánh giá này?", { title: "Xóa đánh giá", confirmText: "Xóa" }))) return;
-      const deleted = await checkedDelete(supabaseClient.from("reviews").delete().eq("id", reviewId), "Xóa đánh giá");
-      if (!deleted.ok) return;
-      await syncFromSupabase("reviews");
-      rerender();
-    };
-    window.adminDeleteReply = async function(reviewId, replyId) {
-      if (!supabaseClient || !isCurrentAdmin() || !(await appConfirm("Bạn có chắc muốn xóa phản hồi này?", { title: "Xóa phản hồi", confirmText: "Xóa" }))) return;
-      const deleted = await checkedDelete(supabaseClient.from("review_replies").delete().eq("id", replyId), "Xóa phản hồi");
-      if (!deleted.ok) return;
-      await syncFromSupabase("reviews");
-      rerender();
-    };
+
     window.adminDeleteNotice = async function(id) {
-      if (!supabaseClient || !isCurrentAdmin() || !(await appConfirm("Xóa thông báo này khỏi Trang chủ?", { title: "Xóa thông báo", confirmText: "Xóa" }))) return;
+      if (!supabaseClient || !isCurrentAdmin() || !(await appConfirm("Xóa thông báo này khỏi Trang chủ và mục Thông báo?", { title: "Xóa thông báo", confirmText: "Xóa" }))) return;
       const deleted = await checkedDelete(supabaseClient.from("notices").delete().eq("id", id), "Xóa thông báo");
       if (!deleted.ok) return;
       await syncFromSupabase("notices");
@@ -6516,8 +7326,9 @@
     function getRouteNavIndex(parts) {
       if (parts.length === 0) return 0;
       if (parts[0] === "majors" || parts[0] === "major" || (parts[0] === "faculty" && parts[2] === "majors")) return 1;
-      if (parts[0] === "lecturers" || parts[0] === "lecturer" || parts[0] === "faculty") return 2;
-      if (parts[0] === "feedback" || parts[0] === "support" || parts[0] === "response") return 3;
+      if (parts[0] === "lecturers" || parts[0] === "lecturer" || parts[0] === "faculty" || parts[0] === "add-lecturer") return 2;
+      if (parts[0] === "notices") return 3;
+      if (parts[0] === "feedback" || parts[0] === "support" || parts[0] === "response") return 4;
       return -1;
     }
 
@@ -6549,7 +7360,8 @@
       if (nextNavIndex === 0) document.querySelector('.main-nav a[href="#/"]')?.classList.add("active");
       else if (nextNavIndex === 1) document.querySelector('.main-nav a[href="#/majors"]')?.classList.add("active");
       else if (nextNavIndex === 2) document.querySelector('.main-nav a[href="#/lecturers"]')?.classList.add("active");
-      else if (nextNavIndex === 3) document.querySelector('.main-nav a[href="#/support"]')?.classList.add("active");
+      else if (nextNavIndex === 3) document.querySelector('.main-nav a[href="#/notices"]')?.classList.add("active");
+      else if (nextNavIndex === 4) document.querySelector('.main-nav a[href="#/support"]')?.classList.add("active");
       requestAnimationFrame(() => syncMainNavPill(!LAST_ROUTE_STATE.initialized));
 
       const token = ++ROUTE_TRANSITION_TOKEN;
@@ -6579,6 +7391,7 @@
         else if (parts[0] === "major") html = viewMajor(parts[1], highlightReviewId, highlightReplyId);
         else if (parts[0] === "lecturers") html = viewLecturers();
         else if (parts[0] === "lecturer") html = viewLecturer(parts[1], highlightReviewId, highlightReplyId);
+        else if (parts[0] === "notices") html = viewNotices();
         else if (parts[0] === "feedback") html = viewSupportCenter("report-info");
         else if (parts[0] === "support") html = viewSupportCenter("report-info");
         else if (parts[0] === "response") html = `<div class="loading-box"><i class="fas fa-spinner fa-spin"></i> Đang tải phản hồi...</div>`;
@@ -6586,10 +7399,10 @@
         else if (parts[0] === "admin") html = viewAdmin();
         else html = `<div class="empty-state fade-up"><h2>404</h2><a href="#/" class="btn">Về trang chủ</a></div>`;
 
-        appEl.classList.remove("page-leave-left", "page-leave-right", "page-leave-up", "page-enter-up", "page-enter-right", "page-enter-left");
+        const isFirstLoad = !LAST_ROUTE_STATE.initialized;
         appEl.classList.toggle("is-admin-wide", parts[0] === "admin" && isCurrentAdmin());
+        appEl.classList.toggle("is-first-load", isFirstLoad);
         appEl.classList.toggle("is-in-place", preserveScroll);
-        appEl.classList.toggle("is-page-transitioning", shouldAnimatePage);
         appEl.innerHTML = html;
 
         if (currentUser && currentProfile) {
@@ -6620,12 +7433,40 @@
         if (parts[0] === "admin" && isCurrentAdmin()) {
           if (activeAdminTab === "tab-admin-activity" && document.getElementById("admin-activity-feed")) loadAdminActivityFeed();
           if (activeAdminTab === "tab-manage" && document.getElementById("admin-catalog-results")) renderAdminCatalogResults();
-          if (document.getElementById("admin-user-search") && !preserveScroll) {
-            ADMIN_USER_RESULTS = [];
-            ADMIN_SELECTED_USER = null;
+          if (document.getElementById("admin-user-search")) {
+            if (!preserveScroll) {
+              ADMIN_USER_RESULTS = [];
+              ADMIN_SELECTED_USER = null;
+            } else {
+              if (ADMIN_USER_RESULTS.length) renderAdminUserResultsList();
+              if (ADMIN_SELECTED_USER) {
+                renderAdminSelectedUserPanel();
+                loadAdminUserHistory(ADMIN_SELECTED_USER.id);
+                loadAdminUserActivity(ADMIN_SELECTED_USER.id);
+              }
+            }
           }
           requestAnimationFrame(() => syncSegmentedPills(true));
         }
+
+        // Cập nhật tiêu đề tab trình duyệt theo trang hiện tại
+        let pageTitle = "HUIT Review — Tham khảo ngành học và chia sẻ trải nghiệm học tập";
+        if (parts[0] === "majors") pageTitle = "Danh sách ngành học — HUIT Review";
+        else if (parts[0] === "lecturers") pageTitle = "Danh sách giảng viên — HUIT Review";
+        else if (parts[0] === "major" && parts[1]) pageTitle = `${getMajor(parts[1])?.name || "Ngành học"} — HUIT Review`;
+        else if (parts[0] === "lecturer" && parts[1]) pageTitle = `GV ${getLecturer(parts[1])?.name || "Giảng viên"} — HUIT Review`;
+        else if (parts[0] === "faculty" && parts[1]) pageTitle = `${FACULTY_BY_ID[parts[1]]?.name || "Khoa"} — HUIT Review`;
+        else if (parts[0] === "notices") pageTitle = "Thông báo từ Admin — HUIT Review";
+        else if (parts[0] === "support" || parts[0] === "feedback") pageTitle = "Hỗ trợ & Góp ý — HUIT Review";
+        else if (parts[0] === "add-lecturer") pageTitle = "Đề xuất giảng viên — HUIT Review";
+        else if (parts[0] === "admin") pageTitle = "Quản trị viên — HUIT Review";
+        else if (parts[0] === "response") pageTitle = "Phản hồi từ Admin — HUIT Review";
+        document.title = pageTitle;
+
+        // Ẩn thanh tìm kiếm mobile khi chuyển trang & đồng bộ trạng thái header trang chủ
+        if (!preserveScroll) toggleMobileSearch(false);
+        syncHomeTopHeaderState();
+        requestAnimationFrame(() => syncMainNavPill(false));
         if (document.getElementById("lecturerGrid")) applyLecturerFilters(false);
         if (document.getElementById("heroSearch")) initHeroSearch();
         if (document.querySelector("details.home-intro-accordion")) initSmoothAccordions();
@@ -6644,18 +7485,22 @@
           window.scrollTo({ top: preservedScrollY, left: 0, behavior: "instant" });
         }
 
-        // Pha đi vào mượt mà theo hướng chuyển mục
+        // Đổi trực tiếp từ trạng thái leave -> enter trong cùng 1 khung hình (không chớp trắng, không kích hoạt lại .fade-up)
+        appEl.classList.remove("is-leaving", "page-leave-left", "page-leave-right", "page-leave-up", "page-enter-up", "page-enter-right", "page-enter-left");
         if (shouldAnimatePage) {
           const enterClass = isTopNavSwitch
             ? (nextNavIndex > prevNavIndex ? "page-enter-right" : "page-enter-left")
             : "page-enter-up";
-          void appEl.offsetWidth;
           appEl.classList.add(enterClass);
-          setTimeout(() => {
-            if (token === ROUTE_TRANSITION_TOKEN) {
-              appEl.classList.remove(enterClass, "is-page-transitioning");
-            }
-          }, 420);
+          const cleanupEnter = () => {
+            if (token === ROUTE_TRANSITION_TOKEN) appEl.classList.remove(enterClass);
+          };
+          appEl.addEventListener("animationend", function onEnd(e) {
+            if (e.target !== appEl) return;
+            appEl.removeEventListener("animationend", onEnd);
+            cleanupEnter();
+          });
+          setTimeout(cleanupEnter, 320);
         }
 
         LAST_ROUTE_STATE = { section: nextSection, navIndex: nextNavIndex, initialized: true };
@@ -6668,17 +7513,19 @@
           ? (nextNavIndex > prevNavIndex ? "page-leave-left" : "page-leave-right")
           : "page-leave-up";
         appEl.classList.remove("page-enter-up", "page-enter-right", "page-enter-left");
-        appEl.classList.add(leaveClass);
+        appEl.classList.add("is-leaving", leaveClass);
         setTimeout(() => {
           if (token !== ROUTE_TRANSITION_TOKEN) { progressDone(); return; }
           commitRender();
-        }, 115);
+        }, 90);
       } else {
         commitRender();
       }
     }
 
     function initReviewForm() {
+      const rvArea = document.getElementById("rv-content");
+      if (rvArea) bindTextareaHelper(rvArea, document.getElementById("rv-content-count"), document.getElementById("rv-content-warn"), 10, 3000);
       document.querySelector("#app .review-form")?.addEventListener("submit", async (event) => {
         event.preventDefault();
         if (!supabaseClient) { alert("Chưa kết nối Supabase."); return; }
@@ -6724,6 +7571,8 @@
     }
 
     function initAddLecturerForm() {
+      const lectRevArea = document.getElementById("new-lect-review");
+      if (lectRevArea) bindTextareaHelper(lectRevArea, document.getElementById("new-lect-review-count"), document.getElementById("new-lect-review-warn"), 10, 3000);
       document.getElementById("addLecturerForm")?.addEventListener("submit", async (event) => {
         event.preventDefault();
         if (!supabaseClient) return;
@@ -6758,9 +7607,9 @@
           await Promise.all([syncFromSupabase("catalog"), syncFromSupabase("reviews")]);
           if (e2) {
             console.error("Lỗi lưu đánh giá đầu tiên:", e2);
-            alert("Đã gửi đề xuất giảng viên, nhưng đánh giá kèm theo chưa lưu được (" + supabaseErrorText(e2) + ").");
+            showToast("Đã gửi đề xuất giảng viên, nhưng đánh giá kèm theo chưa lưu được (" + supabaseErrorText(e2) + ").", "error");
           } else {
-            alert("Đã gửi đề xuất giảng viên! Admin sẽ kiểm duyệt sớm nhất.");
+            showToast("Đã gửi đề xuất giảng viên! Admin sẽ kiểm duyệt sớm nhất.", "success");
           }
           window.location.hash = "#/lecturers";
         } catch (err) {
@@ -6970,7 +7819,7 @@
           const { error } = await supabaseClient.from("notices").insert({ title, content });
           if (error) { alert("Lỗi đăng thông báo: " + supabaseErrorText(error)); return; }
           await syncFromSupabase("notices");
-          alert("Đã đăng thông báo lên trang chủ!");
+          showToast("Đã đăng thông báo! Thông báo mới nhất đã hiển thị trên Trang chủ và mục Thông báo.", "success");
           route({ preserveScroll: true });
         } catch (err) {
           alert("Lỗi đăng thông báo: " + supabaseErrorText(err));
@@ -6985,11 +7834,19 @@
       if (!wrap) return;
       let rating = 5;
       const stars = [...wrap.querySelectorAll("span")];
-      const paint = (n) => stars.forEach((s, i) => {
-        const icon = s.querySelector("i");
-        if (i < n) { icon.className = "fas fa-star"; s.classList.add("active"); }
-        else { icon.className = "far fa-star"; s.classList.remove("active"); }
-      });
+      const labelEl = wrap.parentElement?.querySelector("[data-star-label]");
+      const paint = (n) => {
+        stars.forEach((s, i) => {
+          const icon = s.querySelector("i");
+          if (i < n) { icon.className = "fas fa-star"; s.classList.add("active"); }
+          else { icon.className = "far fa-star"; s.classList.remove("active"); }
+        });
+        if (labelEl) {
+          const info = STAR_SENTIMENT_LABELS[n] || STAR_SENTIMENT_LABELS[5];
+          labelEl.textContent = `${n}★ · ${info.text}`;
+          labelEl.className = `star-sentiment-pill ${info.tone}`;
+        }
+      };
       wrap.addEventListener("click", (e) => {
         const span = e.target.closest("span");
         const v = span?.dataset?.v;
@@ -7019,6 +7876,7 @@
       requestAnimationFrame(() => {
         const btn = document.getElementById("backToTop");
         if (btn) btn.classList.toggle("visible", window.scrollY > 300);
+        syncHomeTopHeaderState();
         scrollTicking = false;
       });
     }, { passive: true });
@@ -7027,24 +7885,31 @@
       const q = normalizeSearch(rawValue);
       if (q.length < 2) return null;
       const lecRes = DB.lecturers
-        .filter(l => (l._searchKey || normalizeSearch(`${l.name} ${facultyForLecturer(l)?.name || ""}`)).includes(q))
-        .slice(0, 5)
-        .map(l => {
+        .map(l => ({ l, score: scoreVietnameseNameSearch(l, rawValue, q) }))
+        .filter(x => x.score < Infinity)
+        .sort((a, b) => a.score - b.score || compareVietnameseName(a.l, b.l))
+        .slice(0, 6)
+        .map(({ l }) => {
           const avg = avgRating("lecturer", l.id);
           const starTag = avg ? `<span class="search-star"><i class="fas fa-star"></i> ${avg.toFixed(1)}</span>` : "";
           return `<a href="#/lecturer/${encodeURIComponent(l.id)}"><span class="search-result-label"><i class="fas fa-user-tie"></i> ${escapeHtml(l.name)}${facultyForLecturer(l) ? ` — ${escapeHtml(facultyForLecturer(l).name)}` : ""}</span>${starTag}</a>`;
         }).join("");
       const majRes = DB.majors
-        .filter(m => (m._searchKey || normalizeSearch(`${m.name} ${m.code || m.id}`)).includes(q))
+        .map(m => ({ m, score: scoreMajorSearch(m, rawValue, q) }))
+        .filter(x => x.score < Infinity)
+        .sort((a, b) => a.score - b.score || compareViText(a.m.name, b.m.name))
         .slice(0, 4)
-        .map(m => {
+        .map(({ m }) => {
           const avg = avgRating("major", m.id);
           const starTag = avg ? `<span class="search-star"><i class="fas fa-star"></i> ${avg.toFixed(1)}</span>` : "";
           return `<a href="#/major/${encodeURIComponent(m.id)}"><span class="search-result-label"><i class="fas fa-book"></i> ${escapeHtml(m.name)}</span>${starTag}</a>`;
         }).join("");
-      return (lecRes || majRes)
-        ? (majRes + lecRes)
-        : `<div style="padding:12px 16px;color:var(--muted);font-size:.88rem;"><i class="fas fa-search"></i> Không tìm thấy kết quả phù hợp</div>`;
+      if (!lecRes && !majRes) {
+        return `<div style="padding:12px 16px;color:var(--muted);font-size:.88rem;"><i class="fas fa-search"></i> Không tìm thấy kết quả phù hợp</div>`;
+      }
+      const majGroup = majRes ? `<div class="search-group-label"><i class="fas fa-graduation-cap"></i> Ngành học</div>${majRes}` : "";
+      const lecGroup = lecRes ? `<div class="search-group-label"><i class="fas fa-chalkboard-teacher"></i> Giảng viên</div>${lecRes}` : "";
+      return majGroup + lecGroup;
     }
 
     function bindSearchKeyboardNav(input, box) {
@@ -7118,6 +7983,7 @@
       if (!e.target.closest("a")) return;
       searchResultsBox.classList.remove("active");
       if (globalSearchInput) globalSearchInput.value = "";
+      toggleMobileSearch(false);
     });
 
     // Đóng thông báo, menu tài khoản, ô tìm kiếm và hộp thoại khi bấm ra ngoài hoặc nhấn Esc
@@ -7152,7 +8018,14 @@
         const tag = (document.activeElement?.tagName || "").toLowerCase();
         if (!["input", "textarea", "select"].includes(tag) && !document.querySelector(".modal-overlay.active")) {
           e.preventDefault();
-          globalSearchInput?.focus();
+          const heroInput = document.getElementById("heroSearch");
+          if (document.body.classList.contains("is-home-top") && heroInput) {
+            heroInput.focus();
+          } else if (window.innerWidth <= 900) {
+            toggleMobileSearch(true);
+          } else {
+            globalSearchInput?.focus();
+          }
         }
       }
     });
