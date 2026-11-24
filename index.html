@@ -282,12 +282,15 @@
     .account-pill:hover, .account-pill.open { border-color: #b7d1eb; background: var(--primary-soft); }
     .account-pill.is-admin { border-color: #fecaca; background: #fff7f7; color: #991b1b; }
     .account-pill.is-admin:hover, .account-pill.is-admin.open { background: #fee2e2; }
+    .account-pill.is-super-admin { border-color: #fcd34d; background: #fffbeb; color: #92400e; }
+    .account-pill.is-super-admin:hover, .account-pill.is-super-admin.open { background: #fef3c7; }
     .account-pill-avatar {
       width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
       display: inline-flex; align-items: center; justify-content: center;
       font-size: .74rem; font-weight: 800; background: var(--primary-soft); color: var(--primary);
     }
     .account-pill.is-admin .account-pill-avatar { background: linear-gradient(135deg, #ef4444, #b91c1c); color: #fff; }
+    .account-pill.is-super-admin .account-pill-avatar { background: linear-gradient(135deg, #f59e0b, #b45309); color: #fff; }
     .account-pill-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .account-pill-caret { font-size: .68rem; color: var(--muted); transition: transform .18s var(--ease); }
     .account-pill.open .account-pill-caret { transform: rotate(180deg); }
@@ -1214,6 +1217,9 @@
     .confirm-modal-box p { margin: 0; color: var(--text-soft); font-size: .92rem; line-height: 1.55; }
     .confirm-actions { display: flex; gap: 10px; margin-top: 22px; }
     .confirm-actions .btn { margin: 0; flex: 1; justify-content: center; padding: 11px 16px; }
+    #confirmModal { z-index: 260; background: rgba(15, 23, 42, 0.56); }
+    #confirmModal .confirm-modal-box { box-shadow: 0 28px 72px rgba(15, 23, 42, 0.32); }
+    #confirmMessage { white-space: pre-line; }
 
     .mod-mode-banner { display: flex; align-items: flex-start; gap: 10px; padding: 11px 14px; margin: 0 0 12px; border-radius: 12px; font-size: .83rem; line-height: 1.5; font-weight: 600; }
     .mod-mode-banner.danger { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
@@ -1338,6 +1344,139 @@
     }
     .my-review-row-foot { display: flex; align-items: center; gap: 12px; font-size: .76rem; color: var(--muted); }
 
+    /* ===== RBAC: SUPER ADMIN, TEAM & PERMISSIONS UI ===== */
+    .super-admin-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: linear-gradient(135deg, #f59e0b, #b45309); color: #fff;
+      padding: 2px 8px; border-radius: 6px; font-size: .68rem; font-weight: 800;
+      letter-spacing: .04em; margin-left: 6px; vertical-align: middle;
+      box-shadow: 0 2px 6px rgba(180, 83, 9, 0.22);
+    }
+    .role-pill {
+      display: inline-flex; align-items: center; gap: 5px; border-radius: 999px;
+      padding: 3px 9px; font-size: .72rem; font-weight: 800;
+    }
+    .role-pill.super_admin { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+    .role-pill.admin { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+    .role-pill.user { background: #eef2f6; color: #475569; border: 1px solid #dbe4ef; }
+    .admin-tab.is-super-tab.active { background: #fffbeb; color: #92400e; box-shadow: inset 3px 0 0 var(--accent); }
+    .admin-tab.is-super-tab.active .admin-tab-left i { color: #d97706; }
+
+    .admin-team-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 16px; }
+    .admin-team-stat {
+      padding: 13px 15px; border-radius: 14px; border: 1px solid var(--border); background: var(--surface-soft);
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    }
+    .admin-team-stat strong { display: block; font-size: 1.24rem; font-weight: 800; color: var(--primary-dark); line-height: 1.1; font-variant-numeric: tabular-nums; }
+    .admin-team-stat span { display: block; font-size: .75rem; font-weight: 600; color: var(--muted); margin-top: 2px; }
+    .admin-team-stat i { width: 36px; height: 36px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; font-size: .95rem; flex-shrink: 0; }
+    .admin-team-stat.gold i { background: #fef3c7; color: #b45309; }
+    .admin-team-stat.red i { background: #fee2e2; color: #dc2626; }
+    .admin-team-stat.blue i { background: var(--primary-soft); color: var(--primary); }
+
+    .admin-team-promote-bar {
+      display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: center;
+      padding: 13px; margin-bottom: 16px; border-radius: 14px;
+      background: linear-gradient(145deg, #fffdf5 0%, #f8fbff 100%);
+      border: 1px solid #e2e8f0;
+    }
+    .admin-team-promote-bar input[type="search"] { height: 42px; padding: 0 14px 0 38px; background: #fff; border-radius: 10px; }
+    .admin-team-promote-results { display: grid; gap: 8px; margin-bottom: 16px; }
+    .admin-team-list { display: grid; gap: 12px; }
+    .admin-team-card {
+      padding: 16px 18px; border-radius: 15px; border: 1px solid var(--border); background: #fff;
+      box-shadow: var(--shadow-xs); transition: border-color .2s ease, box-shadow .2s ease;
+    }
+    .admin-team-card:hover { border-color: #bfd6ec; box-shadow: var(--shadow); }
+    .admin-team-card.is-super { border-color: #fde68a; background: linear-gradient(155deg, #fffdf4 0%, #fff 55%); }
+    .admin-team-card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+    .admin-team-card-identity { display: flex; align-items: center; gap: 12px; min-width: 220px; flex: 1; }
+    .admin-team-avatar {
+      flex: 0 0 42px; width: 42px; height: 42px; border-radius: 12px;
+      display: inline-flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: 800;
+      background: #fee2e2; color: #b91c1c;
+    }
+    .admin-team-card.is-super .admin-team-avatar { background: linear-gradient(135deg, #f59e0b, #b45309); color: #fff; }
+    .admin-team-card-actions { display: flex; gap: 7px; flex-wrap: wrap; }
+    .admin-perm-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; padding-top: 11px; border-top: 1px dashed var(--border); }
+    .admin-perm-chip {
+      display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; border-radius: 999px;
+      font-size: .73rem; font-weight: 700; background: var(--primary-soft); color: var(--primary-dark); border: 1px solid #d5e6f8;
+    }
+    .admin-perm-chip.all { background: #fef3c7; color: #92400e; border-color: #fcd34d; }
+    .admin-perm-chip.none { background: #f1f5f9; color: #64748b; border-color: #e2e8f0; }
+
+    /* Role & Permissions Editor Modal */
+    .role-selector-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 8px 0 14px; }
+    .role-selector-btn {
+      border: 1.5px solid var(--border-strong); background: var(--surface-soft); border-radius: 12px;
+      padding: 11px 10px; text-align: center; cursor: pointer; transition: all .2s var(--ease-gentle);
+      display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-soft);
+    }
+    .role-selector-btn i { font-size: 1.1rem; color: #7c92a8; }
+    .role-selector-btn strong { font-size: .83rem; }
+    .role-selector-btn small { font-size: .7rem; color: var(--muted); line-height: 1.3; }
+    .role-selector-btn:hover { border-color: var(--primary-light); background: #f0f7ff; }
+    .role-selector-btn.active { border-color: var(--primary); background: var(--primary-soft); color: var(--primary-dark); box-shadow: 0 0 0 3px rgba(10, 94, 168, 0.10); }
+    .role-selector-btn.active i { color: var(--primary); }
+    .role-selector-btn.role-super.active { border-color: #d97706; background: #fffbeb; color: #92400e; box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.14); }
+    .role-selector-btn.role-super.active i { color: #d97706; }
+    .role-selector-btn.role-admin.active { border-color: #dc2626; background: #fef2f2; color: #991b1b; box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.10); }
+    .role-selector-btn.role-admin.active i { color: #dc2626; }
+
+    .perm-presets { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 10px; }
+    .perm-preset-btn {
+      border: 1px solid var(--border-strong); background: #fff; color: var(--text-soft);
+      padding: 4px 10px; border-radius: 999px; font: 700 .74rem 'Inter', sans-serif; cursor: pointer;
+      transition: all .16s ease;
+    }
+    .perm-preset-btn:hover { border-color: var(--primary); background: var(--primary-soft); color: var(--primary); }
+
+    .perm-checklist { display: grid; gap: 8px; max-height: 300px; overflow-y: auto; padding-right: 2px; }
+    .perm-check-item {
+      display: flex !important; align-items: flex-start; gap: 11px; margin: 0 !important;
+      padding: 10px 12px; border-radius: 12px; border: 1.5px solid var(--border); background: var(--surface-soft);
+      cursor: pointer; transition: border-color .18s ease, background .18s ease;
+    }
+    .perm-check-item:hover { border-color: #b7d1eb; background: #f4f9ff; }
+    .perm-check-item.checked { border-color: var(--primary-light); background: #eff6ff; }
+    .perm-check-item input[type="checkbox"] { width: 18px; height: 18px; margin: 2px 0 0; accent-color: var(--primary); flex-shrink: 0; }
+    .perm-check-info { min-width: 0; flex: 1; }
+    .perm-check-title { display: flex; align-items: center; gap: 6px; font-size: .85rem; font-weight: 700; color: var(--primary-dark); }
+    .perm-check-title i { color: var(--primary); width: 15px; text-align: center; }
+    .perm-check-desc { display: block; font-size: .75rem; font-weight: 500; color: var(--muted); margin-top: 2px; line-height: 1.4; }
+
+    .role-modal-summary {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+      padding: 12px 14px; border-radius: 13px; background: var(--surface-soft);
+      border: 1px solid var(--border); margin-bottom: 14px; font-size: .88rem;
+    }
+    .role-modal-user { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; }
+    .role-modal-avatar {
+      width: 38px; height: 38px; border-radius: 11px; flex-shrink: 0;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: .88rem; font-weight: 800; background: var(--primary-soft); color: var(--primary);
+    }
+    .role-modal-avatar.is-super { background: linear-gradient(135deg, #f59e0b, #b45309); color: #fff; }
+    .role-modal-avatar.is-admin { background: #fee2e2; color: #b91c1c; }
+    .role-modal-perms-head {
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      flex-wrap: wrap; margin-top: 8px;
+    }
+    .role-modal-perms-counter {
+      font-size: .75rem; font-weight: 800; padding: 3px 10px; border-radius: 999px;
+      background: var(--primary-soft); color: var(--primary-dark); font-variant-numeric: tabular-nums;
+    }
+    .role-modal-footer {
+      display: flex; gap: 10px; margin-top: 18px; padding-top: 14px; border-top: 1px solid #edf2f7;
+    }
+
+    .rename-sync-box {
+      padding: 15px 16px; border-radius: 13px; border: 1px solid #cbdcf0; background: #fff; margin-bottom: 14px;
+    }
+    .rename-sync-box label { margin-top: 10px !important; }
+    .rename-sync-box label:first-of-type { margin-top: 0 !important; }
+
     /* ===== RESPONSIVE ===== */
     @media (max-width: 1180px) {
       .main-nav a { padding: 7px 10px; font-size: .84rem; gap: 6px; }
@@ -1381,6 +1520,8 @@
     }
     @media (max-width: 650px) {
       .hero-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .admin-team-stats, .role-selector-grid { grid-template-columns: 1fr; }
+      .admin-team-promote-bar { grid-template-columns: 1fr; }
       .catalog-toolbar, .notices-toolbar { grid-template-columns: minmax(0, 1fr); padding: 12px; }
       .catalog-result-count { width: 100%; min-width: 0; }
       .notice-banner { flex-wrap: wrap; padding: 14px 16px; }
@@ -1458,19 +1599,6 @@
   <button id="backToTop" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="Lên đầu trang" aria-label="Lên đầu trang">
     <i class="fas fa-arrow-up"></i>
   </button>
-
-  <!-- Modal xác nhận dùng chung (thay thế hộp thoại confirm mặc định) -->
-  <div class="modal-overlay" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
-    <div class="modal-box confirm-modal-box">
-      <div id="confirmIconWrap" class="confirm-icon-wrap"><i class="fas fa-triangle-exclamation"></i></div>
-      <h3 id="confirmTitle">Xác nhận thao tác</h3>
-      <p id="confirmMessage"></p>
-      <div class="confirm-actions">
-        <button type="button" id="confirmCancelBtn" class="btn btn-neutral" onclick="resolveAppConfirm(false)">Hủy</button>
-        <button type="button" id="confirmOkBtn" class="btn btn-del" onclick="resolveAppConfirm(true)">Xác nhận</button>
-      </div>
-    </div>
-  </div>
 
   <!-- Modal Báo cáo Review / Phản hồi -->
   <div class="modal-overlay" id="reportModal" role="dialog" aria-modal="true">
@@ -1710,6 +1838,77 @@
     </div>
   </div>
 
+  <!-- Modal Phân quyền & Vai trò Admin (Chỉ Super Admin) -->
+  <div class="modal-overlay" id="adminRoleModal" role="dialog" aria-modal="true" aria-labelledby="adminRoleModalTitle">
+    <div class="modal-box" style="max-width:580px;">
+      <div class="modal-head-bar">
+        <h3 id="adminRoleModalTitle"><i class="fas fa-crown" style="color:var(--accent)"></i> Phân quyền Quản trị viên</h3>
+        <button type="button" class="auth-close" aria-label="Đóng" onclick="closeModal('adminRoleModal')">&times;</button>
+      </div>
+      <div id="adminRoleUserSummary" class="role-modal-summary"></div>
+
+      <label style="margin:0 0 6px;">Chọn vai trò tài khoản:</label>
+      <div class="role-selector-grid" role="radiogroup" aria-label="Chọn vai trò">
+        <button type="button" class="role-selector-btn" data-role-opt="user" role="radio" aria-checked="false" onclick="selectAdminModalRole('user')">
+          <i class="fas fa-user"></i>
+          <strong>Thành viên</strong>
+          <small>Hủy quyền quản trị</small>
+        </button>
+        <button type="button" class="role-selector-btn role-admin" data-role-opt="admin" role="radio" aria-checked="false" onclick="selectAdminModalRole('admin')">
+          <i class="fas fa-user-shield"></i>
+          <strong>Admin</strong>
+          <small>Tùy chọn quyền bên dưới</small>
+        </button>
+        <button type="button" class="role-selector-btn role-super" data-role-opt="super_admin" role="radio" aria-checked="false" onclick="selectAdminModalRole('super_admin')">
+          <i class="fas fa-crown"></i>
+          <strong>Super Admin</strong>
+          <small>Toàn quyền &amp; set Admin</small>
+        </button>
+      </div>
+
+      <div id="adminRolePermsSection" style="display:none;">
+        <div class="role-modal-perms-head">
+          <label style="margin:0;">Các quyền được phép thực hiện:</label>
+          <span id="adminRolePermsCounter" class="role-modal-perms-counter">0/9 quyền</span>
+        </div>
+        <div class="perm-presets">
+          <button type="button" class="perm-preset-btn" onclick="applyAdminPermPreset('all')">Chọn tất cả</button>
+          <button type="button" class="perm-preset-btn" onclick="applyAdminPermPreset('mod')">Kiểm duyệt &amp; User</button>
+          <button type="button" class="perm-preset-btn" onclick="applyAdminPermPreset('catalog')">Danh mục &amp; Thông báo</button>
+          <button type="button" class="perm-preset-btn" onclick="applyAdminPermPreset('support')">Hỗ trợ &amp; Góp ý</button>
+          <button type="button" class="perm-preset-btn" onclick="applyAdminPermPreset('none')">Bỏ chọn hết</button>
+        </div>
+        <div id="adminRolePermsChecklist" class="perm-checklist"></div>
+      </div>
+
+      <div id="adminRoleSuperNotice" class="mod-mode-banner amber" style="display:none;margin-top:10px;">
+        <i class="fas fa-crown"></i>
+        <span><b>Lưu ý quan trọng:</b> Super Admin có toàn quyền trên hệ thống, bao gồm cấp/hủy quyền Admin khác và sửa đổi mọi cấu hình. Chỉ bổ nhiệm cho người hoàn toàn tin cậy.</span>
+      </div>
+
+      <label for="adminRoleReason" style="margin:14px 0 6px;">Ghi chú / lý do phân quyền <span style="font-weight:500;color:var(--muted);">(không bắt buộc)</span></label>
+      <input type="text" id="adminRoleReason" maxlength="500" placeholder="VD: Phân công duyệt giảng viên và kiểm duyệt bình luận..." />
+
+      <div class="role-modal-footer">
+        <button type="button" id="adminRoleSaveBtn" class="btn" onclick="adminSaveRoleAndPerms(this)" style="margin:0;flex:1;justify-content:center;"><i class="fas fa-save"></i> Lưu phân quyền</button>
+        <button type="button" class="btn btn-neutral" onclick="closeModal('adminRoleModal')" style="margin:0;flex:0 0 106px;justify-content:center;">Hủy</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal xác nhận dùng chung — luôn đặt cuối cùng để luôn nổi trên tất cả các modal khác -->
+  <div class="modal-overlay" id="confirmModal" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle" aria-describedby="confirmMessage">
+    <div class="modal-box confirm-modal-box">
+      <div id="confirmIconWrap" class="confirm-icon-wrap"><i class="fas fa-triangle-exclamation"></i></div>
+      <h3 id="confirmTitle">Xác nhận thao tác</h3>
+      <p id="confirmMessage"></p>
+      <div class="confirm-actions">
+        <button type="button" id="confirmCancelBtn" class="btn btn-neutral" onclick="resolveAppConfirm(false)">Hủy</button>
+        <button type="button" id="confirmOkBtn" class="btn btn-del" onclick="resolveAppConfirm(true)">Xác nhận</button>
+      </div>
+    </div>
+  </div>
+
   <datalist id="degree-list">
     <option value="Thạc sĩ">
     <option value="Tiến sĩ">
@@ -1790,6 +1989,23 @@
     let ADMIN_USER_ACTIVITY_FILTER = { scope: "all", group: "all", search: "" };
     let ADMIN_ACTIVITY_CHANNEL = null;
     let ADMIN_QUICK_WARNING_TARGET = null;
+    let ADMIN_TEAM_CACHE = [];
+    let ADMIN_ROLE_MODAL_TARGET = null;
+    let ADMIN_ROLE_MODAL_ROLE = "admin";
+    let ADMIN_TEAM_PROMOTE_RESULTS = [];
+
+    const ADMIN_PERMISSIONS_DEF = [
+      { key: "approve_lecturers", label: "Duyệt đề xuất giảng viên", desc: "Duyệt hoặc từ chối giảng viên do sinh viên đề xuất.", icon: "fa-user-check" },
+      { key: "manage_catalog", label: "Quản lý Giảng viên & Ngành học", desc: "Thêm mới, chỉnh sửa thông tin và xóa giảng viên, ngành học.", icon: "fa-list-check" },
+      { key: "moderate_comments", label: "Kiểm duyệt đánh giá & Báo cáo", desc: "Sửa/xóa đánh giá, phản hồi, xử lý báo cáo vi phạm & đăng bằng huy hiệu Admin.", icon: "fa-flag" },
+      { key: "manage_users", label: "Quản lý tài khoản & Cảnh báo", desc: "Tìm thành viên, cảnh cáo, gỡ cảnh cáo, khóa/mở khóa và gửi thông báo riêng.", icon: "fa-users-gear" },
+      { key: "rename_users", label: "Đổi tên hiển thị người dùng", desc: "Đổi tên hiển thị và tự động đồng bộ trên toàn bộ đánh giá, phản hồi cũ.", icon: "fa-signature" },
+      { key: "manage_feedback_support", label: "Phản ánh, Góp ý & Hỗ trợ", desc: "Xem, cập nhật trạng thái và phản hồi Phản ánh sai sót, Góp ý, Hỗ trợ tài khoản.", icon: "fa-life-ring" },
+      { key: "manage_notices", label: "Quản lý Thông báo Trang chủ", desc: "Đăng thông báo mới và xóa thông báo tại Trang chủ & mục Thông báo.", icon: "fa-bullhorn" },
+      { key: "manage_words", label: "Quản lý Bộ lọc từ cấm", desc: "Thêm và gỡ từ khóa khỏi bộ lọc tự động.", icon: "fa-ban" },
+      { key: "view_activity_logs", label: "Xem Nhật ký hoạt động", desc: "Theo dõi hoạt động người dùng và nhật ký thao tác của đội ngũ Admin.", icon: "fa-tower-broadcast" }
+    ];
+    const ADMIN_PERM_BY_KEY = Object.fromEntries(ADMIN_PERMISSIONS_DEF.map(p => [p.key, p]));
 
     const ADMIN_COMMENT_PRESET_REASONS = [
       "Ngôn từ thô tục, thiếu văn minh",
@@ -2035,7 +2251,7 @@
       if (!wrap || !type || !targetId) { rerender(); return; }
       const allReviews = getReviewsFor(type, targetId);
       const reviews = getFilteredSortedReviews(type, targetId);
-      const isAdmin = isCurrentAdmin();
+      const isAdmin = hasAdminPerm("moderate_comments");
 
       // Cập nhật trạng thái active trên thanh phân bổ sao
       document.querySelectorAll(".rating-bar-row[data-star]").forEach(btn => {
@@ -2213,6 +2429,11 @@
     window.appConfirm = function(message, options = {}) {
       const modal = document.getElementById("confirmModal");
       if (!modal) return Promise.resolve(window.confirm(message));
+      if (typeof appConfirmResolver === "function") {
+        const staleResolve = appConfirmResolver;
+        appConfirmResolver = null;
+        staleResolve(false);
+      }
       const danger = options.danger !== false;
       const titleEl = document.getElementById("confirmTitle");
       const msgEl = document.getElementById("confirmMessage");
@@ -2228,8 +2449,9 @@
         iconWrap.className = `confirm-icon-wrap ${danger ? "" : "info"}`;
         iconWrap.innerHTML = danger ? '<i class="fas fa-triangle-exclamation"></i>' : '<i class="fas fa-circle-question"></i>';
       }
+      modal.style.zIndex = "260";
       modal.classList.add("active");
-      setTimeout(() => okBtn?.focus(), 40);
+      requestAnimationFrame(() => okBtn?.focus());
       return new Promise(resolve => { appConfirmResolver = resolve; });
     };
     window.resolveAppConfirm = function(result) {
@@ -2632,8 +2854,11 @@
       if (!error) return "Lỗi không xác định.";
       const code = String(error.code || "");
       const message = String(error.message || error.details || "Lỗi không xác định.");
-      if (code === "42501" || /row-level security|permission denied|not authorized/i.test(message)) {
-        return `Supabase từ chối quyền (RLS/GRANT): ${message}. Hãy kiểm tra policy cho tài khoản Admin.`;
+      if (/row-level security|permission denied|not authorized/i.test(message)) {
+        return `Supabase từ chối quyền (RLS/GRANT): ${message}. Hãy kiểm tra policy/trigger trên Supabase.`;
+      }
+      if (code === "42501") {
+        return message;
       }
       if (code === "23514" || /check constraint/i.test(message)) {
         return `Ràng buộc CHECK của bảng chưa chấp nhận giá trị trạng thái. Cần bổ sung 'deleted' vào CHECK constraint: ${message}`;
@@ -2723,8 +2948,82 @@
     function normalizeUsername(value) { return String(value || "").trim().toLowerCase(); }
     function isValidUsername(username) { return /^[a-z0-9_]{4,20}$/.test(username); }
     function usernameToAuthEmail(username) { return `${username}@${SUPABASE_INTERNAL_EMAIL_DOMAIN}`; }
-    function isCurrentAdmin() { return currentProfile?.role === "admin"; }
     function isAccountLocked() { return currentProfile?.account_status === "locked"; }
+    function isSuperAdmin() {
+      return currentProfile?.role === "super_admin" && !isAccountLocked();
+    }
+    function isCurrentAdmin() {
+      return (currentProfile?.role === "super_admin" || currentProfile?.role === "admin") && !isAccountLocked();
+    }
+    function hasAdminPerm(perm) {
+      if (!isCurrentAdmin()) return false;
+      if (isSuperAdmin()) return true;
+      const perms = currentProfile?.admin_permissions;
+      if (!perms || typeof perms !== "object") return false;
+      return Boolean(perms[perm]);
+    }
+    function countActiveAdminPerms(permsObj) {
+      if (!permsObj || typeof permsObj !== "object") return 0;
+      return ADMIN_PERMISSIONS_DEF.filter(p => Boolean(permsObj[p.key])).length;
+    }
+    function roleBadgeHTML(role, compact = false) {
+      if (role === "super_admin") {
+        return compact
+          ? `<span class="super-admin-badge"><i class="fas fa-crown"></i> SUPER ADMIN</span>`
+          : `<span class="role-pill super_admin"><i class="fas fa-crown"></i> Super Admin</span>`;
+      }
+      if (role === "admin") {
+        return compact
+          ? `<span class="admin-badge">ADMIN</span>`
+          : `<span class="role-pill admin"><i class="fas fa-user-shield"></i> Admin</span>`;
+      }
+      return compact ? "" : `<span class="role-pill user"><i class="fas fa-user"></i> Thành viên</span>`;
+    }
+    function canAccessAdminTab(tabId) {
+      if (!isCurrentAdmin()) return false;
+      if (isSuperAdmin()) return true;
+      if (tabId === "tab-admins") return false;
+      if (tabId === "tab-admin-activity") return hasAdminPerm("view_activity_logs");
+      if (tabId === "tab-pending") return hasAdminPerm("approve_lecturers");
+      if (tabId === "tab-reports") return hasAdminPerm("moderate_comments");
+      if (tabId === "tab-feedbacks" || tabId === "tab-support") return hasAdminPerm("manage_feedback_support");
+      if (tabId === "tab-users") return hasAdminPerm("manage_users") || hasAdminPerm("rename_users");
+      if (tabId === "tab-notices") return hasAdminPerm("manage_notices");
+      if (tabId === "tab-words") return hasAdminPerm("manage_words");
+      if (tabId === "tab-manage") return hasAdminPerm("manage_catalog") || hasAdminPerm("approve_lecturers");
+      if (tabId === "tab-add") return hasAdminPerm("manage_catalog");
+      return false;
+    }
+    function firstAllowedAdminTab() {
+      const order = [
+        "tab-admin-activity", "tab-admins", "tab-pending", "tab-reports",
+        "tab-feedbacks", "tab-support", "tab-users", "tab-notices",
+        "tab-words", "tab-manage", "tab-add"
+      ];
+      return order.find(t => canAccessAdminTab(t)) || "";
+    }
+    function canManageTargetUser(targetUser, perm) {
+      if (!targetUser) return false;
+      const tRole = targetUser.role || "user";
+      const isSelf = Boolean(currentUser?.id && targetUser.id === currentUser.id);
+      if (perm === "manage_users") {
+        if (!hasAdminPerm("manage_users")) return false;
+        if (isSelf || tRole === "super_admin") return false;
+        if (tRole === "admin" && !isSuperAdmin()) return false;
+        return true;
+      }
+      if (perm === "notify_users") {
+        if (!hasAdminPerm("manage_users")) return false;
+        if (isSuperAdmin()) return true;
+        return tRole === "user";
+      }
+      if (perm === "rename_users") {
+        if (!hasAdminPerm("rename_users")) return false;
+        if ((tRole === "super_admin" || tRole === "admin") && !isSuperAdmin()) return false;
+        return true;
+      }
+      return hasAdminPerm(perm);
+    }
     function ensureAccountActive() {
       if (isAccountLocked() && !isCurrentAdmin()) {
         alert(`Tài khoản của bạn đang bị khóa sau ${Number(currentProfile?.warning_count || 0)} cảnh cáo. Bạn vẫn có thể đọc thông báo và gửi yêu cầu hỗ trợ tài khoản.`);
@@ -2773,7 +3072,10 @@
       const wantNotices = wantAll || scope === "notices";
       const wantWords = wantAll || scope === "words";
       const wantNotifs = wantAll || scope === "reviews" || scope === "moderation";
-      const wantAdminMod = (wantAll || scope === "moderation") && isCurrentAdmin();
+      const wantModScope = (wantAll || scope === "moderation");
+      const wantAdminReports = wantModScope && hasAdminPerm("moderate_comments");
+      const wantAdminFeedbackSupport = wantModScope && hasAdminPerm("manage_feedback_support");
+      const wantAdminMod = wantAdminReports || wantAdminFeedbackSupport;
 
       try {
         const tasks = [];
@@ -2800,8 +3102,10 @@
           addTask("admin_responses", supabaseClient.from("admin_responses").select("*").order("created_at", { ascending: false }).limit(100));
           addTask("user_notifications", supabaseClient.from("user_notifications").select("*").eq("user_id", currentUser.id).order("created_at", { ascending: false }).limit(100));
         }
-        if (wantAdminMod) {
+        if (wantAdminReports) {
           addTask("reports", supabaseClient.from("reports").select("*").order("created_at", { ascending: false }));
+        }
+        if (wantAdminFeedbackSupport) {
           addTask("feedbacks", supabaseClient.from("feedbacks").select("*").order("created_at", { ascending: false }));
           addTask("support_tickets", supabaseClient.from("support_tickets").select("*").order("created_at", { ascending: false }).limit(100));
         }
@@ -2947,14 +3251,18 @@
           }
         }
 
-        // 6. Dữ liệu chỉ dành cho Admin
-        if (wantAdminMod) {
+        // 6. Dữ liệu quản trị theo từng nhóm quyền
+        if (wantAdminReports) {
           if (resMap.reports && !resMap.reports.error) {
             DB.reportedReviews = (resMap.reports.data || []).map(r => ({
               id: r.id, reviewId: r.review_id, replyId: r.reply_id || null,
               userId: r.reporter_id || null, reason: r.reason, createdAt: r.created_at
             }));
           }
+        } else if (wantAll) {
+          DB.reportedReviews = [];
+        }
+        if (wantAdminFeedbackSupport) {
           if (resMap.feedbacks && !resMap.feedbacks.error) {
             DB.feedbacks = (resMap.feedbacks.data || []).map(f => ({
               id: f.id, userId: f.user_id || null,
@@ -2971,8 +3279,7 @@
               adminNote: t.admin_note || "", createdAt: t.created_at
             }));
           }
-        } else if (wantAll && !isCurrentAdmin()) {
-          DB.reportedReviews = [];
+        } else if (wantAll) {
           DB.feedbacks = [];
           DB.supportTickets = [];
         }
@@ -3036,22 +3343,25 @@
       }
       const displayName = myDisplayName();
       const username = currentProfile?.username || currentUser?.user_metadata?.username || "";
+      const isSuper = isSuperAdmin();
       const isAdmin = isCurrentAdmin();
       const warnCount = Number(currentProfile?.warning_count || 0);
+      const pillClass = isSuper ? "is-super-admin" : (isAdmin ? "is-admin" : "");
+      const avatarIcon = isSuper ? '<i class="fas fa-crown"></i>' : (isAdmin ? '<i class="fas fa-shield-halved"></i>' : escapeHtml(initialsOf(displayName)));
       root.innerHTML = `
         ${notifBellHTML()}
         <div class="account-menu-wrap">
-          <button type="button" class="account-pill ${isAdmin ? "is-admin" : ""} ${accountMenuOpen ? "open" : ""}" onclick="toggleAccountMenu(event)" aria-expanded="${accountMenuOpen ? "true" : "false"}" aria-haspopup="menu" title="${escapeHtml(displayName)}">
-            <span class="account-pill-avatar">${isAdmin ? '<i class="fas fa-shield-halved"></i>' : escapeHtml(initialsOf(displayName))}</span>
+          <button type="button" class="account-pill ${pillClass} ${accountMenuOpen ? "open" : ""}" onclick="toggleAccountMenu(event)" aria-expanded="${accountMenuOpen ? "true" : "false"}" aria-haspopup="menu" title="${escapeHtml(displayName)}">
+            <span class="account-pill-avatar">${avatarIcon}</span>
             <span class="account-pill-name">${escapeHtml(displayName)}</span>
             <i class="fas fa-chevron-down account-pill-caret" aria-hidden="true"></i>
           </button>
           <div class="account-dropdown ${accountMenuOpen ? "active" : ""}" role="menu">
             <div class="account-dropdown-head">
-              <strong>${escapeHtml(displayName)} ${isAdmin ? '<span class="admin-badge">ADMIN</span>' : ""}</strong>
-              <small>${username ? `@${escapeHtml(username)}` : ""}${warnCount > 0 ? ` · ${warnCount}/4 cảnh cáo` : ""}</small>
+              <strong>${escapeHtml(displayName)} ${roleBadgeHTML(currentProfile?.role, true)}</strong>
+              <small>${username ? `@${escapeHtml(username)}` : ""}${isAdmin && !isSuper ? ` · ${countActiveAdminPerms(currentProfile?.admin_permissions)}/${ADMIN_PERMISSIONS_DEF.length} quyền` : ""}${warnCount > 0 ? ` · ${warnCount}/4 cảnh cáo` : ""}</small>
             </div>
-            ${isAdmin ? `<a href="#/admin" class="account-dropdown-item admin-link" onclick="closeAccountMenu()" role="menuitem"><i class="fas fa-gauge-high"></i> Bảng quản trị Admin</a>` : ""}
+            ${isAdmin ? `<a href="#/admin" class="account-dropdown-item admin-link" onclick="closeAccountMenu()" role="menuitem"><i class="fas fa-gauge-high"></i> ${isSuper ? "Bảng quản trị (Super Admin)" : "Bảng quản trị Admin"}</a>` : ""}
             <button type="button" class="account-dropdown-item" onclick="closeAccountMenu();openMyReviewsModal();" role="menuitem"><i class="fas fa-star"></i> Đánh giá của tôi</button>
             <div class="account-dropdown-divider"></div>
             <button type="button" class="account-dropdown-item danger" onclick="closeAccountMenu();logoutUser();" role="menuitem"><i class="fas fa-sign-out-alt"></i> Đăng xuất</button>
@@ -3746,10 +4056,10 @@
             <a href="#/majors" class="cta-secondary"><i class="fas fa-book-open"></i> Danh sách ngành học</a>
           </div>
           <div class="hero-stats" aria-label="Thống kê cộng đồng">
-            <div class="hero-stat"><strong>500+</strong><span>Giảng viên</span></div>
-            <div class="hero-stat"><strong>${DB.majors.length}</strong><span>Ngành học</span></div>
+            <div class="hero-stat"><strong>${DB.lecturers.length.toLocaleString("vi-VN")}</strong><span>Giảng viên</span></div>
+            <div class="hero-stat"><strong>${DB.majors.length.toLocaleString("vi-VN")}</strong><span>Ngành học</span></div>
             <div class="hero-stat"><strong>${FACULTIES.length}</strong><span>Khoa đào tạo</span></div>
-            <div class="hero-stat"><strong>${approvedReviews.length}</strong><span>Đánh giá thực tế</span></div>
+            <div class="hero-stat"><strong>${approvedReviews.length.toLocaleString("vi-VN")}</strong><span>Đánh giá thực tế</span></div>
           </div>
         </section>
 
@@ -4023,7 +4333,7 @@
       const faculty = FACULTY_BY_ID[facultyId];
       const avg = avgRating("major", id);
       const count = getReviewCount("major", id);
-      const isAdmin = isCurrentAdmin();
+      const canCatalog = hasAdminPerm("manage_catalog");
       const reportHref = `#/support?tab=report-info&type=${encodeURIComponent("Ngành học")}&target=${encodeURIComponent(m.name)}&targetType=major&targetId=${encodeURIComponent(m.id)}`;
       return `
         <div class="breadcrumb fade-up"><a href="#/majors">Ngành học</a> <i class="fas fa-chevron-right" style="font-size:.7rem;color:#cbd5e1"></i> ${faculty ? `<a href="#/faculty/${facultyId}/majors">${escapeHtml(faculty.name)}</a> <i class="fas fa-chevron-right" style="font-size:.7rem;color:#cbd5e1"></i>` : ""} ${escapeHtml(m.name)}</div>
@@ -4041,7 +4351,7 @@
           </div>
           <div style="margin-top:20px; display:flex; gap:10px; flex-wrap:wrap;">
             <a href="${reportHref}" class="btn btn-report" style="margin:0;"><i class="fas fa-flag"></i> Báo cáo thông tin sai</a>
-            ${isAdmin ? `
+            ${canCatalog ? `
             <button type="button" onclick="openEditMajorModal(${jsArg(m.id)})" class="btn" style="background:var(--primary);margin:0;padding:10px 20px;font-size:0.9rem;"><i class="fas fa-edit"></i> Sửa (Admin)</button>
             <button type="button" onclick="adminDeleteMajor(${jsArg(m.id)})" class="btn" style="background:var(--danger);margin:0;padding:10px 20px;font-size:0.9rem;"><i class="fas fa-trash"></i> Xóa ngành (Admin)</button>
             ` : ""}
@@ -4160,7 +4470,8 @@
       const avg = avgRating("lecturer", id);
       const count = getReviewCount("lecturer", id);
       const isPending = DB.pendingLecturers.some(pl => pl.id === id);
-      const isAdmin = isCurrentAdmin();
+      const canApprove = hasAdminPerm("approve_lecturers");
+      const canCatalog = hasAdminPerm("manage_catalog");
       const faculty = facultyForLecturer(l);
       const reportHref = `#/support?tab=report-info&type=${encodeURIComponent("Giảng viên")}&target=${encodeURIComponent(l.name)}&targetType=lecturer&targetId=${encodeURIComponent(l.id)}`;
       return `
@@ -4180,11 +4491,11 @@
           </div>
           <div style="margin-top:20px; display:flex; gap:10px; flex-wrap:wrap;">
             <a href="${reportHref}" class="btn btn-report" style="margin:0;"><i class="fas fa-flag"></i> Báo cáo thông tin sai</a>
-            ${isAdmin && isPending ? `
+            ${canApprove && isPending ? `
             <button type="button" onclick="approveLecturer(${jsArg(l.id)}, this)" class="btn btn-approve" style="padding:10px 20px;font-size:.9rem;"><i class="fas fa-check"></i> Duyệt giảng viên</button>
             <button type="button" onclick="rejectLecturer(${jsArg(l.id)})" class="btn btn-del" style="margin:0;padding:10px 20px;font-size:.9rem;"><i class="fas fa-times"></i> Từ chối</button>
             ` : ""}
-            ${isAdmin && !isPending ? `
+            ${canCatalog && !isPending ? `
             <button type="button" onclick="openEditLecturerModal(${jsArg(l.id)})" class="btn" style="background:var(--primary); margin:0; padding:10px 20px; font-size:0.9rem;"><i class="fas fa-edit"></i> Sửa (Admin)</button>
             <button type="button" onclick="adminDeleteLecturer(${jsArg(l.id)})" class="btn" style="background:var(--danger); margin:0; padding:10px 20px; font-size:0.9rem;"><i class="fas fa-trash"></i> Xóa (Admin)</button>
             ` : ""}
@@ -4226,7 +4537,7 @@
         };
       }
 
-      const isAdmin = isCurrentAdmin();
+      const canNotices = hasAdminPerm("manage_notices");
       const html = `<div class="notices-list">${filtered.map(n => {
         const isLatest = n.id === latestId;
         return `
@@ -4240,7 +4551,7 @@
           </div>
           <h2 class="notice-card-title">${escapeHtml(n.title)}</h2>
           <div class="notice-card-body">${escapeHtml(n.content)}</div>
-          ${isAdmin ? `
+          ${canNotices ? `
           <div class="notice-card-foot">
             <span style="font-size:.78rem;color:var(--muted);"><i class="fas fa-shield-halved"></i> Thao tác Quản trị viên</span>
             <button type="button" class="btn btn-sm btn-del" onclick="adminDeleteNotice(${jsArg(n.id)})"><i class="fas fa-trash"></i> Xóa thông báo</button>
@@ -4253,7 +4564,7 @@
 
     function viewNotices() {
       const total = DB.notices.length;
-      const isAdmin = isCurrentAdmin();
+      const canNotices = hasAdminPerm("manage_notices");
       const initial = renderNoticesListHTML(NOTICE_FILTERS.search, NOTICE_FILTERS.sort);
       return `
         <div class="breadcrumb fade-up"><a href="#/">Trang chủ</a> <i class="fas fa-chevron-right" style="font-size:.7rem;color:#cbd5e1;"></i> Thông báo từ Admin</div>
@@ -4263,7 +4574,7 @@
               <h1><i class="fas fa-bullhorn" style="color:var(--accent)"></i> Thông báo từ Quản trị viên <span class="badge" style="margin:0;background:var(--primary-soft);color:var(--primary);font-size:.82rem;">${total} thông báo</span></h1>
               <p>Toàn bộ thông báo chính thức được sắp xếp từ mới nhất đến cũ nhất. Thông báo mới nhất đồng thời hiển thị nổi bật trên Trang chủ.</p>
             </div>
-            ${isAdmin ? `<button type="button" class="btn btn-sm" onclick="openAdminNoticesTab()"><i class="fas fa-plus"></i> Đăng / Quản lý thông báo</button>` : ""}
+            ${canNotices ? `<button type="button" class="btn btn-sm" onclick="openAdminNoticesTab()"><i class="fas fa-plus"></i> Đăng / Quản lý thông báo</button>` : ""}
           </div>
 
           ${total > 0 ? `
@@ -4320,7 +4631,7 @@
       applyNoticeFilters();
     };
     window.openAdminNoticesTab = function() {
-      if (!isCurrentAdmin()) return;
+      if (!hasAdminPerm("manage_notices")) return;
       activeAdminTab = "tab-notices";
       if (window.location.hash === "#/admin") {
         switchTab("tab-notices");
@@ -4543,13 +4854,36 @@
         return `
           <div class="admin-box fade-up" style="max-width:600px;margin:35px auto;text-align:center;">
             <h2><i class="fas fa-lock" style="color:var(--danger)"></i> Khu vực dành riêng cho Quản trị viên</h2>
-            <p style="color:var(--muted);">Vui lòng đăng nhập bằng tài khoản có quyền <b>admin</b> trên Supabase.</p>
+            <p style="color:var(--muted);">Vui lòng đăng nhập bằng tài khoản Quản trị viên được phân quyền.</p>
             ${!currentUser
               ? `<button class="btn" onclick="openAuthModal('login')"><i class="fas fa-sign-in-alt"></i> Đăng nhập ngay</button>`
               : `<a class="btn" href="#/">Về trang chủ</a>`}
           </div>
         `;
       }
+      const isSuper = isSuperAdmin();
+      const canLogs = hasAdminPerm("view_activity_logs");
+      const canApprove = hasAdminPerm("approve_lecturers");
+      const canCatalog = hasAdminPerm("manage_catalog");
+      const canModerate = hasAdminPerm("moderate_comments");
+      const canUsers = hasAdminPerm("manage_users") || hasAdminPerm("rename_users") || isSuper;
+      const canFeedback = hasAdminPerm("manage_feedback_support");
+      const canNotices = hasAdminPerm("manage_notices");
+      const canWords = hasAdminPerm("manage_words");
+
+      if (!canAccessAdminTab(activeAdminTab)) {
+        activeAdminTab = firstAllowedAdminTab();
+      }
+      if (!activeAdminTab) {
+        return `
+          <div class="admin-box fade-up" style="max-width:600px;margin:35px auto;text-align:center;">
+            <h2><i class="fas fa-user-shield" style="color:var(--accent)"></i> Tài khoản Admin chưa được bật quyền</h2>
+            <p style="color:var(--muted);">Tài khoản của bạn đang có vai trò <b>Admin</b> nhưng hiện chưa được Super Admin bật chức năng nào. Vui lòng liên hệ Super Admin để được cấp quyền chi tiết.</p>
+            <a class="btn" href="#/">Về trang chủ</a>
+          </div>
+        `;
+      }
+
       const isTab = (id) => activeAdminTab === id ? "active" : "";
       const filteredFeedbacks = DB.feedbacks.filter(fb => {
         if (activeFeedbackFilter === "all") return true;
@@ -4559,118 +4893,152 @@
       const suggestCount = DB.feedbacks.filter(fb => fb.category === "suggest").length;
       const unresolvedSupportCount = DB.supportTickets.filter(t => t.status !== "resolved").length;
       const totalCatalogCount = DB.lecturers.length + DB.pendingLecturers.length + DB.majors.length;
+      const activePermCount = isSuper ? ADMIN_PERMISSIONS_DEF.length : countActiveAdminPerms(currentProfile?.admin_permissions);
+
+      const kpiCards = [];
+      if (canApprove) {
+        kpiCards.push(`<button type="button" class="admin-kpi-card ${DB.pendingLecturers.length ? "is-warn" : ""}" onclick="switchTab('tab-pending')">
+          <span class="admin-kpi-icon amber"><i class="fas fa-user-clock"></i></span>
+          <span class="admin-kpi-meta"><div class="admin-kpi-value">${DB.pendingLecturers.length}</div><div class="admin-kpi-label">Giảng viên chờ duyệt</div></span>
+        </button>`);
+      }
+      if (canModerate) {
+        kpiCards.push(`<button type="button" class="admin-kpi-card ${DB.reportedReviews.length ? "is-alert" : ""}" onclick="switchTab('tab-reports')">
+          <span class="admin-kpi-icon red"><i class="fas fa-flag"></i></span>
+          <span class="admin-kpi-meta"><div class="admin-kpi-value">${DB.reportedReviews.length}</div><div class="admin-kpi-label">Báo cáo vi phạm</div></span>
+        </button>`);
+      }
+      if (canFeedback) {
+        kpiCards.push(`<button type="button" class="admin-kpi-card" onclick="switchTab('tab-feedbacks')">
+          <span class="admin-kpi-icon blue"><i class="fas fa-lightbulb"></i></span>
+          <span class="admin-kpi-meta"><div class="admin-kpi-value">${DB.feedbacks.length}</div><div class="admin-kpi-label">Phản ánh &amp; Góp ý</div></span>
+        </button>`);
+        kpiCards.push(`<button type="button" class="admin-kpi-card ${unresolvedSupportCount ? "is-warn" : ""}" onclick="switchTab('tab-support')">
+          <span class="admin-kpi-icon purple"><i class="fas fa-life-ring"></i></span>
+          <span class="admin-kpi-meta"><div class="admin-kpi-value">${unresolvedSupportCount}<small style="font-size:.82rem;font-weight:600;color:var(--muted);">/${DB.supportTickets.length}</small></div><div class="admin-kpi-label">Hỗ trợ chưa xử lý</div></span>
+        </button>`);
+      }
+
+      const groupSuper = isSuper ? `
+        <div class="admin-nav-group">
+          <div class="admin-nav-group-title">Quản trị cấp cao</div>
+          <div class="admin-nav-list">
+            <button type="button" class="admin-tab is-super-tab ${isTab("tab-admins")}" data-tab="tab-admins" onclick="switchTab('tab-admins', this)">
+              <span class="admin-tab-left"><i class="fas fa-crown"></i><span>Đội ngũ Admin &amp; Phân quyền</span></span>
+              <span id="sidebar-admin-team-count" class="admin-tab-badge warn">${ADMIN_TEAM_CACHE.length || ""}</span>
+            </button>
+          </div>
+        </div>` : "";
+
+      const monitorItems = [
+        canLogs ? `<button type="button" class="admin-tab ${activeAdminTab === "tab-admin-activity" && ADMIN_ACTIVITY_FILTER.scope !== "admin" ? "active" : ""}" data-tab="tab-admin-activity" data-scope="all" onclick="openActivityScope('all', this)">
+          <span class="admin-tab-left"><i class="fas fa-tower-broadcast"></i><span>Hoạt động hệ thống</span></span>
+          <span id="sidebar-all-activity-count" class="admin-tab-badge">${ADMIN_ACTIVITY_CACHE.length || ""}</span>
+        </button>` : "",
+        canLogs ? `<button type="button" class="admin-tab is-admin-log-tab ${activeAdminTab === "tab-admin-activity" && ADMIN_ACTIVITY_FILTER.scope === "admin" ? "active" : ""}" data-tab="tab-admin-activity" data-scope="admin" onclick="openActivityScope('admin', this)">
+          <span class="admin-tab-left"><i class="fas fa-user-shield"></i><span>${isSuper ? "Hoạt động của Admin" : "Hoạt động của tôi"}</span></span>
+          <span id="sidebar-admin-activity-count" class="admin-tab-badge indigo"></span>
+        </button>` : "",
+        canApprove ? `<button type="button" class="admin-tab ${isTab("tab-pending")}" data-tab="tab-pending" onclick="switchTab('tab-pending', this)">
+          <span class="admin-tab-left"><i class="fas fa-user-check"></i><span>Duyệt giảng viên</span></span>
+          <span class="admin-tab-badge ${DB.pendingLecturers.length ? "warn" : ""}">${DB.pendingLecturers.length}</span>
+        </button>` : "",
+        canModerate ? `<button type="button" class="admin-tab ${isTab("tab-reports")}" data-tab="tab-reports" onclick="switchTab('tab-reports', this)">
+          <span class="admin-tab-left"><i class="fas fa-flag"></i><span>Báo cáo bình luận</span></span>
+          <span class="admin-tab-badge ${DB.reportedReviews.length ? "danger" : ""}">${DB.reportedReviews.length}</span>
+        </button>` : "",
+        canFeedback ? `<button type="button" class="admin-tab ${isTab("tab-feedbacks")}" data-tab="tab-feedbacks" onclick="switchTab('tab-feedbacks', this)">
+          <span class="admin-tab-left"><i class="fas fa-comment-dots"></i><span>Phản ánh &amp; Góp ý</span></span>
+          <span class="admin-tab-badge">${DB.feedbacks.length}</span>
+        </button>` : "",
+        canFeedback ? `<button type="button" class="admin-tab ${isTab("tab-support")}" data-tab="tab-support" onclick="switchTab('tab-support', this)">
+          <span class="admin-tab-left"><i class="fas fa-life-ring"></i><span>Hỗ trợ tài khoản</span></span>
+          <span class="admin-tab-badge ${unresolvedSupportCount ? "warn" : ""}">${DB.supportTickets.length}</span>
+        </button>` : ""
+      ].filter(Boolean).join("");
+
+      const communityItems = [
+        canUsers ? `<button type="button" class="admin-tab ${isTab("tab-users")}" data-tab="tab-users" onclick="switchTab('tab-users', this)">
+          <span class="admin-tab-left"><i class="fas fa-users-gear"></i><span>Người dùng, Đổi tên &amp; Cảnh báo</span></span>
+        </button>` : "",
+        canNotices ? `<button type="button" class="admin-tab ${isTab("tab-notices")}" data-tab="tab-notices" onclick="switchTab('tab-notices', this)">
+          <span class="admin-tab-left"><i class="fas fa-bullhorn"></i><span>Thông báo trang chủ</span></span>
+          <span class="admin-tab-badge">${DB.notices.length}</span>
+        </button>` : "",
+        canWords ? `<button type="button" class="admin-tab ${isTab("tab-words")}" data-tab="tab-words" onclick="switchTab('tab-words', this)">
+          <span class="admin-tab-left"><i class="fas fa-ban"></i><span>Bộ lọc từ cấm</span></span>
+          <span class="admin-tab-badge">${DB.forbiddenWords.length}</span>
+        </button>` : ""
+      ].filter(Boolean).join("");
+
+      const catalogItems = [
+        (canCatalog || canApprove) ? `<button type="button" class="admin-tab ${isTab("tab-manage")}" data-tab="tab-manage" onclick="switchTab('tab-manage', this)">
+          <span class="admin-tab-left"><i class="fas fa-list-check"></i><span>Quản lý GV / Ngành</span></span>
+          <span class="admin-tab-badge">${totalCatalogCount}</span>
+        </button>` : "",
+        canCatalog ? `<button type="button" class="admin-tab ${isTab("tab-add")}" data-tab="tab-add" onclick="switchTab('tab-add', this)">
+          <span class="admin-tab-left"><i class="fas fa-circle-plus"></i><span>Thêm GV / Ngành</span></span>
+        </button>` : ""
+      ].filter(Boolean).join("");
 
       return `
         <div class="admin-dashboard fade-up">
           <section class="admin-hero">
             <div class="admin-hero-main">
-              <div class="admin-hero-kicker"><i class="fas fa-shield-halved"></i> Trung tâm Quản trị · HUIT Review</div>
+              <div class="admin-hero-kicker"><i class="fas ${isSuper ? "fa-crown" : "fa-shield-halved"}"></i> ${isSuper ? "Super Admin · Toàn quyền hệ thống" : `Admin · Được cấp ${activePermCount}/${ADMIN_PERMISSIONS_DEF.length} nhóm quyền`}</div>
               <h1><i class="fas fa-gauge-high"></i> Bảng điều khiển Quản trị viên</h1>
               <p>Xin chào <b>${escapeHtml(myDisplayName())}</b> · Hệ thống hiện có <b>${DB.lecturers.length}</b> giảng viên, <b>${DB.majors.length}</b> ngành học và <b>${REVIEWS_CACHE.length}</b> đánh giá.</p>
             </div>
             <div class="admin-hero-actions">
-              <button type="button" class="admin-hero-btn indigo" onclick="openActivityScope('admin')"><i class="fas fa-user-shield"></i> Nhật ký Admin</button>
+              ${isSuper ? `<button type="button" class="admin-hero-btn primary" onclick="switchTab('tab-admins')"><i class="fas fa-crown"></i> Đội ngũ Admin</button>` : ""}
+              ${canLogs ? `<button type="button" class="admin-hero-btn indigo" onclick="openActivityScope('admin')"><i class="fas fa-user-shield"></i> Nhật ký Admin</button>` : ""}
               <button type="button" class="admin-hero-btn" onclick="adminRefreshAll(this)"><i class="fas fa-rotate"></i> Làm mới dữ liệu</button>
-              <button type="button" class="admin-hero-btn primary" onclick="switchTab('tab-add')"><i class="fas fa-plus"></i> Thêm GV / Ngành</button>
+              ${canCatalog && !isSuper ? `<button type="button" class="admin-hero-btn primary" onclick="switchTab('tab-add')"><i class="fas fa-plus"></i> Thêm GV / Ngành</button>` : ""}
             </div>
           </section>
 
-          <section class="admin-kpi-grid" aria-label="Tổng quan nhanh">
-            <button type="button" class="admin-kpi-card ${DB.pendingLecturers.length ? "is-warn" : ""}" onclick="switchTab('tab-pending')">
-              <span class="admin-kpi-icon amber"><i class="fas fa-user-clock"></i></span>
-              <span class="admin-kpi-meta">
-                <div class="admin-kpi-value">${DB.pendingLecturers.length}</div>
-                <div class="admin-kpi-label">Giảng viên chờ duyệt</div>
-              </span>
-            </button>
-            <button type="button" class="admin-kpi-card ${DB.reportedReviews.length ? "is-alert" : ""}" onclick="switchTab('tab-reports')">
-              <span class="admin-kpi-icon red"><i class="fas fa-flag"></i></span>
-              <span class="admin-kpi-meta">
-                <div class="admin-kpi-value">${DB.reportedReviews.length}</div>
-                <div class="admin-kpi-label">Báo cáo vi phạm</div>
-              </span>
-            </button>
-            <button type="button" class="admin-kpi-card" onclick="switchTab('tab-feedbacks')">
-              <span class="admin-kpi-icon blue"><i class="fas fa-lightbulb"></i></span>
-              <span class="admin-kpi-meta">
-                <div class="admin-kpi-value">${DB.feedbacks.length}</div>
-                <div class="admin-kpi-label">Phản ánh &amp; Góp ý</div>
-              </span>
-            </button>
-            <button type="button" class="admin-kpi-card ${unresolvedSupportCount ? "is-warn" : ""}" onclick="switchTab('tab-support')">
-              <span class="admin-kpi-icon purple"><i class="fas fa-life-ring"></i></span>
-              <span class="admin-kpi-meta">
-                <div class="admin-kpi-value">${unresolvedSupportCount}<small style="font-size:.82rem;font-weight:600;color:var(--muted);">/${DB.supportTickets.length}</small></div>
-                <div class="admin-kpi-label">Hỗ trợ chưa xử lý</div>
-              </span>
-            </button>
-          </section>
+          ${kpiCards.length ? `<section class="admin-kpi-grid" aria-label="Tổng quan nhanh" style="grid-template-columns:repeat(${Math.min(4, kpiCards.length)}, minmax(0, 1fr));">${kpiCards.join("")}</section>` : ""}
 
           <div class="admin-shell">
             <aside class="admin-sidebar" aria-label="Điều hướng quản trị">
-              <div class="admin-nav-group">
-                <div class="admin-nav-group-title">Giám sát &amp; Kiểm duyệt</div>
-                <div class="admin-nav-list">
-                  <button type="button" class="admin-tab ${activeAdminTab === "tab-admin-activity" && ADMIN_ACTIVITY_FILTER.scope !== "admin" ? "active" : ""}" data-tab="tab-admin-activity" data-scope="all" onclick="openActivityScope('all', this)">
-                    <span class="admin-tab-left"><i class="fas fa-tower-broadcast"></i><span>Hoạt động hệ thống</span></span>
-                    <span id="sidebar-all-activity-count" class="admin-tab-badge">${ADMIN_ACTIVITY_CACHE.length || ""}</span>
-                  </button>
-                  <button type="button" class="admin-tab is-admin-log-tab ${activeAdminTab === "tab-admin-activity" && ADMIN_ACTIVITY_FILTER.scope === "admin" ? "active" : ""}" data-tab="tab-admin-activity" data-scope="admin" onclick="openActivityScope('admin', this)">
-                    <span class="admin-tab-left"><i class="fas fa-user-shield"></i><span>Hoạt động của Admin</span></span>
-                    <span id="sidebar-admin-activity-count" class="admin-tab-badge indigo"></span>
-                  </button>
-                  <button type="button" class="admin-tab ${isTab("tab-pending")}" data-tab="tab-pending" onclick="switchTab('tab-pending', this)">
-                    <span class="admin-tab-left"><i class="fas fa-user-check"></i><span>Duyệt giảng viên</span></span>
-                    <span class="admin-tab-badge ${DB.pendingLecturers.length ? "warn" : ""}">${DB.pendingLecturers.length}</span>
-                  </button>
-                  <button type="button" class="admin-tab ${isTab("tab-reports")}" data-tab="tab-reports" onclick="switchTab('tab-reports', this)">
-                    <span class="admin-tab-left"><i class="fas fa-flag"></i><span>Báo cáo bình luận</span></span>
-                    <span class="admin-tab-badge ${DB.reportedReviews.length ? "danger" : ""}">${DB.reportedReviews.length}</span>
-                  </button>
-                  <button type="button" class="admin-tab ${isTab("tab-feedbacks")}" data-tab="tab-feedbacks" onclick="switchTab('tab-feedbacks', this)">
-                    <span class="admin-tab-left"><i class="fas fa-comment-dots"></i><span>Phản ánh &amp; Góp ý</span></span>
-                    <span class="admin-tab-badge">${DB.feedbacks.length}</span>
-                  </button>
-                  <button type="button" class="admin-tab ${isTab("tab-support")}" data-tab="tab-support" onclick="switchTab('tab-support', this)">
-                    <span class="admin-tab-left"><i class="fas fa-life-ring"></i><span>Hỗ trợ tài khoản</span></span>
-                    <span class="admin-tab-badge ${unresolvedSupportCount ? "warn" : ""}">${DB.supportTickets.length}</span>
-                  </button>
-                </div>
-              </div>
-
-              <div class="admin-nav-group">
-                <div class="admin-nav-group-title">Cộng đồng &amp; Nội dung</div>
-                <div class="admin-nav-list">
-                  <button type="button" class="admin-tab ${isTab("tab-users")}" data-tab="tab-users" onclick="switchTab('tab-users', this)">
-                    <span class="admin-tab-left"><i class="fas fa-users-gear"></i><span>Người dùng &amp; Cảnh báo</span></span>
-                  </button>
-                  <button type="button" class="admin-tab ${isTab("tab-notices")}" data-tab="tab-notices" onclick="switchTab('tab-notices', this)">
-                    <span class="admin-tab-left"><i class="fas fa-bullhorn"></i><span>Thông báo trang chủ</span></span>
-                    <span class="admin-tab-badge">${DB.notices.length}</span>
-                  </button>
-                  <button type="button" class="admin-tab ${isTab("tab-words")}" data-tab="tab-words" onclick="switchTab('tab-words', this)">
-                    <span class="admin-tab-left"><i class="fas fa-ban"></i><span>Bộ lọc từ cấm</span></span>
-                    <span class="admin-tab-badge">${DB.forbiddenWords.length}</span>
-                  </button>
-                </div>
-              </div>
-
-              <div class="admin-nav-group">
-                <div class="admin-nav-group-title">Danh mục dữ liệu</div>
-                <div class="admin-nav-list">
-                  <button type="button" class="admin-tab ${isTab("tab-manage")}" data-tab="tab-manage" onclick="switchTab('tab-manage', this)">
-                    <span class="admin-tab-left"><i class="fas fa-list-check"></i><span>Quản lý GV / Ngành</span></span>
-                    <span class="admin-tab-badge">${totalCatalogCount}</span>
-                  </button>
-                  <button type="button" class="admin-tab ${isTab("tab-add")}" data-tab="tab-add" onclick="switchTab('tab-add', this)">
-                    <span class="admin-tab-left"><i class="fas fa-circle-plus"></i><span>Thêm GV / Ngành</span></span>
-                  </button>
-                </div>
-              </div>
+              ${groupSuper}
+              ${monitorItems ? `<div class="admin-nav-group"><div class="admin-nav-group-title">Giám sát &amp; Kiểm duyệt</div><div class="admin-nav-list">${monitorItems}</div></div>` : ""}
+              ${communityItems ? `<div class="admin-nav-group"><div class="admin-nav-group-title">Cộng đồng &amp; Nội dung</div><div class="admin-nav-list">${communityItems}</div></div>` : ""}
+              ${catalogItems ? `<div class="admin-nav-group"><div class="admin-nav-group-title">Danh mục dữ liệu</div><div class="admin-nav-list">${catalogItems}</div></div>` : ""}
             </aside>
 
             <div class="admin-main">
-              <div id="tab-admin-activity" class="admin-content ${isTab("tab-admin-activity")}">
+              ${isSuper ? `
+              <div id="tab-admins" class="admin-content ${isTab("tab-admins")}">
+                <div class="admin-box">
+                  <div class="admin-panel-head">
+                    <div>
+                      <h3><i class="fas fa-crown" style="color:var(--accent)"></i> Quản lý Đội ngũ Admin &amp; Phân quyền chi tiết</h3>
+                      <p>Super Admin có thể bổ nhiệm Admin, tích chọn chính xác quyền từng người, nâng cấp hoặc thu hồi quyền ngay trên web.</p>
+                    </div>
+                    <button type="button" class="btn btn-sm" onclick="loadAdminTeam(true)"><i class="fas fa-rotate"></i> Làm mới</button>
+                  </div>
+
+                  <div class="admin-team-stats">
+                    <div class="admin-team-stat gold"><div><strong id="team-stat-super">0</strong><span>Super Admin</span></div><i class="fas fa-crown"></i></div>
+                    <div class="admin-team-stat red"><div><strong id="team-stat-sub">0</strong><span>Admin</span></div><i class="fas fa-user-shield"></i></div>
+                    <div class="admin-team-stat blue"><div><strong>${ADMIN_PERMISSIONS_DEF.length}</strong><span>Nhóm quyền chi tiết</span></div><i class="fas fa-sliders"></i></div>
+                  </div>
+
+                  <div class="admin-team-promote-bar">
+                    <div class="catalog-search-field">
+                      <i class="fas fa-user-plus" aria-hidden="true"></i>
+                      <input type="search" id="admin-team-promote-search" placeholder="Tìm @username hoặc tên hiển thị để bổ nhiệm làm Admin mới..." onkeydown="if(event.key==='Enter'){event.preventDefault();adminSearchForPromote();}" autocomplete="off" />
+                    </div>
+                    <button type="button" id="admin-team-promote-btn" class="btn btn-sm" style="height:42px;padding:0 18px;" onclick="adminSearchForPromote()"><i class="fas fa-magnifying-glass"></i> Tìm để cấp quyền</button>
+                  </div>
+                  <div id="admin-team-promote-results" class="admin-team-promote-results"></div>
+
+                  <div style="font-weight:800;font-size:.92rem;color:var(--primary-dark);margin:6px 0 10px;"><i class="fas fa-users-rectangle" style="color:var(--primary);margin-right:6px;"></i> Danh sách Quản trị viên hiện tại</div>
+                  <div id="admin-team-list" class="admin-team-list"><div class="loading-box" style="padding:22px;"><i class="fas fa-spinner fa-spin"></i> Đang tải đội ngũ Admin...</div></div>
+                </div>
+              </div>` : ""}
+              ${canLogs ? `<div id="tab-admin-activity" class="admin-content ${isTab("tab-admin-activity")}">
                 <div class="admin-box">
                   <div class="admin-panel-head">
                     <div>
@@ -4707,7 +5075,7 @@
                       <i class="fas fa-users"></i><span>Hoạt động người dùng</span><span id="scope-cnt-user" class="activity-scope-count">0</span>
                     </button>
                     <button type="button" class="activity-scope-btn scope-admin ${ADMIN_ACTIVITY_FILTER.scope === "admin" ? "active" : ""}" data-scope="admin" onclick="setAdminActivityScope('admin')">
-                      <i class="fas fa-user-shield"></i><span>Hoạt động của Admin</span><span id="scope-cnt-admin" class="activity-scope-count">0</span>
+                      <i class="fas fa-user-shield"></i><span id="scope-label-admin">${isSuper ? "Hoạt động của Admin" : "Hoạt động của tôi"}</span><span id="scope-cnt-admin" class="activity-scope-count">0</span>
                     </button>
                   </div>
 
@@ -4724,14 +5092,14 @@
                   <div id="admin-activity-feed" class="admin-activity-feed"><div class="loading-box" style="padding:24px;"><i class="fas fa-spinner fa-spin"></i> Đang tải hoạt động...</div></div>
                   <div id="admin-activity-updated" style="margin-top:10px;color:var(--muted);font-size:.73rem;text-align:right;"></div>
                 </div>
-              </div>
+              </div>` : ""}
 
-              <div id="tab-users" class="admin-content ${isTab("tab-users")}">
+              ${canUsers ? `<div id="tab-users" class="admin-content ${isTab("tab-users")}">
                 <div class="admin-box">
                   <div class="admin-panel-head">
                     <div>
-                      <h3><i class="fas fa-users-gear" style="color:var(--primary)"></i> Tìm kiếm &amp; quản lý tài khoản</h3>
-                      <p>Tìm theo tên đăng nhập để gửi thông báo riêng, cảnh cáo, gỡ cảnh cáo hoặc khóa / mở khóa tài khoản.</p>
+                      <h3><i class="fas fa-users-gear" style="color:var(--primary)"></i> Tìm kiếm, Đổi tên &amp; Quản lý tài khoản</h3>
+                      <p>Tìm theo tên đăng nhập hoặc tên hiển thị để đổi tên (tự động đồng bộ bình luận cũ), phân quyền, cảnh cáo, khóa hoặc gửi thông báo riêng.</p>
                     </div>
                   </div>
                   <div class="user-admin-search">
@@ -4739,7 +5107,7 @@
                       <label class="user-admin-search-label" for="admin-user-search"><i class="fas fa-at" aria-hidden="true"></i> Tên đăng nhập người dùng</label>
                       <div class="user-admin-search-input-wrap">
                         <i class="fas fa-search" aria-hidden="true"></i>
-                        <input type="search" id="admin-user-search" minlength="2" maxlength="30" placeholder="Nhập username cần tìm..." autocomplete="off" aria-describedby="admin-user-search-hint" onkeydown="if(event.key==='Enter'){event.preventDefault();adminSearchUsers();}" />
+                        <input type="search" id="admin-user-search" minlength="2" maxlength="40" placeholder="Nhập @username hoặc tên hiển thị cần tìm..." autocomplete="off" aria-describedby="admin-user-search-hint" onkeydown="if(event.key==='Enter'){event.preventDefault();adminSearchUsers();}" />
                         <span class="user-admin-search-shortcut" aria-hidden="true">Enter</span>
                       </div>
                       <div class="user-admin-search-hint" id="admin-user-search-hint"><i class="fas fa-circle-info" aria-hidden="true"></i> Nhập ít nhất 2 ký tự để tìm tài khoản</div>
@@ -4750,9 +5118,9 @@
                   <div id="admin-user-results" class="user-admin-results"><div class="empty-state" style="padding:24px;"><p style="margin:0;font-size:.9rem;">Nhập ít nhất 2 ký tự để tìm tài khoản.</p></div></div>
                   <div id="admin-user-selected-panel"></div>
                 </div>
-              </div>
+              </div>` : ""}
 
-              <div id="tab-pending" class="admin-content ${isTab("tab-pending")}">
+              ${canApprove ? `<div id="tab-pending" class="admin-content ${isTab("tab-pending")}">
                 <div class="admin-box">
                   <div class="admin-panel-head">
                     <div>
@@ -4776,9 +5144,9 @@
                     </div>`;
                   }).join("") : `<div class="empty-state" style="padding:36px 20px;"><i class="fas fa-check-circle" style="font-size:2.6rem;color:#bbf7d0;"></i><p style="margin:0;">Không có giảng viên nào đang chờ duyệt.</p></div>`}
                 </div>
-              </div>
+              </div>` : ""}
 
-              <div id="tab-reports" class="admin-content ${isTab("tab-reports")}">
+              ${canModerate ? `<div id="tab-reports" class="admin-content ${isTab("tab-reports")}">
                 <div class="admin-box">
                   <div class="admin-panel-head">
                     <div>
@@ -4816,8 +5184,8 @@
                       </div>
                       <div style="display:flex;gap:8px;flex-wrap:wrap;">
                         ${linkObj && reportedText ? `<a class="btn btn-sm" href="${linkObj.href}"><i class="fas fa-arrow-up-right-from-square"></i> Xem chỗ đó</a>` : ""}
-                        ${rep.replyId && replyObj && replyObj.userId && !replyObj.isAdmin && replyObj.userId !== currentUser?.id ? `<button type="button" class="btn btn-sm btn-del" onclick="adminOpenCommentModeration('warn_and_delete','reply',${jsArg(r.id)},${jsArg(replyObj.id)},${jsArg(replyObj.userId)},${jsArg(reportedAuthor)},${jsArg(String(replyObj.content || '').slice(0,260))},${jsArg(rep.id)})"><i class="fas fa-gavel"></i> Cảnh cáo &amp; Xóa</button>` : ""}
-                        ${!rep.replyId && r && r.userId && !r.isAdmin && r.userId !== currentUser?.id ? `<button type="button" class="btn btn-sm btn-del" onclick="adminOpenCommentModeration('warn_and_delete','review',${jsArg(r.id)},'',${jsArg(r.userId)},${jsArg(reportedAuthor)},${jsArg(String(r.content || '').slice(0,260))},${jsArg(rep.id)})"><i class="fas fa-gavel"></i> Cảnh cáo &amp; Xóa</button>` : ""}
+                        ${hasAdminPerm("manage_users") && rep.replyId && replyObj && replyObj.userId && (isSuper || !replyObj.isAdmin) && replyObj.userId !== currentUser?.id ? `<button type="button" class="btn btn-sm btn-del" onclick="adminOpenCommentModeration('warn_and_delete','reply',${jsArg(r.id)},${jsArg(replyObj.id)},${jsArg(replyObj.userId)},${jsArg(reportedAuthor)},${jsArg(String(replyObj.content || '').slice(0,260))},${jsArg(rep.id)})"><i class="fas fa-gavel"></i> Cảnh cáo &amp; Xóa</button>` : ""}
+                        ${hasAdminPerm("manage_users") && !rep.replyId && r && r.userId && (isSuper || !r.isAdmin) && r.userId !== currentUser?.id ? `<button type="button" class="btn btn-sm btn-del" onclick="adminOpenCommentModeration('warn_and_delete','review',${jsArg(r.id)},'',${jsArg(r.userId)},${jsArg(reportedAuthor)},${jsArg(String(r.content || '').slice(0,260))},${jsArg(rep.id)})"><i class="fas fa-gavel"></i> Cảnh cáo &amp; Xóa</button>` : ""}
                         ${rep.replyId && replyObj ? `<button type="button" class="btn btn-sm" style="background:#fee2e2;color:#991b1b;box-shadow:none;" onclick="adminOpenCommentModeration('delete_only','reply',${jsArg(r.id)},${jsArg(replyObj.id)},${jsArg(replyObj.userId || '')},${jsArg(reportedAuthor)},${jsArg(String(replyObj.content || '').slice(0,260))},${jsArg(rep.id)})"><i class="fas fa-trash"></i> Xóa phản hồi</button>` : ""}
                         ${!rep.replyId && r ? `<button type="button" class="btn btn-sm" style="background:#fee2e2;color:#991b1b;box-shadow:none;" onclick="adminOpenCommentModeration('delete_only','review',${jsArg(r.id)},'',${jsArg(r.userId || '')},${jsArg(reportedAuthor)},${jsArg(String(r.content || '').slice(0,260))},${jsArg(rep.id)})"><i class="fas fa-trash"></i> Xóa đánh giá</button>` : ""}
                         <button type="button" class="btn btn-sm" style="background:#94a3b8;" onclick="dismissReport(${jsArg(rep.id)})">Bỏ qua / Đóng</button>
@@ -4825,9 +5193,9 @@
                     </div>`;
                   }).join("") : `<div class="empty-state" style="padding:36px 20px;"><i class="fas fa-circle-check" style="font-size:2.6rem;color:#bbf7d0;"></i><p style="margin:0;">Không có báo cáo vi phạm nào.</p></div>`}
                 </div>
-              </div>
+              </div>` : ""}
 
-              <div id="tab-feedbacks" class="admin-content ${isTab("tab-feedbacks")}">
+              ${canFeedback ? `<div id="tab-feedbacks" class="admin-content ${isTab("tab-feedbacks")}">
                 <div class="admin-box">
                   <div class="admin-panel-head">
                     <div>
@@ -4910,9 +5278,9 @@
                     </div>
                   `).join("") : `<div class="empty-state" style="padding:36px 20px;"><p style="margin:0;">Chưa có yêu cầu hỗ trợ tài khoản nào.</p></div>`}
                 </div>
-              </div>
+              </div>` : ""}
 
-              <div id="tab-notices" class="admin-content ${isTab("tab-notices")}">
+              ${canNotices ? `<div id="tab-notices" class="admin-content ${isTab("tab-notices")}">
                 <div class="admin-box">
                   <div class="admin-panel-head">
                     <div>
@@ -4945,9 +5313,9 @@
                     <button type="button" class="btn btn-sm btn-del" onclick="adminDeleteNotice(${jsArg(n.id)})"><i class="fas fa-trash"></i> Xóa</button>
                   </div>`).join("");
                 })()}
-              </div>
+              </div>` : ""}
 
-              <div id="tab-words" class="admin-content ${isTab("tab-words")}">
+              ${canWords ? `<div id="tab-words" class="admin-content ${isTab("tab-words")}">
                 <div class="admin-box">
                   <div class="admin-panel-head">
                     <div>
@@ -4968,16 +5336,16 @@
                     `).join("") : `<p style="color:var(--muted);margin:0;">Chưa có từ cấm nào.</p>`}
                   </div>
                 </div>
-              </div>
+              </div>` : ""}
 
-              <div id="tab-manage" class="admin-content ${isTab("tab-manage")}">
+              ${(canCatalog || canApprove) ? `<div id="tab-manage" class="admin-content ${isTab("tab-manage")}">
                 <div class="admin-box">
                   <div class="admin-panel-head">
                     <div>
                       <h3><i class="fas fa-list-check" style="color:var(--primary)"></i> Quản lý trực tiếp Giảng viên &amp; Ngành học</h3>
                       <p>Tìm nhanh theo tên, mã ngành, học vị hoặc lọc theo khoa để chỉnh sửa, phê duyệt hoặc xóa ngay tại đây.</p>
                     </div>
-                    <button type="button" class="btn btn-sm" style="margin:0;" onclick="switchTab('tab-add')"><i class="fas fa-plus"></i> Thêm mới</button>
+                    ${canCatalog ? `<button type="button" class="btn btn-sm" style="margin:0;" onclick="switchTab('tab-add')"><i class="fas fa-plus"></i> Thêm mới</button>` : ""}
                   </div>
 
                   <div class="admin-catalog-toolbar" role="search">
@@ -5010,9 +5378,9 @@
 
                   <div id="admin-catalog-results" class="admin-catalog-results" aria-live="polite"></div>
                 </div>
-              </div>
+              </div>` : ""}
 
-              <div id="tab-add" class="admin-content ${isTab("tab-add")}">
+              ${canCatalog ? `<div id="tab-add" class="admin-content ${isTab("tab-add")}">
                 <div class="admin-add-grid">
                   <div class="admin-box">
                     <div class="admin-form-card-head">
@@ -5051,7 +5419,7 @@
                     </form>
                   </div>
                 </div>
-              </div>
+              </div>` : ""}
             </div>
           </div>
         </div>
@@ -5065,9 +5433,11 @@
       if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang đồng bộ...'; }
       try {
         ADMIN_ACTIVITY_LAST_FETCH = 0;
+        await loadCurrentProfile();
         await syncFromSupabase();
+        updateAuthActions();
         route({ preserveScroll: true });
-        showToast("Đã cập nhật dữ liệu mới nhất từ Supabase.", "success");
+        showToast("Đã cập nhật dữ liệu và quyền hạn mới nhất từ Supabase.", "success");
       } catch (err) {
         alert("Không thể đồng bộ dữ liệu: " + supabaseErrorText(err));
       } finally {
@@ -5172,9 +5542,9 @@
             </div>
             <div class="admin-catalog-row-actions">
               <a class="btn btn-sm btn-ghost" href="#/lecturer/${encodeURIComponent(l.id)}"><i class="fas fa-arrow-up-right-from-square"></i> Xem</a>
-              <button type="button" class="btn btn-sm" onclick="openEditLecturerModal(${jsArg(l.id)})"><i class="fas fa-pen"></i> Sửa</button>
-              ${l._pending ? `<button type="button" class="btn btn-sm btn-approve" onclick="approveLecturer(${jsArg(l.id)}, this)"><i class="fas fa-check"></i> Duyệt</button><button type="button" class="btn btn-sm btn-del" onclick="rejectLecturer(${jsArg(l.id)})"><i class="fas fa-times"></i> Từ chối</button>` : ""}
-              <button type="button" class="btn btn-sm btn-del" onclick="adminDeleteLecturer(${jsArg(l.id)})"><i class="fas fa-trash"></i> Xóa</button>
+              ${hasAdminPerm("manage_catalog") ? `<button type="button" class="btn btn-sm" onclick="openEditLecturerModal(${jsArg(l.id)})"><i class="fas fa-pen"></i> Sửa</button>` : ""}
+              ${l._pending && hasAdminPerm("approve_lecturers") ? `<button type="button" class="btn btn-sm btn-approve" onclick="approveLecturer(${jsArg(l.id)}, this)"><i class="fas fa-check"></i> Duyệt</button><button type="button" class="btn btn-sm btn-del" onclick="rejectLecturer(${jsArg(l.id)})"><i class="fas fa-times"></i> Từ chối</button>` : ""}
+              ${hasAdminPerm("manage_catalog") ? `<button type="button" class="btn btn-sm btn-del" onclick="adminDeleteLecturer(${jsArg(l.id)})"><i class="fas fa-trash"></i> Xóa</button>` : ""}
             </div>
           </div>`;
         }).join("");
@@ -5202,8 +5572,7 @@
             </div>
             <div class="admin-catalog-row-actions">
               <a class="btn btn-sm btn-ghost" href="#/major/${encodeURIComponent(m.id)}"><i class="fas fa-arrow-up-right-from-square"></i> Xem</a>
-              <button type="button" class="btn btn-sm" onclick="openEditMajorModal(${jsArg(m.id)})"><i class="fas fa-pen"></i> Sửa</button>
-              <button type="button" class="btn btn-sm btn-del" onclick="adminDeleteMajor(${jsArg(m.id)})"><i class="fas fa-trash"></i> Xóa</button>
+              ${hasAdminPerm("manage_catalog") ? `<button type="button" class="btn btn-sm" onclick="openEditMajorModal(${jsArg(m.id)})"><i class="fas fa-pen"></i> Sửa</button><button type="button" class="btn btn-sm btn-del" onclick="adminDeleteMajor(${jsArg(m.id)})"><i class="fas fa-trash"></i> Xóa</button>` : ""}
             </div>
           </div>`;
         }).join("");
@@ -5272,8 +5641,8 @@
     function reviewSectionHTML(type, targetId, title, highlightReviewId = null, highlightReplyId = null) {
       const allReviews = getReviewsFor(type, targetId);
       const reviews = getFilteredSortedReviews(type, targetId);
-      const isAdmin = isCurrentAdmin();
-      const locked = Boolean(currentUser && isAccountLocked() && !isAdmin);
+      const isAdmin = hasAdminPerm("moderate_comments");
+      const locked = Boolean(currentUser && isAccountLocked() && !isCurrentAdmin());
       const isOpen = Boolean(REVIEW_VIEW_STATE.composerOpen && currentUser && !locked);
       const avatarText = currentUser ? (isAdmin ? '<i class="fas fa-shield-halved"></i>' : escapeHtml(initialsOf(myDisplayName()))) : '<i class="fas fa-pen"></i>';
       return `
@@ -5354,6 +5723,9 @@
 
     function reviewCardHTML(r, isAdmin = false, highlightReviewId = null, highlightReplyId = null) {
       const hasLiked = Boolean(currentUser && (r.likedBy || []).includes(currentUser.id));
+      const isSuper = isSuperAdmin();
+      const canWarnUser = isAdmin && hasAdminPerm("manage_users");
+      const accountLocked = Boolean(currentUser && isAccountLocked());
       const mine = isMine(r);
       const isHighlighted = r.id === highlightReviewId && !highlightReplyId;
       const authorName = r.author || "Thành viên";
@@ -5390,7 +5762,7 @@
                     ${replyMine
                       ? `<button type="button" onclick="openMyEdit('reply',${jsArg(r.id)},${jsArg(reply.id)})"><i class="fas fa-edit"></i> Sửa</button><button type="button" class="del" onclick="deleteMyReply(${jsArg(r.id)},${jsArg(reply.id)})"><i class="fas fa-trash"></i> Xóa</button>`
                       : `<button type="button" class="del" onclick="openReportModal(${jsArg(r.id)},${jsArg(reply.id)})"><i class="fas fa-flag"></i> Báo cáo</button>`}
-                    ${isAdmin && reply.userId && !reply.isAdmin && reply.userId !== currentUser?.id ? `<button type="button" class="admin-inline-warn" onclick="adminOpenCommentModeration('warn_and_delete','reply',${jsArg(r.id)},${jsArg(reply.id)},${jsArg(reply.userId)},${jsArg(repAuthor)},${jsArg(String(reply.content || '').slice(0,260))})" title="Cảnh cáo người viết và tự động xóa phản hồi này"><i class="fas fa-triangle-exclamation"></i> Cảnh cáo &amp; Xóa</button>` : ""}
+                    ${canWarnUser && reply.userId && (isSuper || !reply.isAdmin) && reply.userId !== currentUser?.id ? `<button type="button" class="admin-inline-warn" onclick="adminOpenCommentModeration('warn_and_delete','reply',${jsArg(r.id)},${jsArg(reply.id)},${jsArg(reply.userId)},${jsArg(repAuthor)},${jsArg(String(reply.content || '').slice(0,260))})" title="Cảnh cáo người viết và tự động xóa phản hồi này"><i class="fas fa-triangle-exclamation"></i> Cảnh cáo &amp; Xóa</button>` : ""}
                     ${isAdmin ? `<button type="button" class="admin-inline-del" style="margin-left:auto;" onclick="adminOpenCommentModeration('delete_only','reply',${jsArg(r.id)},${jsArg(reply.id)},${jsArg(reply.userId || '')},${jsArg(repAuthor)},${jsArg(String(reply.content || '').slice(0,260))})" title="Xóa phản hồi"><i class="fas fa-trash"></i> Xóa (Admin)</button>` : ""}
                   </div>
                 </div>`;
@@ -5402,7 +5774,7 @@
             ${mine ? `<button type="button" class="own-edit" onclick="openMyEdit('review',${jsArg(r.id)})"><i class="fas fa-pen"></i> Sửa bình luận</button>
             <button type="button" onclick="deleteMyReview(${jsArg(r.id)})"><i class="fas fa-trash"></i> Xóa bình luận</button>` : `<button type="button" onclick="openReportModal(${jsArg(r.id)})"><i class="fas fa-flag"></i> Báo cáo vi phạm</button>`}
             ${isAdmin ? `
-            ${r.userId && !r.isAdmin && r.userId !== currentUser?.id ? `<button type="button" class="admin-inline-warn" onclick="adminOpenCommentModeration('warn_and_delete','review',${jsArg(r.id)},'',${jsArg(r.userId)},${jsArg(authorName)},${jsArg(String(r.content || '').slice(0,260))})" title="Cảnh cáo người viết và tự động xóa đánh giá này"><i class="fas fa-triangle-exclamation"></i> Cảnh cáo &amp; Xóa</button>` : ""}
+            ${canWarnUser && r.userId && (isSuper || !r.isAdmin) && r.userId !== currentUser?.id ? `<button type="button" class="admin-inline-warn" onclick="adminOpenCommentModeration('warn_and_delete','review',${jsArg(r.id)},'',${jsArg(r.userId)},${jsArg(authorName)},${jsArg(String(r.content || '').slice(0,260))})" title="Cảnh cáo người viết và tự động xóa đánh giá này"><i class="fas fa-triangle-exclamation"></i> Cảnh cáo &amp; Xóa</button>` : ""}
             <button type="button" class="admin-inline-edit" onclick="openEditReviewModal(${jsArg(r.id)})"><i class="fas fa-edit"></i> Sửa (Admin)</button>
             <button type="button" class="admin-inline-del" style="margin-left:auto;" onclick="adminOpenCommentModeration('delete_only','review',${jsArg(r.id)},'',${jsArg(r.userId || '')},${jsArg(authorName)},${jsArg(String(r.content || '').slice(0,260))})"><i class="fas fa-trash"></i> Xóa (Admin)</button>
             ` : ""}
@@ -5418,14 +5790,14 @@
                 <input type="checkbox" id="reply-as-admin-${escapeHtml(r.id)}" style="width:16px; height:16px; margin:0;"> Đăng với tư cách Admin (Nổi bật)
               </label>
             </div>` : ""}
-            <textarea id="reply-content-${escapeHtml(r.id)}" rows="3" maxlength="2000" ${(currentUser && isAccountLocked() && !isAdmin) ? "disabled" : ""} placeholder="${(currentUser && isAccountLocked() && !isAdmin) ? "Tài khoản đang bị khóa, không thể gửi phản hồi..." : "Nhập nội dung phản hồi..."}" oninput="handleReplyInputHelper(${jsArg(r.id)}, this)" style="margin-bottom:4px; padding:10px 14px; font-size:0.9rem;"></textarea>
+            <textarea id="reply-content-${escapeHtml(r.id)}" rows="3" maxlength="2000" ${accountLocked ? "disabled" : ""} placeholder="${accountLocked ? "Tài khoản đang bị khóa, không thể gửi phản hồi..." : "Nhập nội dung phản hồi..."}" oninput="handleReplyInputHelper(${jsArg(r.id)}, this)" style="margin-bottom:4px; padding:10px 14px; font-size:0.9rem;"></textarea>
             <div class="textarea-meta-bar" style="margin-top:2px;margin-bottom:8px;">
               <span>Tối thiểu 2 ký tự</span>
               <span id="reply-count-${escapeHtml(r.id)}" class="textarea-count">0 / 2.000</span>
             </div>
             <div id="reply-warn-${escapeHtml(r.id)}" class="textarea-soft-warn" style="margin-top:0;margin-bottom:10px;" role="status"><i class="fas fa-triangle-exclamation"></i><span>Nội dung có thể chứa từ ngữ chưa phù hợp với quy tắc cộng đồng — vui lòng điều chỉnh trước khi gửi.</span></div>
             <div style="display:flex; gap:12px;">
-              <button type="button" id="reply-btn-${escapeHtml(r.id)}" class="btn btn-sm" ${(currentUser && isAccountLocked() && !isAdmin) ? "disabled" : ""} onclick="submitReply(${jsArg(r.id)})" style="background:var(--primary);"><i class="fas fa-paper-plane"></i> Gửi phản hồi</button>
+              <button type="button" id="reply-btn-${escapeHtml(r.id)}" class="btn btn-sm" ${accountLocked ? "disabled" : ""} onclick="submitReply(${jsArg(r.id)})" style="background:var(--primary);"><i class="fas fa-paper-plane"></i> Gửi phản hồi</button>
               <button type="button" class="btn btn-sm" style="background:#e2e8f0; color:#334155; box-shadow:none;" onclick="closeReplyForm(${jsArg(r.id)})">Hủy</button>
             </div>
           </div>
@@ -5526,7 +5898,7 @@
       if (!ensureAccountActive() || !supabaseClient) return;
       if (!currentUser) { openAuthModal("login"); setAuthMessage("Bạn cần đăng nhập để phản hồi.", "info"); return; }
       const content = document.getElementById(`reply-content-${reviewId}`).value.trim();
-      const isAdminReply = isCurrentAdmin() && Boolean(document.getElementById(`reply-as-admin-${reviewId}`)?.checked);
+      const isAdminReply = hasAdminPerm("moderate_comments") && Boolean(document.getElementById(`reply-as-admin-${reviewId}`)?.checked);
       if (content.length < 2 || content.length > 2000) { alert("Nội dung phản hồi cần từ 2 đến 2.000 ký tự."); return; }
       const rev = REVIEWS_CACHE.find(r => r.id === reviewId);
       const badWord = containsForbiddenWord(content);
@@ -5758,7 +6130,7 @@
     }
 
     window.openActivityScope = function(scope = "all") {
-      if (!isCurrentAdmin()) return;
+      if (!hasAdminPerm("view_activity_logs")) { showToast("Bạn chưa được cấp quyền Xem Nhật ký hoạt động.", "error"); return; }
       ADMIN_ACTIVITY_FILTER.scope = ["all", "user", "admin"].includes(scope) ? scope : "all";
       ADMIN_ACTIVITY_FILTER.group = "all";
       const wasActive = activeAdminTab === "tab-admin-activity";
@@ -5773,11 +6145,14 @@
 
     window.switchTab = function(tabId, el) {
       const target = document.getElementById(tabId);
-      if (!target || !isCurrentAdmin()) return;
+      if (!target || !canAccessAdminTab(tabId)) return;
       activeAdminTab = tabId;
       syncAdminSidebarActive(tabId);
       document.querySelectorAll(".admin-content").forEach(c => c.classList.toggle("active", c.id === tabId));
       triggerSubtlePanelGlide(target);
+      if (tabId === "tab-admins") {
+        loadAdminTeam();
+      }
       if (tabId === "tab-admin-activity") {
         loadAdminActivityFeed();
         requestAnimationFrame(() => syncSegmentedPills(true));
@@ -5803,8 +6178,8 @@
         if (act === "auto_warning_forbidden_word" || act === "auto_warning_and_locked") return false;
         return true;
       }
-      if (meta.deleted_by_admin || meta.edited_by_admin || meta.is_admin || meta.actor_role === "admin") return true;
-      if (item.performed_by_role === "admin" && type !== "forbidden_word_violation" && type !== "account_created") {
+      if (meta.deleted_by_admin || meta.edited_by_admin || meta.is_admin || meta.actor_role === "admin" || meta.actor_role === "super_admin") return true;
+      if ((item.performed_by_role === "admin" || item.performed_by_role === "super_admin") && type !== "forbidden_word_violation" && type !== "account_created") {
         return true;
       }
       return false;
@@ -5870,6 +6245,15 @@
       }
       if (type === "admin_user_notice_sent") {
         return { label: "Thông báo riêng", badgeTone: "admin-op", icon: "fa-envelope-open-text", tone: "admin-op", group: "other", adminGroup: "system", isAdminAction: true, summary: "đã gửi thông báo riêng đến tài khoản người dùng" };
+      }
+      if (type === "admin_role_updated") {
+        return { label: "Phân quyền vai trò", badgeTone: "amber", icon: "fa-crown", tone: "propose", group: "moderation", adminGroup: "system", isAdminAction: true, summary: "đã thay đổi vai trò Quản trị viên / Thành viên cho tài khoản" };
+      }
+      if (type === "admin_permissions_updated") {
+        return { label: "Sửa quyền Admin", badgeTone: "admin-op", icon: "fa-sliders", tone: "admin-op", group: "moderation", adminGroup: "system", isAdminAction: true, summary: "đã cập nhật danh sách quyền chi tiết của Admin" };
+      }
+      if (type === "admin_user_renamed") {
+        return { label: "Đổi tên người dùng", badgeTone: "edited", icon: "fa-signature", tone: "edited", group: "posts", adminGroup: "moderation", isAdminAction: true, summary: "đã đổi tên hiển thị và đồng bộ toàn bộ đánh giá/phản hồi cũ" };
       }
 
       // ===== 2. CÁC HOẠT ĐỘNG NGƯỜI DÙNG & TƯƠNG TÁC CHUNG =====
@@ -6030,11 +6414,35 @@
       return d.toLocaleDateString("vi-VN", { weekday: "short", day: "2-digit", month: "2-digit", year: "numeric" });
     }
 
+    function canViewTargetUserHistory(targetUser) {
+      if (!targetUser || !isCurrentAdmin()) return false;
+      if (isSuperAdmin()) return true;
+      if (targetUser.id === currentUser?.id) return true;
+      const tRole = targetUser.role || "user";
+      return tRole !== "admin" && tRole !== "super_admin";
+    }
+
+    function canCurrentUserViewActivityItem(item) {
+      if (!item || !isCurrentAdmin()) return false;
+      if (isSuperAdmin()) return true;
+      const myId = currentUser?.id;
+      if (!myId) return false;
+      if (item.performed_by === myId) return true;
+      if (!item.performed_by && item.user_id === myId) return true;
+      const actorRole = item.performed_by_role || "";
+      const userRole = item.user_role || "";
+      if (actorRole === "admin" || actorRole === "super_admin") return false;
+      if (userRole === "admin" || userRole === "super_admin") return false;
+      if (isAdminActivityItem(item)) return false;
+      return true;
+    }
+
     function filterActivityList(items, filterState) {
       const scope = filterState?.scope || "all";
       const group = filterState?.group || "all";
       const q = normalizeSearch(filterState?.search || "");
       return (items || []).filter(item => {
+        if (!canCurrentUserViewActivityItem(item)) return false;
         const info = adminActivityTypeInfo(item);
         if (scope === "admin" && !info.isAdminAction) return false;
         if (scope === "user" && info.isAdminAction) return false;
@@ -6082,8 +6490,11 @@
           const adminNameBtn = item.performed_by
             ? `<button type="button" class="admin-activity-user" style="color:#3730a3;" onclick="adminOpenUserActivity(${jsArg(item.performed_by)},${jsArg(adminUsername)},${jsArg(item.performed_by_display_name || "Quản trị viên")},0,'active','')">@${escapeHtml(adminUsername)}</button>`
             : `<span style="color:#3730a3;font-weight:800;font-size:.9rem;">@${escapeHtml(adminUsername || "admin")}</span>`;
+          const actorChip = item.performed_by_role === "super_admin"
+            ? `<span class="super-admin-badge" style="margin-left:0;"><i class="fas fa-crown"></i> SUPER ADMIN</span>`
+            : `<span class="admin-actor-chip"><i class="fas fa-shield-halved"></i> ADMIN</span>`;
           actorLineHTML = `
-            <span class="admin-actor-chip"><i class="fas fa-shield-halved"></i> ADMIN</span>
+            ${actorChip}
             ${adminNameBtn}
             <span class="admin-activity-type ${info.badgeTone || ""}">${escapeHtml(info.label)}</span>
             ${targetUserChip}
@@ -6140,10 +6551,12 @@
     }
 
     function updateActivityCountersUI() {
-      const total = ADMIN_ACTIVITY_CACHE.length;
+      const isSuper = isSuperAdmin();
+      const visibleItems = ADMIN_ACTIVITY_CACHE.filter(canCurrentUserViewActivityItem);
+      const total = visibleItems.length;
       let adminCnt = 0;
       let modCnt = 0;
-      ADMIN_ACTIVITY_CACHE.forEach(item => {
+      visibleItems.forEach(item => {
         const info = adminActivityTypeInfo(item);
         if (info.isAdminAction) adminCnt++;
         if (info.group === "moderation") modCnt++;
@@ -6157,6 +6570,7 @@
       setText("scope-cnt-all", total);
       setText("scope-cnt-user", userCnt);
       setText("scope-cnt-admin", adminCnt);
+      setText("scope-label-admin", isSuper ? "Hoạt động của Admin" : "Hoạt động của tôi");
       setText("sidebar-all-activity-count", total || "");
       setText("sidebar-admin-activity-count", adminCnt || "");
 
@@ -6164,14 +6578,18 @@
       const subtitle = document.getElementById("activity-center-subtitle");
       if (heading && subtitle) {
         if (ADMIN_ACTIVITY_FILTER.scope === "admin") {
-          heading.innerHTML = `<i class="fas fa-user-shield" style="color:#4f46e5"></i> Nhật ký hoạt động của Quản trị viên <span class="live-dot-badge">Trực tiếp</span>`;
-          subtitle.textContent = "Ghi nhận minh bạch mọi thao tác quản trị: duyệt/sửa/xóa GV & ngành, cảnh cáo/khóa tài khoản, xử lý báo cáo, hỗ trợ, thông báo và từ cấm.";
+          heading.innerHTML = `<i class="fas fa-user-shield" style="color:#4f46e5"></i> ${isSuper ? "Nhật ký hoạt động của Admin" : "Nhật ký hoạt động của tôi"} <span class="live-dot-badge">Trực tiếp</span>`;
+          subtitle.textContent = isSuper
+            ? "Ghi nhận minh bạch mọi thao tác quản trị của toàn bộ Super Admin & Admin: phân quyền, đổi tên, duyệt/sửa/xóa GV & ngành, cảnh cáo/khóa tài khoản, báo cáo và từ cấm."
+            : "Bạn chỉ xem được nhật ký thao tác quản trị của chính mình và hoạt động của người dùng (chỉ Super Admin mới xem được nhật ký của các Admin khác).";
         } else if (ADMIN_ACTIVITY_FILTER.scope === "user") {
           heading.innerHTML = `<i class="fas fa-users" style="color:var(--primary)"></i> Nhật ký hoạt động người dùng <span class="live-dot-badge">Trực tiếp</span>`;
           subtitle.textContent = "Theo dõi đăng ký, đăng/sửa/xóa đánh giá & bình luận, lượt hữu ích, đề xuất GV, góp ý, báo cáo và vi phạm từ cấm tự động.";
         } else {
           heading.innerHTML = `<i class="fas fa-tower-broadcast" style="color:var(--primary)"></i> Trung tâm giám sát hoạt động <span class="live-dot-badge">Trực tiếp</span>`;
-          subtitle.textContent = "Theo dõi toàn diện mọi hoạt động của người dùng và nhật ký thao tác của đội ngũ Quản trị viên theo thời gian thực.";
+          subtitle.textContent = isSuper
+            ? "Theo dõi toàn diện mọi hoạt động của người dùng và nhật ký thao tác của đội ngũ Super Admin & Admin theo thời gian thực."
+            : "Theo dõi hoạt động của người dùng và nhật ký thao tác của chính bạn theo thời gian thực.";
         }
       }
       document.querySelectorAll(".activity-scope-btn").forEach(btn => {
@@ -6249,7 +6667,7 @@
 
     async function loadAdminActivityFeed(force = false) {
       const box = document.getElementById("admin-activity-feed");
-      if (!supabaseClient || !isCurrentAdmin()) return;
+      if (!supabaseClient || !hasAdminPerm("view_activity_logs")) return;
       const isFresh = ADMIN_ACTIVITY_CACHE.length > 0 && (Date.now() - ADMIN_ACTIVITY_LAST_FETCH < 20000);
       if (!force && isFresh) {
         paintAdminActivityFeed();
@@ -6268,13 +6686,21 @@
         if (updated) updated.textContent = `Cập nhật lúc ${new Date(ADMIN_ACTIVITY_LAST_FETCH).toLocaleString("vi-VN")} · Đã tải ${ADMIN_ACTIVITY_CACHE.length} sự kiện gần nhất`;
       } catch (error) {
         console.error("Load Admin activity feed error:", error);
-        if (box) box.innerHTML = `<div class="admin-activity-empty">Không tải được hoạt động. Hãy chạy file <b>huit_review_v4_admin_activity.sql</b> trong Supabase SQL Editor. <div style="margin-top:6px;font-size:.76rem;">${escapeHtml(error?.message || "Lỗi không xác định")}</div></div>`;
+        if (box) box.innerHTML = `<div class="admin-activity-empty">Không tải được hoạt động. Hãy chạy file <b>huit_review_rbac_admin_upgrade_v3.sql</b> trong Supabase SQL Editor. <div style="margin-top:6px;font-size:.76rem;">${escapeHtml(error?.message || "Lỗi không xác định")}</div></div>`;
       }
     }
 
     async function loadAdminUserActivity(userId) {
       const box = document.getElementById("admin-user-activity");
       if (!box || !supabaseClient || !isCurrentAdmin()) return;
+      const targetUser = (ADMIN_SELECTED_USER?.id === userId ? ADMIN_SELECTED_USER : null)
+        || ADMIN_USER_RESULTS.find(u => u.id === userId)
+        || ADMIN_TEAM_CACHE.find(u => u.id === userId);
+      if (targetUser && !canViewTargetUserHistory(targetUser)) {
+        ADMIN_USER_ACTIVITY_CACHE = [];
+        box.innerHTML = `<div class="admin-activity-empty"><i class="fas fa-shield-halved" style="color:#d97706;margin-bottom:6px;"></i><div>Chỉ <b>Super Admin</b> mới được xem nhật ký hoạt động của Quản trị viên khác.</div></div>`;
+        return;
+      }
       box.innerHTML = `<div class="loading-box" style="padding:14px;"><i class="fas fa-spinner fa-spin"></i> Đang tải...</div>`;
       try {
         const { data, error } = await supabaseClient.rpc("admin_get_user_activity", { p_user_id: userId, p_limit: 300 });
@@ -6284,7 +6710,7 @@
       } catch (error) {
         console.error("Load per-user activity error:", error);
         ADMIN_USER_ACTIVITY_CACHE = [];
-        box.innerHTML = `<div class="admin-activity-empty">Không tải được hoạt động tài khoản. Hãy chạy file <b>huit_review_v4_admin_activity.sql</b>. <div style="font-size:.76rem;margin-top:6px;">${escapeHtml(error?.message || "Lỗi không xác định")}</div></div>`;
+        box.innerHTML = `<div class="admin-activity-empty">Chỉ Super Admin mới xem được nhật ký của Quản trị viên khác, hoặc hãy chạy file <b>huit_review_rbac_admin_upgrade_v3.sql</b>. <div style="font-size:.76rem;margin-top:6px;">${escapeHtml(error?.message || "Lỗi không xác định")}</div></div>`;
       }
     }
 
@@ -6298,50 +6724,66 @@
       resultsBox.innerHTML = ADMIN_USER_RESULTS.map(u => `
         <div class="user-admin-result ${ADMIN_SELECTED_USER?.id === u.id ? "selected" : ""}">
           <div class="user-admin-result-main">
-            <div class="user-admin-avatar" aria-hidden="true">${escapeHtml(String(u.username || "U").charAt(0))}</div>
+            <div class="user-admin-avatar" aria-hidden="true">${u.role === "super_admin" ? '<i class="fas fa-crown" style="color:#d97706;"></i>' : (u.role === "admin" ? '<i class="fas fa-user-shield" style="color:#dc2626;"></i>' : escapeHtml(String(u.username || "U").charAt(0)))}</div>
             <div class="user-admin-identity">
               <button type="button" class="user-admin-open-profile" onclick="adminSelectUser(${jsArg(u.id)})">@${escapeHtml(u.username || "")} <i class="fas fa-arrow-up-right-from-square" style="font-size:.68rem;"></i></button>
               <span class="user-admin-display-name">${escapeHtml(u.display_name || "Chưa có tên hiển thị")}</span>
               <div class="user-admin-result-meta">
+                ${roleBadgeHTML(u.role || "user")}
                 <span class="user-state-pill ${u.account_status === "locked" ? "locked" : "active"}"><i class="fas ${u.account_status === "locked" ? "fa-lock" : "fa-check-circle"}"></i> ${u.account_status === "locked" ? "Đang khóa" : "Hoạt động"}</span>
                 <span class="user-admin-warning-count"><i class="fas fa-triangle-exclamation"></i> ${Number(u.warning_count || 0)}/4 cảnh cáo</span>
               </div>
             </div>
           </div>
-          <button type="button" class="btn btn-sm user-admin-select-btn" onclick="adminSelectUser(${jsArg(u.id)})"><i class="fas fa-user-gear"></i> Quản lý <i class="fas fa-arrow-right" style="font-size:.72rem;margin-left:2px;"></i></button>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            ${isSuperAdmin() ? `<button type="button" class="btn btn-sm btn-neutral" onclick="openAdminRoleModal(${jsArg(u.id)}, 'users')" title="Cấp / sửa quyền Admin"><i class="fas fa-crown" style="color:#d97706;"></i> Quyền</button>` : ""}
+            <button type="button" class="btn btn-sm user-admin-select-btn" onclick="adminSelectUser(${jsArg(u.id)})"><i class="fas fa-user-gear"></i> Quản lý <i class="fas fa-arrow-right" style="font-size:.72rem;margin-left:2px;"></i></button>
+          </div>
         </div>`).join("");
     }
 
-    window.adminOpenUserActivity = async function(userId, username, displayName = "", warningCount = 0, accountStatus = "active", lockReason = "") {
-      if (!isCurrentAdmin() || !userId) return;
+    window.adminOpenUserActivity = async function(userId, username, displayName = "", warningCount = 0, accountStatus = "active", lockReason = "", preferredTab = "history", roleHint = "") {
+      if (!canAccessAdminTab("tab-users") || !userId) return;
+      const known = ADMIN_TEAM_CACHE.find(x => x.id === userId) || ADMIN_USER_RESULTS.find(x => x.id === userId) || null;
+      const actItem = ADMIN_ACTIVITY_CACHE.find(x => x.performed_by === userId || x.user_id === userId);
+      const inferredRole = roleHint || known?.role || (actItem?.performed_by === userId ? actItem?.performed_by_role : actItem?.user_role) || "user";
+      if (!isSuperAdmin() && userId !== currentUser?.id && (inferredRole === "admin" || inferredRole === "super_admin")) {
+        showToast("Chỉ Super Admin mới có quyền xem nhật ký hoạt động của Quản trị viên khác.", "error");
+        return;
+      }
       activeAdminTab = "tab-users";
-      ADMIN_USER_PANEL_TAB = "history";
+      ADMIN_USER_PANEL_TAB = ["profile", "mod", "notice", "history"].includes(preferredTab) ? preferredTab : "history";
       syncAdminSidebarActive("tab-users");
       document.querySelectorAll(".admin-content").forEach(c => c.classList.toggle("active", c.id === "tab-users"));
       const field = document.getElementById("admin-user-search");
       if (field) field.value = username && !username.startsWith("tài khoản") ? username : "";
       ADMIN_SELECTED_USER = {
+        ...(known || {}),
         id: userId,
-        username: username || "thanh_vien",
-        display_name: displayName || "Chưa có tên hiển thị",
-        warning_count: Number(warningCount || 0),
-        account_status: accountStatus === "locked" ? "locked" : "active",
-        lock_reason: lockReason || ""
+        username: known?.username || username || "thanh_vien",
+        display_name: known?.display_name || displayName || "Chưa có tên hiển thị",
+        role: inferredRole,
+        admin_permissions: known?.admin_permissions || {},
+        warning_count: Number(known?.warning_count ?? warningCount ?? 0),
+        account_status: (known?.account_status || accountStatus) === "locked" ? "locked" : "active",
+        lock_reason: known?.lock_reason ?? lockReason ?? ""
       };
       ADMIN_USER_RESULTS = [ADMIN_SELECTED_USER];
       ADMIN_USER_ACTIVITY_FILTER = { scope: "all", group: "all", search: "" };
       renderAdminUserResultsList();
-      setAdminUserSearchMessage(`Đang xem hoạt động của @${ADMIN_SELECTED_USER.username}.`, "success");
+      setAdminUserSearchMessage(`Đang quản lý tài khoản @${ADMIN_SELECTED_USER.username}.`, "success");
       renderAdminSelectedUserPanel();
-      // Chỉ gọi tải lịch sử & hoạt động 1 lần duy nhất
-      loadAdminUserHistory(userId);
-      loadAdminUserActivity(userId);
+      if (canViewTargetUserHistory(ADMIN_SELECTED_USER)) {
+        loadAdminUserHistory(userId);
+        loadAdminUserActivity(userId);
+      }
       if (supabaseClient && username && !username.startsWith("tài khoản")) {
         try {
-          const { data } = await supabaseClient.rpc("admin_search_users", { p_query: String(username).trim().toLowerCase() });
+          const { data } = await searchUsersRpcCompat(String(username).trim());
           const latest = Array.isArray(data) ? data.find(u => u.id === userId) : null;
           if (latest && ADMIN_SELECTED_USER?.id === userId) {
-            const changed = latest.warning_count !== ADMIN_SELECTED_USER.warning_count
+            const changed = latest.role !== ADMIN_SELECTED_USER.role
+              || latest.warning_count !== ADMIN_SELECTED_USER.warning_count
               || latest.account_status !== ADMIN_SELECTED_USER.account_status
               || latest.lock_reason !== ADMIN_SELECTED_USER.lock_reason
               || latest.display_name !== ADMIN_SELECTED_USER.display_name;
@@ -6349,15 +6791,10 @@
             ADMIN_USER_RESULTS = [latest];
             renderAdminUserResultsList();
             if (changed) {
-              const statusPill = document.getElementById("selected-user-status-pill");
-              const warnMeta = document.getElementById("selected-user-warn-meta");
-              const isLocked = latest.account_status === "locked";
-              if (statusPill) {
-                statusPill.className = `user-state-pill ${isLocked ? "locked" : "active"}`;
-                statusPill.textContent = isLocked ? "ĐANG BỊ KHÓA" : "ĐANG HOẠT ĐỘNG";
-              }
-              if (warnMeta) {
-                warnMeta.innerHTML = `<b style="color:var(--primary-dark);font-size:1rem;">${Number(latest.warning_count || 0)}/4 cảnh cáo</b>${isLocked && latest.lock_reason ? `<span>Lý do khóa: ${escapeHtml(latest.lock_reason)}</span>` : ""}`;
+              renderAdminSelectedUserPanel();
+              if (canViewTargetUserHistory(latest)) {
+                loadAdminUserHistory(userId);
+                loadAdminUserActivity(userId);
               }
             }
           }
@@ -6385,14 +6822,14 @@
         supabaseClient.removeChannel(ADMIN_ACTIVITY_CHANNEL).catch(err => console.warn("Remove Admin activity channel:", err));
         ADMIN_ACTIVITY_CHANNEL = null;
       }
-      if (!isCurrentAdmin()) return;
+      if (!hasAdminPerm("view_activity_logs")) return;
       ADMIN_ACTIVITY_CHANNEL = supabaseClient.channel("huit-admin-activity-events")
         .on("postgres_changes", { event: "INSERT", schema: "public", table: "admin_activity_events" }, payload => {
           const userId = payload?.new?.user_id;
           const actorId = payload?.new?.performed_by;
           ADMIN_ACTIVITY_LAST_FETCH = 0;
           if (document.getElementById("admin-activity-feed")) loadAdminActivityFeed(true);
-          if (ADMIN_SELECTED_USER?.id && (ADMIN_SELECTED_USER.id === userId || ADMIN_SELECTED_USER.id === actorId)) {
+          if (ADMIN_SELECTED_USER?.id && canViewTargetUserHistory(ADMIN_SELECTED_USER) && (ADMIN_SELECTED_USER.id === userId || ADMIN_SELECTED_USER.id === actorId)) {
             loadAdminUserActivity(ADMIN_SELECTED_USER.id);
           }
         })
@@ -6412,9 +6849,19 @@
 
     // Modal hợp nhất: Cảnh cáo & Xóa bình luận HOẶC Xóa bình luận (Admin) với danh sách lý do bấm chọn nhanh
     window.adminOpenCommentModeration = function(mode, commentKind, reviewId, replyId, userId, displayName, excerpt, reportId = "") {
-      if (!supabaseClient || !isCurrentAdmin()) return;
+      if (!supabaseClient || !hasAdminPerm("moderate_comments")) return;
       const isWarnMode = mode === "warn_and_delete";
+      if (isWarnMode && !hasAdminPerm("manage_users")) {
+        showToast("Bạn cần được cấp thêm quyền Quản lý tài khoản để gửi cảnh cáo.", "error");
+        return;
+      }
       const rev = REVIEWS_CACHE.find(x => x.id === reviewId);
+      const repObj = (commentKind === "reply" && replyId) ? rev?.replies?.find(x => x.id === replyId) : null;
+      const isTargetAdminPost = Boolean(commentKind === "reply" ? repObj?.isAdmin : rev?.isAdmin);
+      if (isWarnMode && isTargetAdminPost && !isSuperAdmin()) {
+        showToast("Chỉ Super Admin mới có quyền cảnh cáo nội dung của Quản trị viên khác.", "error");
+        return;
+      }
       ADMIN_QUICK_WARNING_TARGET = {
         mode: isWarnMode ? "warn_and_delete" : "delete_only",
         commentKind: commentKind === "reply" ? "reply" : "review",
@@ -6424,6 +6871,7 @@
         displayName: displayName || "Thành viên",
         excerpt: excerpt || "",
         reportId: reportId || "",
+        isTargetAdminPost,
         targetType: rev?.targetType || null,
         targetId: rev?.targetId || null
       };
@@ -6454,7 +6902,7 @@
       if (chipsBox) chipsBox.innerHTML = renderReasonChipsHTML(ADMIN_COMMENT_PRESET_REASONS);
       resetReasonInput("adminQuickWarningChips", "adminQuickWarningReason");
 
-      const canWarn = Boolean(userId && userId !== currentUser?.id);
+      const canWarn = Boolean(userId && userId !== currentUser?.id && hasAdminPerm("manage_users") && (isSuperAdmin() || !isTargetAdminPost));
       if (alsoWarnWrap && alsoWarnCheck) {
         alsoWarnWrap.style.display = (!isWarnMode && canWarn) ? "flex" : "none";
         alsoWarnCheck.checked = false;
@@ -6469,17 +6917,19 @@
 
 
     window.adminSubmitQuickWarning = async function() {
-      if (!supabaseClient || !isCurrentAdmin() || !ADMIN_QUICK_WARNING_TARGET) return;
+      if (!supabaseClient || !hasAdminPerm("moderate_comments") || !ADMIN_QUICK_WARNING_TARGET) return;
       const target = ADMIN_QUICK_WARNING_TARGET;
-      const shouldWarn = target.mode === "warn_and_delete"
-        || Boolean(document.getElementById("adminQuickWarningAlsoWarn")?.checked && target.userId && target.userId !== currentUser?.id);
+      const shouldWarn = hasAdminPerm("manage_users") && (
+        target.mode === "warn_and_delete"
+        || Boolean(document.getElementById("adminQuickWarningAlsoWarn")?.checked && target.userId && target.userId !== currentUser?.id)
+      );
       const reason = collectReasonInput("adminQuickWarningChips", "adminQuickWarningReason");
-      if (!reason) {
-        alert("Vui lòng bấm chọn ít nhất 1 lý do có sẵn hoặc nhập ghi chú.");
+      if (reason.length < 5) {
+        showToast("Vui lòng bấm chọn ít nhất 1 lý do có sẵn hoặc nhập ghi chú ít nhất 5 ký tự.", "error");
         return;
       }
       if (reason.length > 1000) {
-        alert("Lý do tối đa 1.000 ký tự.");
+        showToast("Lý do tối đa 1.000 ký tự.", "error");
         return;
       }
 
@@ -6571,16 +7021,28 @@
       box.className = message ? `auth-message show ${type}` : "auth-message";
     }
 
+    async function searchUsersRpcCompat(rawQuery) {
+      const q = String(rawQuery || "").trim();
+      const v2 = await supabaseClient.rpc("admin_search_users_v2", { p_query: q });
+      if (!v2.error) return { data: v2.data || [], error: null, isV2: true };
+      const msg = String(v2.error?.message || "");
+      if (v2.error?.code === "PGRST202" || /could not find the function|does not exist/i.test(msg)) {
+        const v1 = await supabaseClient.rpc("admin_search_users", { p_query: q.toLowerCase() });
+        return { data: v1.data || [], error: v1.error, isV2: false };
+      }
+      return { data: [], error: v2.error, isV2: true };
+    }
+
     window.adminSearchUsers = async function() {
-      if (!supabaseClient || !isCurrentAdmin() || adminUserSearchInFlight) return;
+      if (!supabaseClient || !canAccessAdminTab("tab-users") || adminUserSearchInFlight) return;
       const button = document.getElementById("admin-user-search-button");
       adminUserSearchInFlight = true;
       if (button) { button.disabled = true; button.dataset.originalHtml = button.innerHTML; button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang tìm...'; }
       const field = document.getElementById("admin-user-search");
       const resultsBox = document.getElementById("admin-user-results");
-      const query = String(field?.value || "").trim().toLowerCase();
+      const query = String(field?.value || "").trim();
       if (query.length < 2) {
-        setAdminUserSearchMessage("Nhập ít nhất 2 ký tự tên đăng nhập.", "error");
+        setAdminUserSearchMessage("Nhập ít nhất 2 ký tự tên đăng nhập hoặc tên hiển thị.", "error");
         adminUserSearchInFlight = false;
         if (button) { button.disabled = false; button.innerHTML = button.dataset.originalHtml || '<i class="fas fa-magnifying-glass"></i> Tìm kiếm'; }
         return;
@@ -6588,7 +7050,7 @@
       setAdminUserSearchMessage("Đang tìm tài khoản...", "info");
       if (resultsBox) resultsBox.innerHTML = `<div class="loading-box" style="padding:20px;"><i class="fas fa-spinner fa-spin"></i> Đang tìm...</div>`;
       try {
-        const { data, error } = await supabaseClient.rpc("admin_search_users", { p_query: query });
+        const { data, error } = await searchUsersRpcCompat(query);
         if (error) throw error;
         ADMIN_USER_RESULTS = Array.isArray(data) ? data : [];
         setAdminUserSearchMessage(ADMIN_USER_RESULTS.length ? `Tìm thấy ${ADMIN_USER_RESULTS.length} tài khoản.` : "Không tìm thấy tài khoản phù hợp.", ADMIN_USER_RESULTS.length ? "success" : "info");
@@ -6596,7 +7058,14 @@
         else if (resultsBox) resultsBox.innerHTML = `<div class="empty-state" style="padding:24px;"><p style="margin:0;font-size:.9rem;">Không tìm thấy người dùng.</p></div>`;
         if (ADMIN_SELECTED_USER) {
           const refreshed = ADMIN_USER_RESULTS.find(u => u.id === ADMIN_SELECTED_USER.id);
-          if (refreshed) { ADMIN_SELECTED_USER = refreshed; renderAdminSelectedUserPanel(); loadAdminUserHistory(refreshed.id); loadAdminUserActivity(refreshed.id); }
+          if (refreshed) {
+            ADMIN_SELECTED_USER = refreshed;
+            renderAdminSelectedUserPanel();
+            if (canViewTargetUserHistory(refreshed)) {
+              loadAdminUserHistory(refreshed.id);
+              loadAdminUserActivity(refreshed.id);
+            }
+          }
           else { ADMIN_SELECTED_USER = null; const panel = document.getElementById("admin-user-selected-panel"); if (panel) panel.innerHTML = ""; }
         }
       } catch (error) {
@@ -6617,15 +7086,31 @@
       const resultsBox = document.getElementById("admin-user-results");
       if (resultsBox) resultsBox.querySelectorAll(".user-admin-result").forEach((el, index) => el.classList.toggle("selected", ADMIN_USER_RESULTS[index]?.id === userId));
       renderAdminSelectedUserPanel();
-      loadAdminUserHistory(userId);
-      loadAdminUserActivity(userId);
+      if (canViewTargetUserHistory(ADMIN_SELECTED_USER)) {
+        loadAdminUserHistory(userId);
+        loadAdminUserActivity(userId);
+      }
     };
 
     window.switchAdminUserTab = function(tab) {
-      ADMIN_USER_PANEL_TAB = ["mod", "notice", "history"].includes(tab) ? tab : "mod";
+      ADMIN_USER_PANEL_TAB = ["profile", "mod", "notice", "history"].includes(tab) ? tab : "profile";
       document.querySelectorAll(".user-panel-tab").forEach(b => b.classList.toggle("active", b.dataset.utab === ADMIN_USER_PANEL_TAB));
       document.querySelectorAll(".user-panel-pane").forEach(p => p.classList.toggle("active", p.dataset.upane === ADMIN_USER_PANEL_TAB));
     };
+
+    function renderAdminPermChipsHTML(role, permsObj) {
+      if (role === "super_admin") {
+        return `<span class="admin-perm-chip all"><i class="fas fa-crown"></i> Toàn quyền hệ thống (cấp/hủy Admin &amp; mọi chức năng)</span>`;
+      }
+      if (role !== "admin") {
+        return `<span class="admin-perm-chip none">Tài khoản thành viên thường</span>`;
+      }
+      const active = ADMIN_PERMISSIONS_DEF.filter(p => Boolean(permsObj?.[p.key]));
+      if (!active.length) {
+        return `<span class="admin-perm-chip none"><i class="fas fa-circle-info"></i> Chưa bật quyền nào (0/${ADMIN_PERMISSIONS_DEF.length})</span>`;
+      }
+      return active.map(p => `<span class="admin-perm-chip"><i class="fas ${p.icon}"></i> ${escapeHtml(p.label)}</span>`).join("");
+    }
 
     function renderAdminSelectedUserPanel() {
       const panel = document.getElementById("admin-user-selected-panel");
@@ -6633,11 +7118,37 @@
       if (!panel) return;
       if (!u) { panel.innerHTML = ""; return; }
       const locked = u.account_status === "locked";
-      const curTab = ["mod", "notice", "history"].includes(ADMIN_USER_PANEL_TAB) ? ADMIN_USER_PANEL_TAB : "mod";
+      const targetRole = u.role || "user";
+      const isSuper = isSuperAdmin();
+      const canRename = canManageTargetUser(u, "rename_users");
+      const canModUser = canManageTargetUser(u, "manage_users");
+      const canNotifyUser = canManageTargetUser(u, "notify_users");
+      const isSelfTarget = Boolean(currentUser?.id && u.id === currentUser.id);
+      const showProfileTab = isSuper || hasAdminPerm("rename_users");
+      const showModTab = hasAdminPerm("manage_users");
+      const showNoticeTab = hasAdminPerm("manage_users");
+      const showHistoryTab = hasAdminPerm("manage_users") || hasAdminPerm("view_activity_logs") || hasAdminPerm("rename_users");
+
+      const allowedTabs = [
+        showProfileTab ? "profile" : null,
+        showModTab ? "mod" : null,
+        showNoticeTab ? "notice" : null,
+        showHistoryTab ? "history" : null
+      ].filter(Boolean);
+      const curTab = allowedTabs.includes(ADMIN_USER_PANEL_TAB) ? ADMIN_USER_PANEL_TAB : (allowedTabs[0] || "history");
+      ADMIN_USER_PANEL_TAB = curTab;
+
       panel.innerHTML = `
         <div class="user-admin-detail">
           <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap;">
-            <div><h3><i class="fas fa-user-shield"></i> @${escapeHtml(u.username || "")}</h3><div style="color:var(--muted);font-size:.86rem;">${escapeHtml(u.display_name || "Chưa có tên hiển thị")}</div></div>
+            <div>
+              <h3 style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px;">
+                <i class="fas ${targetRole === "super_admin" ? "fa-crown" : "fa-user-shield"}" style="color:${targetRole === "super_admin" ? "#d97706" : "var(--primary)"}"></i>
+                <span>@${escapeHtml(u.username || "")}</span>
+                ${roleBadgeHTML(targetRole)}
+              </h3>
+              <div style="color:var(--muted);font-size:.87rem;">Tên hiển thị: <b style="color:var(--primary-dark);">${escapeHtml(u.display_name || "Chưa có tên hiển thị")}</b></div>
+            </div>
             <span id="selected-user-status-pill" class="user-state-pill ${locked ? "locked" : "active"}">${locked ? "ĐANG BỊ KHÓA" : "ĐANG HOẠT ĐỘNG"}</span>
           </div>
           <div id="selected-user-warn-meta" class="user-admin-result-meta" style="margin:10px 0 4px;">
@@ -6646,37 +7157,76 @@
           </div>
 
           <div class="user-panel-tabs" role="tablist" aria-label="Quản lý chi tiết tài khoản">
-            <button type="button" class="user-panel-tab ${curTab === "mod" ? "active" : ""}" data-utab="mod" onclick="switchAdminUserTab('mod')"><i class="fas fa-gavel"></i> Kiểm duyệt &amp; Khóa</button>
-            <button type="button" class="user-panel-tab ${curTab === "notice" ? "active" : ""}" data-utab="notice" onclick="switchAdminUserTab('notice')"><i class="fas fa-bullhorn"></i> Thông báo riêng</button>
-            <button type="button" class="user-panel-tab ${curTab === "history" ? "active" : ""}" data-utab="history" onclick="switchAdminUserTab('history')"><i class="fas fa-clock-rotate-left"></i> Lịch sử &amp; Hoạt động</button>
+            ${showProfileTab ? `<button type="button" class="user-panel-tab ${curTab === "profile" ? "active" : ""}" data-utab="profile" onclick="switchAdminUserTab('profile')"><i class="fas fa-id-card"></i> Đổi tên &amp; Phân quyền</button>` : ""}
+            ${showModTab ? `<button type="button" class="user-panel-tab ${curTab === "mod" ? "active" : ""}" data-utab="mod" onclick="switchAdminUserTab('mod')"><i class="fas fa-gavel"></i> Kiểm duyệt &amp; Khóa</button>` : ""}
+            ${showNoticeTab ? `<button type="button" class="user-panel-tab ${curTab === "notice" ? "active" : ""}" data-utab="notice" onclick="switchAdminUserTab('notice')"><i class="fas fa-bullhorn"></i> Thông báo riêng</button>` : ""}
+            ${showHistoryTab ? `<button type="button" class="user-panel-tab ${curTab === "history" ? "active" : ""}" data-utab="history" onclick="switchAdminUserTab('history')"><i class="fas fa-clock-rotate-left"></i> Lịch sử &amp; Hoạt động</button>` : ""}
           </div>
 
+          ${showProfileTab ? `
+          <div class="user-panel-pane ${curTab === "profile" ? "active" : ""}" data-upane="profile">
+            ${hasAdminPerm("rename_users") ? `
+            <div class="rename-sync-box">
+              <h3 style="font-size:1rem;margin:0 0 6px;"><i class="fas fa-signature" style="color:var(--primary)"></i> Đổi tên hiển thị (tự động đồng bộ toàn hệ thống)</h3>
+              ${canRename ? `
+                <p style="margin:0 0 10px;font-size:.82rem;color:var(--muted);">Tên mới sẽ cập nhật trên hồ sơ và <b>tự động đổi trên toàn bộ đánh giá, phản hồi và lượt nhắc @tên cũ</b> của tài khoản này.</p>
+                <label for="admin-rename-input">Tên hiển thị mới (2–30 ký tự)</label>
+                <input type="text" id="admin-rename-input" minlength="2" maxlength="30" value="${escapeHtml(u.display_name || "")}" placeholder="Nhập tên hiển thị mới..." />
+                <label for="admin-rename-reason">Lý do đổi tên <span style="font-weight:500;color:var(--muted);">(không bắt buộc)</span></label>
+                <input type="text" id="admin-rename-reason" maxlength="500" placeholder="VD: Hỗ trợ đổi theo yêu cầu sinh viên / Tên cũ vi phạm quy tắc..." />
+                <button type="button" class="btn btn-sm" style="margin-top:12px;" onclick="adminRenameSelectedUser(this)"><i class="fas fa-check"></i> Lưu tên mới &amp; Đồng bộ</button>
+              ` : `<div class="mod-mode-banner amber" style="margin:8px 0 0;"><i class="fas fa-shield-halved"></i><span>Chỉ <b>Super Admin</b> mới có quyền đổi tên hiển thị của tài khoản Quản trị viên khác.</span></div>`}
+            </div>` : ""}
+
+            ${isSuper ? `
+            <div class="rename-sync-box" style="margin-bottom:0;border-color:#fde68a;background:linear-gradient(155deg,#fffdf6 0%,#fff 65%);">
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
+                <div>
+                  <h3 style="font-size:1rem;margin:0 0 4px;"><i class="fas fa-crown" style="color:#d97706"></i> Vai trò &amp; Quyền Quản trị viên</h3>
+                  <div style="font-size:.82rem;color:var(--muted);">Vai trò hiện tại: ${roleBadgeHTML(targetRole)}</div>
+                </div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                  <button type="button" class="btn btn-sm" onclick="openAdminRoleModal(${jsArg(u.id)}, 'users')"><i class="fas fa-sliders"></i> ${targetRole === "user" ? "Cấp quyền Admin" : "Chỉnh sửa vai trò &amp; quyền"}</button>
+                  ${targetRole === "admin" ? `<button type="button" class="btn btn-sm btn-del" onclick="adminQuickRevokeAdmin(${jsArg(u.id)}, ${jsArg(u.username || "")}, this)"><i class="fas fa-user-slash"></i> Hủy Admin</button>` : ""}
+                </div>
+              </div>
+              <div class="admin-perm-chips">${renderAdminPermChipsHTML(targetRole, u.admin_permissions)}</div>
+            </div>` : ""}
+          </div>` : ""}
+
+          ${showModTab ? `
           <div class="user-panel-pane ${curTab === "mod" ? "active" : ""}" data-upane="mod">
+            ${canModUser ? `
+            ${isSuper && targetRole === "admin" ? `<div class="mod-mode-banner amber" style="margin:0 0 12px;"><i class="fas fa-crown"></i><span>Bạn đang thao tác với quyền <b>Super Admin</b> trên tài khoản Admin <b>@${escapeHtml(u.username || "")}</b>. Khi khóa tài khoản, toàn bộ quyền quản trị của Admin này sẽ lập tức bị tạm ngưng cho đến khi được mở khóa.</span></div>` : ""}
             <div class="admin-public-reply" style="margin-top:0;border-color:#fecaca;background:#fffafa;">
               <h3 style="font-size:1rem;margin:0 0 8px;color:#991b1b;"><i class="fas fa-triangle-exclamation"></i> Gửi cảnh cáo</h3>
+              ${locked ? `<div class="mod-mode-banner danger" style="margin:0 0 10px;"><i class="fas fa-lock"></i><span>Tài khoản này đang bị khóa. Hãy gỡ cảnh cáo hoặc mở khóa ở mục bên dưới trước khi gửi cảnh cáo mới.</span></div>` : ""}
               <label style="margin:0 0 4px;">Chọn nhanh lý do cảnh cáo:</label>
               <div id="admin-user-warn-chips" class="reason-chip-grid">${renderReasonChipsHTML(ADMIN_USER_WARN_PRESET_REASONS)}</div>
-              <label for="admin-user-warning-reason">Ghi chú thêm <span style="font-weight:500;color:var(--muted);">(không bắt buộc nếu đã chọn ở trên)</span></label>
+              <label for="admin-user-warning-reason">Ghi chú thêm <span style="font-weight:500;color:var(--muted);">(không bắt buộc nếu đã chọn ở trên, tối thiểu 5 ký tự)</span></label>
               <textarea id="admin-user-warning-reason" rows="2" maxlength="1000" placeholder="Có thể bỏ trống nếu đã bấm chọn lý do..."></textarea>
-              <button type="button" class="btn btn-sm btn-del" style="margin-top:10px;" onclick="adminWarnUser(this)"><i class="fas fa-gavel"></i> Gửi cảnh cáo</button>
+              <button type="button" class="btn btn-sm btn-del" style="margin-top:10px;" ${locked ? "disabled" : ""} onclick="adminWarnUser(this)"><i class="fas fa-gavel"></i> Gửi cảnh cáo</button>
               <p class="auth-help" style="margin-top:8px;">Cảnh cáo thứ 4 sẽ tự động khóa tài khoản. Mỗi cảnh cáo đều được lưu trong lịch sử.</p>
             </div>
             <div style="margin-top:14px;">
               <label style="margin:0 0 4px;">Chọn nhanh lý do gỡ cảnh cáo / khóa / mở khóa:</label>
               <div id="admin-user-action-chips" class="reason-chip-grid">${renderReasonChipsHTML(ADMIN_USER_ACTION_PRESET_REASONS, "tone-blue")}</div>
-              <label for="admin-user-action-reason">Ghi chú thêm <span style="font-weight:500;color:var(--muted);">(không bắt buộc nếu đã chọn ở trên)</span></label>
+              <label for="admin-user-action-reason">Ghi chú thêm <span style="font-weight:500;color:var(--muted);">(không bắt buộc nếu đã chọn ở trên, tối thiểu 5 ký tự)</span></label>
               <textarea id="admin-user-action-reason" rows="2" maxlength="1000" placeholder="Có thể bỏ trống nếu đã bấm chọn lý do..."></textarea>
               <div class="user-admin-actions">
                 ${Number(u.warning_count || 0) > 0 ? `<button type="button" class="btn btn-sm" style="background:#64748b;" onclick="adminRemoveUserWarning(this)"><i class="fas fa-eraser"></i> Gỡ 1 cảnh cáo</button>` : ""}
                 ${locked
-                  ? `<button type="button" class="btn btn-sm btn-approve" onclick="adminSetUserLock(false, this)"><i class="fas fa-lock-open"></i> Mở khóa tài khoản</button>`
+                  ? `<button type="button" class="btn btn-sm btn-approve" ${Number(u.warning_count || 0) >= 4 ? 'title="Cần gỡ cảnh cáo xuống dưới 4/4 trước khi mở khóa"' : ""} onclick="adminSetUserLock(false, this)"><i class="fas fa-lock-open"></i> Mở khóa tài khoản</button>`
                   : `<button type="button" class="btn btn-sm btn-del" onclick="adminSetUserLock(true, this)"><i class="fas fa-lock"></i> Khóa tài khoản</button>`}
               </div>
-              <p class="auth-help">Gỡ cảnh cáo không tự mở khóa tài khoản. Khi số cảnh cáo còn dưới 4, Admin có thể thực hiện mở khóa riêng.</p>
-            </div>
-          </div>
+              <p class="auth-help">${locked && Number(u.warning_count || 0) >= 4 ? "<b>Lưu ý:</b> Tài khoản đang có đủ 4/4 cảnh cáo — hãy bấm <b>Gỡ 1 cảnh cáo</b> trước, sau đó mới bấm <b>Mở khóa tài khoản</b>." : "Gỡ cảnh cáo không tự mở khóa tài khoản. Khi số cảnh cáo còn dưới 4, có thể thực hiện mở khóa riêng."}</p>
+            </div>` : `
+            <div class="mod-mode-banner amber" style="margin:0;"><i class="fas fa-shield-halved"></i><span>${isSelfTarget ? "Không thể tự cảnh cáo hoặc tự khóa tài khoản của chính mình." : (targetRole === "super_admin" ? "Không thể cảnh cáo hoặc khóa tài khoản Super Admin. Nếu cần, hãy đổi vai trò trước." : "Chỉ Super Admin mới có quyền cảnh cáo hoặc khóa tài khoản Quản trị viên khác.")}</span></div>`}
+          </div>` : ""}
 
+          ${showNoticeTab ? `
           <div class="user-panel-pane ${curTab === "notice" ? "active" : ""}" data-upane="notice">
+            ${canNotifyUser ? `
             <div class="admin-public-reply" style="margin-top:0;">
               <h3 style="font-size:1rem;margin:0 0 8px;"><i class="fas fa-bullhorn"></i> Gửi thông báo riêng</h3>
               <label for="admin-user-notice-title">Tiêu đề</label>
@@ -6684,10 +7234,13 @@
               <label for="admin-user-notice-message">Nội dung thông báo</label>
               <textarea id="admin-user-notice-message" rows="3" maxlength="5000" placeholder="Viết nội dung người dùng sẽ mở chuông thông báo để đọc..."></textarea>
               <button type="button" class="btn btn-sm btn-approve" style="margin-top:10px;" onclick="adminSendUserNotice(this)"><i class="fas fa-paper-plane"></i> Gửi thông báo</button>
-            </div>
-          </div>
+            </div>` : `
+            <div class="mod-mode-banner amber" style="margin:0;"><i class="fas fa-shield-halved"></i><span>Chỉ <b>Super Admin</b> mới được gửi thông báo riêng đến tài khoản Quản trị viên khác.</span></div>`}
+          </div>` : ""}
 
+          ${showHistoryTab ? `
           <div class="user-panel-pane ${curTab === "history" ? "active" : ""}" data-upane="history">
+            ${canViewTargetUserHistory(u) ? `
             <div class="user-admin-history" style="margin-top:0;padding-top:0;border-top:0;"><b><i class="fas fa-scale-balanced"></i> Lịch sử cảnh cáo / quản trị</b><div id="admin-user-history" style="margin-top:6px;color:var(--muted);font-size:.84rem;">Đang tải lịch sử...</div></div>
             <div class="user-admin-history">
               <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px;">
@@ -6710,36 +7263,485 @@
                 </div>
               </div>
               <div id="admin-user-activity" style="margin-top:8px;"><div class="loading-box" style="padding:14px;">Đang tải hoạt động...</div></div>
-            </div>
-          </div>
+            </div>` : `
+            <div class="mod-mode-banner amber" style="margin:0;"><i class="fas fa-shield-halved"></i><span>Chỉ <b>Super Admin</b> mới có quyền xem lịch sử và nhật ký hoạt động của Quản trị viên khác.</span></div>`}
+          </div>` : ""}
         </div>`;
     }
+
+    /* ================= QUẢN LÝ ĐỘI NGŨ ADMIN, PHÂN QUYỀN & ĐỔI TÊN ================= */
+    async function loadAdminTeam(force = false) {
+      const box = document.getElementById("admin-team-list");
+      if (!supabaseClient || !isSuperAdmin()) return;
+      if (box && !ADMIN_TEAM_CACHE.length) {
+        box.innerHTML = `<div class="loading-box" style="padding:22px;"><i class="fas fa-spinner fa-spin"></i> Đang tải đội ngũ Quản trị viên...</div>`;
+      }
+      try {
+        const { data, error } = await supabaseClient.rpc("admin_list_admins");
+        if (error) throw error;
+        ADMIN_TEAM_CACHE = Array.isArray(data) ? data : [];
+        renderAdminTeamList();
+      } catch (err) {
+        console.error("Load admin team error:", err);
+        if (box) {
+          box.innerHTML = `<div class="admin-activity-empty"><i class="fas fa-database" style="font-size:1.6rem;margin-bottom:8px;color:#cbd5e1;"></i><div>Chưa tải được danh sách đội ngũ Admin. Hãy chạy file <b>huit_review_rbac_admin_upgrade_v3.sql</b> trong Supabase SQL Editor.</div><div style="margin-top:6px;font-size:.76rem;">${escapeHtml(err?.message || "Lỗi không xác định")}</div></div>`;
+        }
+      }
+    }
+
+    function renderAdminTeamList() {
+      const box = document.getElementById("admin-team-list");
+      const superCnt = ADMIN_TEAM_CACHE.filter(a => a.role === "super_admin").length;
+      const subCnt = ADMIN_TEAM_CACHE.filter(a => a.role === "admin").length;
+      const setEl = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = String(v); };
+      setEl("team-stat-super", superCnt);
+      setEl("team-stat-sub", subCnt);
+      setEl("sidebar-admin-team-count", ADMIN_TEAM_CACHE.length || "");
+      if (!box) return;
+      if (!ADMIN_TEAM_CACHE.length) {
+        box.innerHTML = `<div class="empty-state" style="padding:28px;"><p style="margin:0;">Chưa có tài khoản Quản trị viên nào.</p></div>`;
+        return;
+      }
+      box.innerHTML = ADMIN_TEAM_CACHE.map(a => {
+        const isSuper = a.role === "super_admin";
+        const isSelf = a.id === currentUser?.id;
+        return `
+        <div class="admin-team-card ${isSuper ? "is-super" : ""}">
+          <div class="admin-team-card-top">
+            <div class="admin-team-card-identity">
+              <div class="admin-team-avatar" aria-hidden="true"><i class="fas ${isSuper ? "fa-crown" : "fa-user-shield"}"></i></div>
+              <div style="min-width:0;">
+                <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;">
+                  <strong style="font-size:.96rem;color:var(--primary-dark);">@${escapeHtml(a.username || "")}</strong>
+                  ${isSelf ? `<span class="own-badge">Bạn</span>` : ""}
+                  ${roleBadgeHTML(a.role)}
+                  ${a.account_status === "locked" ? `<span class="user-state-pill locked"><i class="fas fa-lock"></i> Đang khóa</span>` : ""}
+                </div>
+                <div style="font-size:.82rem;color:var(--muted);margin-top:2px;">${escapeHtml(a.display_name || "Chưa có tên hiển thị")}</div>
+              </div>
+            </div>
+            <div class="admin-team-card-actions">
+              <button type="button" class="btn btn-sm" onclick="openAdminRoleModal(${jsArg(a.id)}, 'team')"><i class="fas fa-sliders"></i> ${isSuper ? "Đổi vai trò" : "Sửa quyền"}</button>
+              <button type="button" class="btn btn-sm btn-neutral" onclick="adminOpenUserActivity(${jsArg(a.id)},${jsArg(a.username || "")},${jsArg(a.display_name || "")},${jsArg(a.warning_count || 0)},${jsArg(a.account_status || "active")},${jsArg(a.lock_reason || "")},'profile',${jsArg(a.role || 'admin')})"><i class="fas fa-signature"></i> Hồ sơ &amp; Đổi tên</button>
+              ${!isSuper ? `<button type="button" class="btn btn-sm" style="background:#fff7ed;color:#9a3412;border:1px solid #fed7aa;box-shadow:none;" onclick="adminOpenUserActivity(${jsArg(a.id)},${jsArg(a.username || "")},${jsArg(a.display_name || "")},${jsArg(a.warning_count || 0)},${jsArg(a.account_status || "active")},${jsArg(a.lock_reason || "")},'mod',${jsArg(a.role || 'admin')})"><i class="fas fa-gavel"></i> Cảnh cáo / Khóa</button>` : ""}
+              ${!isSuper ? `<button type="button" class="btn btn-sm btn-del" onclick="adminQuickRevokeAdmin(${jsArg(a.id)}, ${jsArg(a.username || "")}, this)"><i class="fas fa-user-slash"></i> Hủy Admin</button>` : ""}
+            </div>
+          </div>
+          <div class="admin-perm-chips">${renderAdminPermChipsHTML(a.role, a.admin_permissions)}</div>
+        </div>`;
+      }).join("");
+    }
+
+    window.adminSearchForPromote = async function() {
+      if (!supabaseClient || !isSuperAdmin()) return;
+      const input = document.getElementById("admin-team-promote-search");
+      const out = document.getElementById("admin-team-promote-results");
+      const btn = document.getElementById("admin-team-promote-btn");
+      const query = String(input?.value || "").trim();
+      if (query.length < 2) { showToast("Nhập ít nhất 2 ký tự username hoặc tên hiển thị.", "error"); return; }
+      await withButtonLock(btn, "Đang tìm...", async () => {
+        try {
+          const { data, error } = await searchUsersRpcCompat(query);
+          if (error) throw error;
+          ADMIN_TEAM_PROMOTE_RESULTS = Array.isArray(data) ? data : [];
+          if (!out) return;
+          if (!ADMIN_TEAM_PROMOTE_RESULTS.length) {
+            out.innerHTML = `<div class="admin-activity-empty" style="padding:14px;">Không tìm thấy tài khoản nào khớp “${escapeHtml(query)}”.</div>`;
+            return;
+          }
+          out.innerHTML = ADMIN_TEAM_PROMOTE_RESULTS.map(u => `
+            <div class="user-admin-result" style="padding:11px 14px;">
+              <div class="user-admin-result-main">
+                <div class="user-admin-avatar" style="width:36px;height:36px;flex-basis:36px;" aria-hidden="true">${escapeHtml(String(u.username || "U").charAt(0))}</div>
+                <div class="user-admin-identity">
+                  <strong style="font-size:.9rem;color:var(--primary-dark);">@${escapeHtml(u.username || "")}</strong> ${roleBadgeHTML(u.role || "user")}
+                  <span class="user-admin-display-name">${escapeHtml(u.display_name || "Chưa có tên hiển thị")}</span>
+                </div>
+              </div>
+              <button type="button" class="btn btn-sm" onclick="openAdminRoleModal(${jsArg(u.id)}, 'promote')"><i class="fas fa-crown"></i> ${u.role === "user" ? "Cấp làm Admin" : "Chỉnh sửa quyền"}</button>
+            </div>`).join("");
+        } catch (err) {
+          showToast("Không tìm được tài khoản: " + supabaseErrorText(err), "error");
+        }
+      });
+    };
+
+    function normalizePermsMap(permsObj) {
+      const normalized = {};
+      for (const p of ADMIN_PERMISSIONS_DEF) {
+        normalized[p.key] = Boolean(permsObj && permsObj[p.key]);
+      }
+      return normalized;
+    }
+
+    function arePermsEqual(a, b) {
+      return ADMIN_PERMISSIONS_DEF.every(p => Boolean(a?.[p.key]) === Boolean(b?.[p.key]));
+    }
+
+    window.openAdminRoleModal = function(userId, source = "team") {
+      if (!isSuperAdmin()) { showToast("Chỉ Super Admin mới có quyền phân quyền Quản trị viên.", "error"); return; }
+      let userObj = null;
+      if (source === "team") userObj = ADMIN_TEAM_CACHE.find(x => x.id === userId);
+      else if (source === "promote") userObj = ADMIN_TEAM_PROMOTE_RESULTS.find(x => x.id === userId);
+      else userObj = ADMIN_USER_RESULTS.find(x => x.id === userId) || (ADMIN_SELECTED_USER?.id === userId ? ADMIN_SELECTED_USER : null);
+      if (!userObj) userObj = ADMIN_TEAM_CACHE.find(x => x.id === userId) || ADMIN_USER_RESULTS.find(x => x.id === userId) || ADMIN_SELECTED_USER;
+      if (!userObj) return;
+
+      const currentRole = userObj.role || "user";
+      const existingPerms = normalizePermsMap(userObj.admin_permissions);
+      ADMIN_ROLE_MODAL_TARGET = { ...userObj, role: currentRole, admin_permissions: existingPerms };
+      const initialRole = (currentRole === "user" && source === "promote") ? "admin" : currentRole;
+
+      const summary = document.getElementById("adminRoleUserSummary");
+      if (summary) {
+        const isSelf = userObj.id === currentUser?.id;
+        const avatarClass = currentRole === "super_admin" ? "is-super" : (currentRole === "admin" ? "is-admin" : "");
+        const avatarInner = currentRole === "super_admin"
+          ? '<i class="fas fa-crown"></i>'
+          : (currentRole === "admin" ? '<i class="fas fa-user-shield"></i>' : escapeHtml(initialsOf(userObj.display_name || userObj.username || "U")));
+        summary.innerHTML = `<div class="role-modal-user">
+            <span class="role-modal-avatar ${avatarClass}" aria-hidden="true">${avatarInner}</span>
+            <div style="min-width:0;">
+              <div style="font-weight:800;color:var(--primary-dark);">@${escapeHtml(userObj.username || "")} ${isSelf ? '<span class="own-badge">Bạn</span>' : ""}</div>
+              <div style="font-size:.81rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(userObj.display_name || "Chưa có tên hiển thị")}</div>
+            </div>
+          </div>
+          ${roleBadgeHTML(currentRole)}`;
+      }
+      const checklist = document.getElementById("adminRolePermsChecklist");
+      if (checklist) {
+        checklist.innerHTML = ADMIN_PERMISSIONS_DEF.map(p => {
+          const checked = Boolean(existingPerms[p.key]);
+          return `<label class="perm-check-item ${checked ? "checked" : ""}" for="perm-chk-${p.key}">
+            <input type="checkbox" id="perm-chk-${p.key}" data-perm-key="${p.key}" ${checked ? "checked" : ""} onchange="onAdminPermCheckboxChange(this)">
+            <span class="perm-check-info">
+              <span class="perm-check-title"><i class="fas ${p.icon}"></i> ${escapeHtml(p.label)}</span>
+              <span class="perm-check-desc">${escapeHtml(p.desc)}</span>
+            </span>
+          </label>`;
+        }).join("");
+      }
+      const reasonInput = document.getElementById("adminRoleReason");
+      if (reasonInput) reasonInput.value = "";
+      selectAdminModalRole(initialRole);
+      updateAdminPermCounterUI();
+      document.getElementById("adminRoleModal")?.classList.add("active");
+    };
+
+    window.selectAdminModalRole = function(role) {
+      ADMIN_ROLE_MODAL_ROLE = ["user", "admin", "super_admin"].includes(role) ? role : "user";
+      document.querySelectorAll("#adminRoleModal .role-selector-btn").forEach(btn => {
+        const selected = btn.dataset.roleOpt === ADMIN_ROLE_MODAL_ROLE;
+        btn.classList.toggle("active", selected);
+        btn.setAttribute("aria-checked", selected ? "true" : "false");
+      });
+      const permsSec = document.getElementById("adminRolePermsSection");
+      const superNotice = document.getElementById("adminRoleSuperNotice");
+      if (permsSec) permsSec.style.display = ADMIN_ROLE_MODAL_ROLE === "admin" ? "block" : "none";
+      if (superNotice) superNotice.style.display = ADMIN_ROLE_MODAL_ROLE === "super_admin" ? "flex" : "none";
+    };
+
+    window.onAdminPermCheckboxChange = function(cb) {
+      cb?.closest(".perm-check-item")?.classList.toggle("checked", Boolean(cb.checked));
+      updateAdminPermCounterUI();
+    };
+
+    function updateAdminPermCounterUI() {
+      const checks = [...document.querySelectorAll("#adminRolePermsChecklist input[data-perm-key]")];
+      const active = checks.filter(c => c.checked).length;
+      const el = document.getElementById("adminRolePermsCounter");
+      if (el) el.textContent = `${active}/${checks.length} quyền`;
+    }
+
+    window.applyAdminPermPreset = function(preset) {
+      const sets = {
+        all: new Set(ADMIN_PERMISSIONS_DEF.map(p => p.key)),
+        mod: new Set(["moderate_comments", "manage_users", "rename_users", "view_activity_logs"]),
+        catalog: new Set(["approve_lecturers", "manage_catalog", "manage_notices"]),
+        support: new Set(["manage_feedback_support", "rename_users"]),
+        none: new Set()
+      };
+      const allow = sets[preset] || new Set();
+      document.querySelectorAll("#adminRolePermsChecklist input[data-perm-key]").forEach(cb => {
+        cb.checked = allow.has(cb.dataset.permKey);
+        cb.closest(".perm-check-item")?.classList.toggle("checked", cb.checked);
+      });
+      updateAdminPermCounterUI();
+    };
+
+    window.adminSaveRoleAndPerms = async function(btn) {
+      if (!supabaseClient || !isSuperAdmin() || !ADMIN_ROLE_MODAL_TARGET) return;
+      const target = ADMIN_ROLE_MODAL_TARGET;
+      const prevRole = target.role || "user";
+      const nextRole = ADMIN_ROLE_MODAL_ROLE;
+      const reason = document.getElementById("adminRoleReason")?.value.trim() || "";
+      const perms = {};
+      document.querySelectorAll("#adminRolePermsChecklist input[data-perm-key]").forEach(cb => {
+        perms[cb.dataset.permKey] = Boolean(cb.checked);
+      });
+      const activePermCount = countActiveAdminPerms(perms);
+
+      // 1. Tránh gọi RPC nếu vai trò và danh sách quyền không hề thay đổi
+      const roleUnchanged = prevRole === nextRole;
+      const permsUnchanged = nextRole !== "admin" || arePermsEqual(target.admin_permissions, perms);
+      if (roleUnchanged && permsUnchanged) {
+        showToast("Vai trò và danh sách quyền chưa có thay đổi nào.", "info");
+        return;
+      }
+
+      // 2. Bảo vệ hệ thống luôn có ít nhất 1 Super Admin đang hoạt động
+      if (prevRole === "super_admin" && nextRole !== "super_admin") {
+        if (!ADMIN_TEAM_CACHE.length) {
+          try {
+            const { data } = await supabaseClient.rpc("admin_list_admins");
+            if (Array.isArray(data)) ADMIN_TEAM_CACHE = data;
+          } catch (e) { console.warn("Could not refresh team before super-admin check:", e); }
+        }
+        const activeSuperCount = ADMIN_TEAM_CACHE.filter(a => a.role === "super_admin" && a.account_status !== "locked").length;
+        if (activeSuperCount <= 1) {
+          showToast("Hệ thống cần giữ ít nhất 1 Super Admin đang hoạt động. Hãy bổ nhiệm thêm một Super Admin khác trước khi hạ quyền.", "error");
+          return;
+        }
+      }
+
+      // 3. Luôn hiện hộp thoại xác nhận rõ ràng (nổi trên modal phân quyền)
+      let confirmTitle = "Xác nhận lưu phân quyền";
+      let confirmMsg = "";
+      let confirmBtnText = "Lưu phân quyền";
+      let isDanger = false;
+
+      if (nextRole === "super_admin") {
+        confirmTitle = "Xác nhận bổ nhiệm Super Admin";
+        confirmMsg = `Bổ nhiệm @${target.username} làm Super Admin?\nTài khoản này sẽ có toàn quyền hệ thống, bao gồm cấp và thu hồi quyền các Admin khác.`;
+        confirmBtnText = "Xác nhận bổ nhiệm";
+        isDanger = true;
+      } else if (nextRole === "user") {
+        confirmTitle = "Thu hồi quyền Quản trị viên";
+        confirmMsg = `Chuyển @${target.username} về Thành viên thường và gỡ toàn bộ quyền quản trị?`;
+        confirmBtnText = "Thu hồi quyền";
+        isDanger = true;
+      } else {
+        const zeroWarn = activePermCount === 0
+          ? "\n(Lưu ý: Bạn chưa bật quyền nào — Admin này sẽ chưa thể thao tác chức năng quản trị.)"
+          : "";
+        confirmTitle = prevRole === "admin" ? "Xác nhận cập nhật quyền Admin" : "Xác nhận bổ nhiệm Admin";
+        confirmMsg = `${prevRole === "admin" ? "Cập nhật quyền" : "Cấp vai trò"} Admin cho @${target.username} với ${activePermCount}/${ADMIN_PERMISSIONS_DEF.length} nhóm quyền?${zeroWarn}`;
+        confirmBtnText = "Lưu phân quyền";
+        isDanger = target.id === currentUser?.id && prevRole === "super_admin";
+      }
+
+      const ok = await appConfirm(confirmMsg, {
+        title: confirmTitle,
+        confirmText: confirmBtnText,
+        danger: isDanger
+      });
+      if (!ok) return;
+
+      await withButtonLock(btn, "Đang lưu...", async () => {
+        try {
+          let rpcError = null;
+          if (prevRole === "admin" && nextRole === "admin") {
+            const { error } = await supabaseClient.rpc("admin_update_admin_permissions", {
+              p_user_id: target.id, p_permissions: perms, p_reason: reason
+            });
+            rpcError = error;
+          } else {
+            const { error } = await supabaseClient.rpc("admin_set_user_role", {
+              p_user_id: target.id, p_role: nextRole, p_permissions: nextRole === "admin" ? perms : {}, p_reason: reason
+            });
+            rpcError = error;
+          }
+          if (rpcError) throw rpcError;
+
+          closeModal("adminRoleModal");
+          ADMIN_ROLE_MODAL_TARGET = null;
+          ADMIN_ACTIVITY_LAST_FETCH = 0;
+
+          if (target.id === currentUser?.id) {
+            await loadCurrentProfile();
+            updateAuthActions();
+            if (!isSuperAdmin()) {
+              route({ preserveScroll: true });
+              showToast("Đã cập nhật vai trò tài khoản của bạn.", "success");
+              return;
+            }
+          }
+          await loadAdminTeam(true);
+          const promoteOut = document.getElementById("admin-team-promote-results");
+          if (promoteOut) promoteOut.innerHTML = "";
+          if (ADMIN_SELECTED_USER?.id === target.id) await refreshAdminSelectedUser();
+          showToast(
+            nextRole === "user"
+              ? `Đã thu hồi quyền Admin của @${target.username}.`
+              : (nextRole === "super_admin"
+                ? `Đã bổ nhiệm @${target.username} làm Super Admin.`
+                : `Đã lưu phân quyền cho Admin @${target.username} (${activePermCount}/${ADMIN_PERMISSIONS_DEF.length} quyền).`),
+            "success"
+          );
+        } catch (err) {
+          console.error("Save role & perms error:", err);
+          showToast("Không lưu được phân quyền: " + supabaseErrorText(err), "error");
+        }
+      });
+    };
+
+    window.adminQuickRevokeAdmin = async function(userId, username, btn) {
+      if (!supabaseClient || !isSuperAdmin()) return;
+      const ok = await appConfirm(`Hủy toàn bộ quyền Quản trị viên của @${username} và chuyển về Thành viên thường?`, {
+        title: "Hủy quyền Admin", confirmText: "Hủy quyền Admin", danger: true
+      });
+      if (!ok) return;
+      await withButtonLock(btn, "Đang hủy...", async () => {
+        try {
+          const { error } = await supabaseClient.rpc("admin_set_user_role", {
+            p_user_id: userId, p_role: "user", p_permissions: {}, p_reason: "Hủy quyền Admin bởi Super Admin"
+          });
+          if (error) throw error;
+          ADMIN_ACTIVITY_LAST_FETCH = 0;
+          await loadAdminTeam(true);
+          if (ADMIN_SELECTED_USER?.id === userId) await refreshAdminSelectedUser();
+          showToast(`Đã hủy quyền Admin của @${username}.`, "success");
+        } catch (err) {
+          showToast("Không thể hủy quyền Admin: " + supabaseErrorText(err), "error");
+        }
+      });
+    };
+
+    window.adminRenameSelectedUser = async function(btn) {
+      if (!supabaseClient || !ADMIN_SELECTED_USER || !canManageTargetUser(ADMIN_SELECTED_USER, "rename_users")) {
+        showToast("Bạn không có quyền đổi tên cho tài khoản này.", "error");
+        return;
+      }
+      const newName = (document.getElementById("admin-rename-input")?.value || "").trim().replace(/\s+/g, " ");
+      const reason = (document.getElementById("admin-rename-reason")?.value || "").trim();
+      if (newName.length < 2 || newName.length > 30) {
+        showToast("Tên hiển thị mới cần dài từ 2 đến 30 ký tự.", "error");
+        return;
+      }
+      if (newName === (ADMIN_SELECTED_USER.display_name || "").trim()) {
+        showToast("Tên mới đang trùng với tên hiển thị hiện tại.", "info");
+        return;
+      }
+      if ((ADMIN_SELECTED_USER.role || "user") === "user") {
+        const norm = normalizeSearch(newName);
+        if (norm.includes("admin") || norm.includes("quan tri")) {
+          showToast("Tên hiển thị của thành viên thường không được chứa từ khóa Quản trị viên.", "error");
+          return;
+        }
+        if (containsForbiddenWord(newName)) {
+          showToast("Tên hiển thị mới chứa từ ngữ không phù hợp với quy tắc cộng đồng.", "error");
+          return;
+        }
+      }
+      const ok = await appConfirm(`Đổi tên hiển thị của @${ADMIN_SELECTED_USER.username} thành "${newName}" và tự động cập nhật trên toàn bộ đánh giá/phản hồi cũ?`, {
+        title: "Xác nhận đổi tên hiển thị", confirmText: "Đổi tên & Đồng bộ", danger: false
+      });
+      if (!ok) return;
+
+      await withButtonLock(btn, "Đang đồng bộ...", async () => {
+        try {
+          const { data, error } = await supabaseClient.rpc("admin_rename_user", {
+            p_user_id: ADMIN_SELECTED_USER.id,
+            p_display_name: newName,
+            p_reason: reason
+          });
+          if (error) throw error;
+          const res = Array.isArray(data) ? data[0] : data;
+          ADMIN_SELECTED_USER.display_name = newName;
+          ADMIN_ACTIVITY_LAST_FETCH = 0;
+
+          if (ADMIN_SELECTED_USER.id === currentUser?.id) {
+            await loadCurrentProfile();
+            updateAuthActions();
+          }
+          await syncFromSupabase("reviews");
+          await refreshAdminSelectedUser();
+          if (isSuperAdmin() && document.getElementById("admin-team-list")) loadAdminTeam(true);
+
+          const revCnt = Number(res?.updated_reviews || 0);
+          const repCnt = Number(res?.updated_replies || 0);
+          showToast(`Đã đổi tên @${ADMIN_SELECTED_USER.username} thành "${newName}" (tự động đồng bộ ${revCnt} đánh giá & ${repCnt} phản hồi).`, "success");
+        } catch (err) {
+          console.error("Admin rename user error:", err);
+          showToast("Không đổi được tên hiển thị: " + supabaseErrorText(err), "error");
+        }
+      });
+    };
 
     async function loadAdminUserHistory(userId) {
       const box = document.getElementById("admin-user-history");
       if (!box || !supabaseClient || !isCurrentAdmin()) return;
+      const targetUser = (ADMIN_SELECTED_USER?.id === userId ? ADMIN_SELECTED_USER : null)
+        || ADMIN_USER_RESULTS.find(u => u.id === userId)
+        || ADMIN_TEAM_CACHE.find(u => u.id === userId);
+      if (targetUser && !canViewTargetUserHistory(targetUser)) {
+        box.textContent = "Chỉ Super Admin mới xem được lịch sử của Quản trị viên khác.";
+        return;
+      }
+      const MOD_ACTION_LABELS = {
+        warning_issued: "Gửi cảnh cáo (+1)",
+        warning_issued_and_auto_locked: "Cảnh cáo thứ 4 (Tự động khóa)",
+        auto_warning_forbidden_word: "Tự động cảnh cáo (Từ cấm)",
+        auto_warning_and_locked: "Tự động khóa (Vi phạm từ cấm)",
+        warning_removed: "Gỡ 1 cảnh cáo",
+        manually_locked: "Khóa tài khoản thủ công",
+        unlocked: "Mở khóa tài khoản",
+        notice_sent: "Gửi thông báo riêng",
+        warning_and_comment_deleted: "Cảnh cáo & Xóa bình luận",
+        comment_deleted_by_admin: "Xóa bình luận vi phạm"
+      };
       box.textContent = "Đang tải lịch sử...";
       try {
         const { data, error } = await supabaseClient.rpc("admin_get_user_moderation_history", { p_user_id: userId });
         if (error) throw error;
         box.innerHTML = data?.length ? data.map(item => `
           <div class="user-admin-history-item">
-            <b>${escapeHtml(item.action_type || "Thao tác")}</b> · ${exactTime(item.created_at)}
+            <b>${escapeHtml(MOD_ACTION_LABELS[item.action_type] || item.action_type || "Thao tác")}</b> · ${exactTime(item.created_at)}
             <div>${escapeHtml(item.reason || "Không có ghi chú")}</div>
-            <small>Sau thao tác: ${Number(item.warning_count_after || 0)} cảnh cáo · ${item.account_status_after === "locked" ? "Đang khóa" : "Hoạt động"} · Admin: ${escapeHtml(item.actor_username || "Quản trị viên")}</small>
+            <small>Sau thao tác: ${Number(item.warning_count_after || 0)}/4 cảnh cáo · ${item.account_status_after === "locked" ? "Đang khóa" : "Hoạt động"} · Bởi: @${escapeHtml(item.actor_username || "Quản trị viên")}</small>
           </div>`).join("") : `<div style="padding:8px 0;">Chưa có lịch sử cảnh cáo hoặc khóa tài khoản.</div>`;
       } catch (error) {
         console.error("Load moderation history error:", error);
-        box.textContent = "Không tải được lịch sử. Hãy kiểm tra đã chạy file SQL thiết lập Supabase.";
+        box.innerHTML = `<div class="admin-activity-empty" style="padding:12px;">Không tải được lịch sử kiểm duyệt: ${escapeHtml(supabaseErrorText(error))}</div>`;
       }
     }
 
     async function refreshAdminSelectedUser() {
+      const prevId = ADMIN_SELECTED_USER?.id || null;
+      const prevUsername = ADMIN_SELECTED_USER?.username || "";
+      const wasAdminTarget = ADMIN_SELECTED_USER?.role === "admin" || ADMIN_SELECTED_USER?.role === "super_admin";
       const field = document.getElementById("admin-user-search");
-      const resultsBox = document.getElementById("admin-user-results");
       const query = String(field?.value || "").trim();
-      if (query.length >= 2) await window.adminSearchUsers();
-      else if (resultsBox) resultsBox.innerHTML = "";
+
+      if (query.length >= 2) {
+        await window.adminSearchUsers();
+      }
+      // Nếu tìm kiếm không còn khớp (VD vừa đổi tên hoặc mở trực tiếp từ tab Đội ngũ Admin), nạp lại trực tiếp theo username
+      if (prevId && ADMIN_SELECTED_USER?.id !== prevId && prevUsername && supabaseClient) {
+        try {
+          const { data, error } = await searchUsersRpcCompat(prevUsername);
+          const fresh = !error && Array.isArray(data) ? data.find(u => u.id === prevId) : null;
+          if (fresh) {
+            ADMIN_SELECTED_USER = fresh;
+            if (!ADMIN_USER_RESULTS.some(u => u.id === prevId)) {
+              ADMIN_USER_RESULTS = [fresh, ...ADMIN_USER_RESULTS];
+            } else {
+              ADMIN_USER_RESULTS = ADMIN_USER_RESULTS.map(u => u.id === prevId ? fresh : u);
+            }
+            renderAdminUserResultsList();
+            renderAdminSelectedUserPanel();
+            if (canViewTargetUserHistory(fresh)) {
+              loadAdminUserHistory(fresh.id);
+              loadAdminUserActivity(fresh.id);
+            }
+          }
+        } catch (err) {
+          console.warn("Direct user refresh fallback skipped:", err);
+        }
+      }
+      if (isSuperAdmin() && wasAdminTarget && document.getElementById("admin-team-list")) {
+        loadAdminTeam(true);
+      }
     }
 
     async function withButtonLock(btn, busyLabel, fn) {
@@ -6751,7 +7753,10 @@
     }
 
     window.adminSendUserNotice = async function(btn) {
-      if (!supabaseClient || !isCurrentAdmin() || !ADMIN_SELECTED_USER) return;
+      if (!supabaseClient || !ADMIN_SELECTED_USER || !canManageTargetUser(ADMIN_SELECTED_USER, "notify_users")) {
+        showToast("Bạn không có quyền gửi thông báo riêng cho tài khoản này.", "error");
+        return;
+      }
       const title = document.getElementById("admin-user-notice-title")?.value.trim() || "";
       const message = document.getElementById("admin-user-notice-message")?.value.trim() || "";
       if (title.length < 4 || title.length > 150) { showToast("Tiêu đề cần từ 4 đến 150 ký tự.", "error"); return; }
@@ -6764,21 +7769,30 @@
           if (error) throw error;
           ADMIN_ACTIVITY_LAST_FETCH = 0;
           showToast("Đã gửi thông báo. Người dùng sẽ nhận được tại biểu tượng chuông.", "success");
-          document.getElementById("admin-user-notice-title").value = "";
-          document.getElementById("admin-user-notice-message").value = "";
+          const tEl = document.getElementById("admin-user-notice-title");
+          const mEl = document.getElementById("admin-user-notice-message");
+          if (tEl) tEl.value = "";
+          if (mEl) mEl.value = "";
           await refreshAdminSelectedUser();
         } catch (error) {
           console.error("Send user notice error:", error);
-          showToast("Không gửi được thông báo: " + (error?.message || "Lỗi không xác định"), "error");
+          showToast("Không gửi được thông báo: " + supabaseErrorText(error), "error");
         }
       });
     };
 
     window.adminWarnUser = async function(btn) {
-      if (!supabaseClient || !isCurrentAdmin() || !ADMIN_SELECTED_USER) return;
+      if (!supabaseClient || !ADMIN_SELECTED_USER || !canManageTargetUser(ADMIN_SELECTED_USER, "manage_users")) {
+        showToast("Bạn không có quyền cảnh cáo tài khoản này.", "error");
+        return;
+      }
       const reason = collectReasonInput("admin-user-warn-chips", "admin-user-warning-reason");
-      if (!reason || reason.length > 1000) { showToast("Vui lòng chọn ít nhất 1 lý do có sẵn hoặc nhập ghi chú (tối đa 1.000 ký tự).", "error"); return; }
-      if (!(await appConfirm(`Gửi một cảnh cáo cho @${ADMIN_SELECTED_USER.username}? Cảnh cáo thứ 4 sẽ tự động khóa tài khoản.`, { title: "Gửi cảnh cáo", confirmText: "Gửi cảnh cáo" }))) return;
+      if (reason.length < 5 || reason.length > 1000) {
+        showToast("Vui lòng chọn ít nhất 1 lý do có sẵn hoặc nhập ghi chú từ 5 đến 1.000 ký tự.", "error");
+        return;
+      }
+      const targetRoleLabel = ADMIN_SELECTED_USER.role === "admin" ? "Admin " : "";
+      if (!(await appConfirm(`Gửi một cảnh cáo cho ${targetRoleLabel}@${ADMIN_SELECTED_USER.username}? Cảnh cáo thứ 4 sẽ tự động khóa tài khoản.`, { title: "Gửi cảnh cáo", confirmText: "Gửi cảnh cáo" }))) return;
       await withButtonLock(btn, "Đang gửi...", async () => {
         try {
           const { data, error } = await supabaseClient.rpc("admin_warn_user", { p_user_id: ADMIN_SELECTED_USER.id, p_reason: reason });
@@ -6787,20 +7801,26 @@
           ADMIN_ACTIVITY_LAST_FETCH = 0;
           resetReasonInput("admin-user-warn-chips", "admin-user-warning-reason");
           showToast(result?.locked
-            ? `Đã gửi cảnh cáo thứ ${result.warning_count}. Tài khoản đã tự động bị khóa.`
-            : `Đã gửi cảnh cáo. Người dùng hiện có ${result?.warning_count ?? "?"}/4 cảnh cáo.`, "success");
+            ? `Đã gửi cảnh cáo thứ ${result.warning_count}/4. Tài khoản đã tự động bị khóa.`
+            : `Đã gửi cảnh cáo. Tài khoản hiện có ${result?.warning_count ?? "?"}/4 cảnh cáo.`, "success");
           await refreshAdminSelectedUser();
         } catch (error) {
           console.error("Warn user error:", error);
-          showToast("Không gửi được cảnh cáo: " + (error?.message || "Lỗi không xác định"), "error");
+          showToast("Không gửi được cảnh cáo: " + supabaseErrorText(error), "error");
         }
       });
     };
 
     window.adminRemoveUserWarning = async function(btn) {
-      if (!supabaseClient || !isCurrentAdmin() || !ADMIN_SELECTED_USER) return;
+      if (!supabaseClient || !ADMIN_SELECTED_USER || !canManageTargetUser(ADMIN_SELECTED_USER, "manage_users")) {
+        showToast("Bạn không có quyền gỡ cảnh cáo cho tài khoản này.", "error");
+        return;
+      }
       const reason = collectReasonInput("admin-user-action-chips", "admin-user-action-reason");
-      if (!reason || reason.length > 1000) { showToast("Vui lòng chọn ít nhất 1 lý do có sẵn hoặc nhập ghi chú (tối đa 1.000 ký tự).", "error"); return; }
+      if (reason.length < 5 || reason.length > 1000) {
+        showToast("Vui lòng chọn ít nhất 1 lý do có sẵn hoặc nhập ghi chú từ 5 đến 1.000 ký tự.", "error");
+        return;
+      }
       if (!(await appConfirm(`Gỡ một cảnh cáo của @${ADMIN_SELECTED_USER.username}? Lịch sử cảnh cáo cũ vẫn được lưu.`, { title: "Gỡ cảnh cáo", confirmText: "Gỡ cảnh cáo", danger: false }))) return;
       await withButtonLock(btn, "Đang xử lý...", async () => {
         try {
@@ -6809,21 +7829,35 @@
           const result = Array.isArray(data) ? data[0] : data;
           ADMIN_ACTIVITY_LAST_FETCH = 0;
           resetReasonInput("admin-user-action-chips", "admin-user-action-reason");
-          showToast(`Đã gỡ một cảnh cáo. Số cảnh cáo còn lại: ${result?.warning_count ?? "?"}.`, "success");
+          showToast(`Đã gỡ một cảnh cáo. Số cảnh cáo còn lại: ${result?.warning_count ?? "?"}/4.`, "success");
           await refreshAdminSelectedUser();
         } catch (error) {
           console.error("Remove warning error:", error);
-          showToast("Không gỡ được cảnh cáo: " + (error?.message || "Lỗi không xác định"), "error");
+          showToast("Không gỡ được cảnh cáo: " + supabaseErrorText(error), "error");
         }
       });
     };
 
     window.adminSetUserLock = async function(locked, btn) {
-      if (!supabaseClient || !isCurrentAdmin() || !ADMIN_SELECTED_USER) return;
+      if (!supabaseClient || !ADMIN_SELECTED_USER || !canManageTargetUser(ADMIN_SELECTED_USER, "manage_users")) {
+        showToast("Bạn không có quyền khóa hoặc mở khóa tài khoản này.", "error");
+        return;
+      }
+      if (!locked && Number(ADMIN_SELECTED_USER.warning_count || 0) >= 4) {
+        showToast("Tài khoản đang có 4/4 cảnh cáo. Vui lòng bấm 'Gỡ 1 cảnh cáo' xuống dưới 4 trước khi mở khóa.", "error");
+        return;
+      }
       const reason = collectReasonInput("admin-user-action-chips", "admin-user-action-reason");
-      if (!reason || reason.length > 1000) { showToast("Vui lòng chọn ít nhất 1 lý do có sẵn hoặc nhập ghi chú (tối đa 1.000 ký tự).", "error"); return; }
+      if (reason.length < 5 || reason.length > 1000) {
+        showToast("Vui lòng chọn ít nhất 1 lý do có sẵn hoặc nhập ghi chú từ 5 đến 1.000 ký tự.", "error");
+        return;
+      }
       const action = locked ? "khóa" : "mở khóa";
-      if (!(await appConfirm(`Bạn chắc chắn muốn ${action} tài khoản @${ADMIN_SELECTED_USER.username}?`, { title: locked ? "Khóa tài khoản" : "Mở khóa tài khoản", confirmText: locked ? "Khóa ngay" : "Mở khóa", danger: Boolean(locked) }))) return;
+      const targetRoleLabel = ADMIN_SELECTED_USER.role === "admin" ? "Admin " : "";
+      const extraNote = (locked && ADMIN_SELECTED_USER.role === "admin")
+        ? "\nToàn bộ quyền quản trị của Admin này sẽ bị tạm vô hiệu hóa cho đến khi được mở khóa."
+        : "";
+      if (!(await appConfirm(`Bạn chắc chắn muốn ${action} tài khoản ${targetRoleLabel}@${ADMIN_SELECTED_USER.username}?${extraNote}`, { title: locked ? "Khóa tài khoản" : "Mở khóa tài khoản", confirmText: locked ? "Khóa ngay" : "Mở khóa", danger: Boolean(locked) }))) return;
       await withButtonLock(btn, "Đang xử lý...", async () => {
         try {
           const { error } = await supabaseClient.rpc("admin_set_user_lock", {
@@ -6832,19 +7866,20 @@
           if (error) throw error;
           ADMIN_ACTIVITY_LAST_FETCH = 0;
           resetReasonInput("admin-user-action-chips", "admin-user-action-reason");
-          showToast(`Đã ${action} tài khoản và gửi thông báo cho người dùng.`, "success");
+          showToast(`Đã ${action} tài khoản ${targetRoleLabel}@${ADMIN_SELECTED_USER.username} và gửi thông báo.`, "success");
           await refreshAdminSelectedUser();
         } catch (error) {
           console.error("Set user lock error:", error);
-          showToast("Không thể " + action + " tài khoản: " + (error?.message || "Lỗi không xác định"), "error");
+          showToast("Không thể " + action + " tài khoản: " + supabaseErrorText(error), "error");
         }
       });
     };
 
     /* ================= ADMIN ACTIONS ================= */
     window.adminSendResponse = async function(sourceType, sourceId) {
-      if (!supabaseClient || !isCurrentAdmin()) return;
-      if (!["support", "feedback", "report"].includes(sourceType)) return;
+      if (!supabaseClient || !["support", "feedback", "report"].includes(sourceType)) return;
+      const permNeeded = sourceType === "report" ? "moderate_comments" : "manage_feedback_support";
+      if (!hasAdminPerm(permNeeded)) { showToast("Bạn không có quyền gửi phản hồi mục này.", "error"); return; }
       const field = document.getElementById(`admin-response-${sourceType}-${sourceId}`);
       const message = field?.value.trim() || "";
       if (message.length < 5 || message.length > 3000) {
@@ -6879,7 +7914,7 @@
     };
 
     window.adminSaveSupportTicket = async function(id, btn) {
-      if (!supabaseClient || !isCurrentAdmin()) return;
+      if (!supabaseClient || !hasAdminPerm("manage_feedback_support")) return;
       const status = document.getElementById(`support-status-${id}`)?.value;
       const adminNote = document.getElementById(`support-note-${id}`)?.value.trim() || "";
       if (!["new", "processing", "resolved"].includes(status)) { showToast("Trạng thái không hợp lệ.", "error"); return; }
@@ -6900,7 +7935,7 @@
     };
 
     window.adminDeleteSupportTicket = async function(id) {
-      if (!supabaseClient || !isCurrentAdmin() || !(await appConfirm("Xóa yêu cầu hỗ trợ này khỏi danh sách?", { title: "Xóa yêu cầu hỗ trợ", confirmText: "Xóa" }))) return;
+      if (!supabaseClient || !hasAdminPerm("manage_feedback_support") || !(await appConfirm("Xóa yêu cầu hỗ trợ này khỏi danh sách?", { title: "Xóa yêu cầu hỗ trợ", confirmText: "Xóa" }))) return;
       const result = await checkedDelete(supabaseClient.from("support_tickets").delete().eq("id", id), "Xóa yêu cầu hỗ trợ");
       if (!result.ok) return;
       await syncFromSupabase("moderation");
@@ -6908,7 +7943,7 @@
     };
 
     window.openEditLecturerModal = function(id) {
-      if (!isCurrentAdmin()) return;
+      if (!hasAdminPerm("manage_catalog")) return;
       const l = getLecturer(id);
       if (!l) return;
       const sel = document.getElementById("edit-lect-faculty");
@@ -6922,7 +7957,7 @@
       document.getElementById("editLecturerModal").classList.add("active");
     };
     window.saveEditedLecturer = async function() {
-      if (!supabaseClient || !isCurrentAdmin()) return;
+      if (!supabaseClient || !hasAdminPerm("manage_catalog")) return;
       if (!currentUser?.id) {
         alert("Phiên đăng nhập quản trị viên không còn hợp lệ. Vui lòng đăng nhập lại rồi thử lưu.");
         return;
@@ -7014,7 +8049,7 @@
     };
 
     window.openEditMajorModal = function(id) {
-      if (!isCurrentAdmin()) return;
+      if (!hasAdminPerm("manage_catalog")) return;
       const major = getMajor(id);
       if (!major) return;
       const facultySelect = document.getElementById("edit-major-faculty");
@@ -7027,7 +8062,7 @@
       document.getElementById("editMajorModal").classList.add("active");
     };
     window.saveEditedMajor = async function() {
-      if (!supabaseClient || !isCurrentAdmin()) return;
+      if (!supabaseClient || !hasAdminPerm("manage_catalog")) return;
       const id = document.getElementById("edit-major-id").value;
       const code = document.getElementById("edit-major-code").value.trim();
       const name = document.getElementById("edit-major-name").value.trim();
@@ -7053,7 +8088,7 @@
     };
 
     window.adminDeleteLecturer = async function(id) {
-      if (!supabaseClient || !isCurrentAdmin()) return;
+      if (!supabaseClient || !hasAdminPerm("manage_catalog")) return;
       const lecturer = getLecturer(id);
       if (!lecturer) { showToast("Không tìm thấy giảng viên cần xóa.", "error"); return; }
       const ok = await appConfirm(`Xóa vĩnh viễn giảng viên "${lecturer.name}" cùng toàn bộ đánh giá của họ khỏi Supabase?`, {
@@ -7107,7 +8142,7 @@
     };
 
     window.adminDeleteMajor = async function(id) {
-      if (!supabaseClient || !isCurrentAdmin()) return;
+      if (!supabaseClient || !hasAdminPerm("manage_catalog")) return;
       const major = getMajor(id);
       if (!major) { showToast("Không tìm thấy ngành học cần xóa.", "error"); return; }
       const ok = await appConfirm(`Xóa vĩnh viễn ngành "${major.name}" cùng toàn bộ đánh giá liên quan khỏi Supabase?`, {
@@ -7157,7 +8192,7 @@
     };
 
     window.approveLecturer = async function(id, btn) {
-      if (!supabaseClient || !isCurrentAdmin()) return;
+      if (!supabaseClient || !hasAdminPerm("approve_lecturers")) return;
       await withButtonLock(btn, "Đang duyệt...", async () => {
         const { data, error } = await supabaseClient.from("lecturer_records").update({ status: "approved" }).eq("id", id).select("id");
         if (error) { showToast("Lỗi duyệt: " + supabaseErrorText(error), "error"); return; }
@@ -7169,7 +8204,7 @@
       });
     };
     window.rejectLecturer = async function(id) {
-      if (!supabaseClient || !isCurrentAdmin() || !(await appConfirm("Từ chối và xóa vĩnh viễn đề xuất giảng viên này?", { title: "Từ chối đề xuất", confirmText: "Từ chối & Xóa" }))) return;
+      if (!supabaseClient || !hasAdminPerm("approve_lecturers") || !(await appConfirm("Từ chối và xóa vĩnh viễn đề xuất giảng viên này?", { title: "Từ chối đề xuất", confirmText: "Từ chối & Xóa" }))) return;
       const expectedReviews = getReviewCount("lecturer", id);
       const reviewDelete = await checkedDelete(
         supabaseClient.from("reviews").delete().eq("target_type", "lecturer").eq("target_id", id),
@@ -7182,7 +8217,7 @@
       route({ preserveScroll: true });
     };
     window.addForbiddenWord = async function() {
-      if (!supabaseClient || !isCurrentAdmin()) return;
+      if (!supabaseClient || !hasAdminPerm("manage_words")) return;
       const field = document.getElementById("newWord");
       const w = (field?.value || "").trim().toLowerCase();
       if (!w) return;
@@ -7194,7 +8229,7 @@
       route({ preserveScroll: true });
     };
     window.removeForbiddenWord = async function(word) {
-      if (!supabaseClient || !isCurrentAdmin()) {
+      if (!supabaseClient || !hasAdminPerm("manage_words")) {
         showToast("Bạn cần đăng nhập bằng tài khoản Admin để xóa từ cấm.", "error");
         return;
       }
@@ -7210,7 +8245,7 @@
     };
 
     window.dismissReport = async function(reportId) {
-      if (!supabaseClient || !isCurrentAdmin()) return;
+      if (!supabaseClient || !hasAdminPerm("moderate_comments")) return;
       const deleted = await checkedDelete(supabaseClient.from("reports").delete().eq("id", reportId), "Đóng báo cáo");
       if (!deleted.ok) return;
       await syncFromSupabase("moderation");
@@ -7218,14 +8253,14 @@
     };
 
     window.adminDeleteNotice = async function(id) {
-      if (!supabaseClient || !isCurrentAdmin() || !(await appConfirm("Xóa thông báo này khỏi Trang chủ và mục Thông báo?", { title: "Xóa thông báo", confirmText: "Xóa" }))) return;
+      if (!supabaseClient || !hasAdminPerm("manage_notices") || !(await appConfirm("Xóa thông báo này khỏi Trang chủ và mục Thông báo?", { title: "Xóa thông báo", confirmText: "Xóa" }))) return;
       const deleted = await checkedDelete(supabaseClient.from("notices").delete().eq("id", id), "Xóa thông báo");
       if (!deleted.ok) return;
       await syncFromSupabase("notices");
       route({ preserveScroll: true });
     };
     window.adminDeleteFeedback = async function(id) {
-      if (!supabaseClient || !isCurrentAdmin() || !(await appConfirm("Đánh dấu đã xử lý và xóa mục này khỏi danh sách?", { title: "Xóa phản ánh / góp ý", confirmText: "Đã xử lý & Xóa" }))) return;
+      if (!supabaseClient || !hasAdminPerm("manage_feedback_support") || !(await appConfirm("Đánh dấu đã xử lý và xóa mục này khỏi danh sách?", { title: "Xóa phản ánh / góp ý", confirmText: "Đã xử lý & Xóa" }))) return;
       const deleted = await checkedDelete(supabaseClient.from("feedbacks").delete().eq("id", id), "Xóa phản ánh / góp ý");
       if (!deleted.ok) return;
       await syncFromSupabase("moderation");
@@ -7243,7 +8278,7 @@
       });
     };
     window.openEditReviewModal = function(reviewId) {
-      if (!isCurrentAdmin()) return;
+      if (!hasAdminPerm("moderate_comments")) return;
       const r = REVIEWS_CACHE.find(x => x.id === reviewId);
       if (!r) return;
       document.getElementById("edit-review-id").value = reviewId;
@@ -7254,7 +8289,7 @@
       document.getElementById("editReviewModal").classList.add("active");
     };
     window.saveEditedReview = async function() {
-      if (!supabaseClient || !isCurrentAdmin()) return;
+      if (!supabaseClient || !hasAdminPerm("moderate_comments")) return;
       const id = document.getElementById("edit-review-id").value;
       const author = document.getElementById("edit-review-author").value.trim();
       const content = document.getElementById("edit-review-content").value.trim();
@@ -7296,7 +8331,11 @@
       document.getElementById("reportReason").value = "";
       document.getElementById("reportModal").classList.add("active");
     };
-    window.closeModal = function(id) { document.getElementById(id)?.classList.remove("active"); };
+    window.closeModal = function(id) {
+      document.getElementById(id)?.classList.remove("active");
+      if (id === "adminRoleModal") ADMIN_ROLE_MODAL_TARGET = null;
+      if (id === "adminQuickWarningModal") ADMIN_QUICK_WARNING_TARGET = null;
+    };
     window.submitReport = async function() {
       if (!ensureAccountActive()) return;
       if (!supabaseClient) { alert("Chưa kết nối Supabase."); return; }
@@ -7431,7 +8470,8 @@
         if (document.getElementById("supportForm")) initSupportForm();
         if (document.getElementById("adminAddNoticeForm")) initAdminAddNoticeForm();
         if (parts[0] === "admin" && isCurrentAdmin()) {
-          if (activeAdminTab === "tab-admin-activity" && document.getElementById("admin-activity-feed")) loadAdminActivityFeed();
+          if (isSuperAdmin() && document.getElementById("admin-team-list")) loadAdminTeam();
+          if (activeAdminTab === "tab-admin-activity" && hasAdminPerm("view_activity_logs") && document.getElementById("admin-activity-feed")) loadAdminActivityFeed();
           if (activeAdminTab === "tab-manage" && document.getElementById("admin-catalog-results")) renderAdminCatalogResults();
           if (document.getElementById("admin-user-search")) {
             if (!preserveScroll) {
@@ -7441,8 +8481,10 @@
               if (ADMIN_USER_RESULTS.length) renderAdminUserResultsList();
               if (ADMIN_SELECTED_USER) {
                 renderAdminSelectedUserPanel();
-                loadAdminUserHistory(ADMIN_SELECTED_USER.id);
-                loadAdminUserActivity(ADMIN_SELECTED_USER.id);
+                if (canViewTargetUserHistory(ADMIN_SELECTED_USER)) {
+                  loadAdminUserHistory(ADMIN_SELECTED_USER.id);
+                  loadAdminUserActivity(ADMIN_SELECTED_USER.id);
+                }
               }
             }
           }
@@ -7534,7 +8576,7 @@
         const form = event.currentTarget;
         const btn = form.querySelector("button[type='submit']");
         const content = form.querySelector("#rv-content").value.trim();
-        const isAdminPost = isCurrentAdmin() && Boolean(form.querySelector("#rv-as-admin")?.checked);
+        const isAdminPost = hasAdminPerm("moderate_comments") && Boolean(form.querySelector("#rv-as-admin")?.checked);
         const rating = parseInt(form.querySelector(".star-input")?.dataset.rating || "5", 10);
         if (content.length < 10 || content.length > 3000) { alert("Nội dung đánh giá cần từ 10 đến 3.000 ký tự."); return; }
         const badWord = containsForbiddenWord(content);
@@ -7623,7 +8665,7 @@
     function initAdminAddLecturerForm() {
       document.getElementById("adminAddLecturerForm")?.addEventListener("submit", async (e) => {
         e.preventDefault();
-        if (!isCurrentAdmin()) return;
+        if (!hasAdminPerm("manage_catalog")) return;
         const btn = e.currentTarget.querySelector("button[type='submit']");
         const name = toTitleCase(document.getElementById("admin-lect-name").value.trim());
         const degree = document.getElementById("admin-lect-degree").value.trim();
@@ -7650,7 +8692,7 @@
     function initAdminAddMajorForm() {
       document.getElementById("adminAddMajorForm")?.addEventListener("submit", async (e) => {
         e.preventDefault();
-        if (!isCurrentAdmin()) return;
+        if (!hasAdminPerm("manage_catalog")) return;
         const btn = e.currentTarget.querySelector("button[type='submit']");
         const code = document.getElementById("admin-major-code").value.trim().replace(/[^A-Za-z0-9_-]/g, "");
         const name = document.getElementById("admin-major-name").value.trim();
@@ -7808,7 +8850,7 @@
     function initAdminAddNoticeForm() {
       document.getElementById("adminAddNoticeForm")?.addEventListener("submit", async (e) => {
         e.preventDefault();
-        if (!isCurrentAdmin()) return;
+        if (!hasAdminPerm("manage_notices")) return;
         const btn = e.currentTarget.querySelector("button[type='submit']");
         const title = document.getElementById("notice-title").value.trim();
         const content = document.getElementById("notice-content").value.trim();
@@ -8021,7 +9063,7 @@
           const heroInput = document.getElementById("heroSearch");
           if (document.body.classList.contains("is-home-top") && heroInput) {
             heroInput.focus();
-          } else if (window.innerWidth <= 900) {
+          } else if (window.innerWidth <= 1000) {
             toggleMobileSearch(true);
           } else {
             globalSearchInput?.focus();
